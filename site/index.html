@@ -805,6 +805,34 @@ $("tabSignUp").onclick=()=>setAuthTab("up");
 let session=null, meProfile=null, isAdmin=false, events=[], myBets=[], usersList=[];
 
 /* tiny sfx */
+function sfxCashout(){
+  try{
+    const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
+
+    // low "coin" hit
+    const o1 = ctx.createOscillator();
+    const g1 = ctx.createGain();
+    o1.type = "square";
+    o1.frequency.setValueAtTime(420, ctx.currentTime);
+    g1.gain.setValueAtTime(0.08, ctx.currentTime);
+    g1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    o1.connect(g1); g1.connect(ctx.destination);
+    o1.start(); o1.stop(ctx.currentTime + 0.16);
+
+    // high sparkle
+    const o2 = ctx.createOscillator();
+    const g2 = ctx.createGain();
+    o2.type = "triangle";
+    o2.frequency.setValueAtTime(980, ctx.currentTime + 0.05);
+    g2.gain.setValueAtTime(0.05, ctx.currentTime + 0.05);
+    g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+    o2.connect(g2); g2.connect(ctx.destination);
+    o2.start(ctx.currentTime + 0.05);
+    o2.stop(ctx.currentTime + 0.23);
+
+  }catch(_){}
+}
+
 function sfx(freq=520, dur=0.06, type="sine", gain=0.04){
   try{
     const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
@@ -1821,7 +1849,8 @@ async function doMinesCashout({ auto=false } = {}){
     // ✅ show mine locations after cashout
     revealAllMines();
 
-    sfx(740,0.08,"triangle",0.035);
+    sfxCashout();
+
     toast(auto ? `Auto cashout +${to2(payout)}` : `Cashout +${to2(payout)}`);
 
     endMinesRound("CASHED");
