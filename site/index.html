@@ -1678,16 +1678,41 @@ $("rouSpinBtn").onclick = async ()=>{
 };
 
 // =======================
-// MINES (UPDATED / FIXED)
+// MINES (IMPROVED)
+// - Start button disables/greys while round is active (bet placed)
+// - Auto cashout when all safe tiles are revealed (only mines left)
+// - Reveal mine locations after cashout (manual or auto)
 // =======================
+
 let mines = {
   active: false,
   bombs: 1,
   stake: 0,
   mult: 1.0,
   bombSet: new Set(),
-  revealed: new Set()
+  revealed: new Set(),   // safe picks only
+  ended: false
 };
+
+function setMinesUiState(active){
+  const startBtn = $("minesStartBtn");
+  const cashBtn  = $("minesCashBtn");
+  if(!startBtn || !cashBtn) return;
+
+  if(active){
+    startBtn.disabled = true;
+    startBtn.textContent = "Bet placed ✓";
+    startBtn.style.opacity = "0.55";
+    startBtn.style.cursor = "not-allowed";
+    cashBtn.disabled = false;
+  } else {
+    startBtn.disabled = false;
+    startBtn.textContent = "Start";
+    startBtn.style.opacity = "1";
+    startBtn.style.cursor = "pointer";
+    cashBtn.disabled = true;
+  }
+}
 
 function minesResetUI(){
   const grid = $("minesGrid");
@@ -1711,39 +1736,81 @@ function minesMultFor(picks,bombs){
   return Math.max(1.0, base);
 }
 
+function revealAllMines(){
+  const grid = $("minesGrid");
+  if(!grid) return;
+  const tiles = [...grid.children];
+
+  tiles.forEach((t, idx)=>{
+    if(mines.bombSet.has(idx)){
+      t.textContent = "💣";
+      t.style.background = "rgba(239,68,68,.12)";
+      t.classList.add("bombHit");
+    }
+  });
+}
+
+function endMinesRound(statusLabel){
+  mines.active = false;
+  mines.ended = true;
+  setMinesUiState(false);
+  $("minesStatus").textContent = statusLabel;
+}
+
+async function doMinesCashout({ auto=false } = {}){
+  if(!mines.active) return;
+  if(mines.ended) return;
+
+  const safePicks = mines.revealed.size;
+  if(safePicks === 0) return toast("Pick at least 1 tile");
+
+  const payout = mines.stake * mines.mult;
+
+  try{
+    const newPts = clamp2(Number(meProfile.pts) + payout);
+    const { error } = await supabase.from("profiles").update({ pts:newPts }).eq("id", session.user.id);
+    if(error) throw error;
+
+    meProfile.pts = newPts;
+    updateMeUI();
+
+    // ✅ show mine locations after cashout
+    revealAllMines();
+
+    sfx(740,0.08,"triangle",0.035);
+    toast(auto ? `Auto cashout +${to2(payout)}` : `Cashout +${to2(payout)}`);
+
+    endMinesRound("CASHED");
+  }catch(e){
+    toast("Cashout failed (DB/RLS)");
+    console.error(e);
+  }
+}
+
 async function minesPick(i, btn){
   if(!mines.active) return toast("Start mines first");
-  if(mines.revealed.has(i)) return;
+  if(mines.ended) return;
+  if(btn.dataset.locked === "1") return;
 
-  mines.revealed.add(i);
+  btn.dataset.locked = "1";
 
-  // BOMB
+  // BOMB clicked
   if(mines.bombSet.has(i)){
     btn.textContent="💣";
     btn.style.background="rgba(239,68,68,.20)";
     btn.classList.add("bombHit");
     sfxBomb();
 
-    // reveal all bombs
-    const tiles=[...$("minesGrid").children];
-    tiles.forEach((t,idx)=>{
-      if(mines.bombSet.has(idx)){
-        setTimeout(()=>{
-          t.textContent="💣";
-          t.style.background="rgba(239,68,68,.12)";
-          t.classList.add("bombHit");
-        }, 40 + Math.random()*180);
-      }
-    });
+    // show all mines
+    revealAllMines();
 
-    mines.active=false;
-    $("minesCashBtn").disabled=true;
-    $("minesStatus").textContent="BOMB";
+    endMinesRound("BOMB");
     toast("Boom 💣");
     return;
   }
 
-  // SAFE
+  // SAFE clicked
+  mines.revealed.add(i);
   btn.innerHTML = gemYellow();
   btn.style.background="rgba(34,197,94,.10)";
   btn.classList.add("gemHit");
@@ -1751,22 +1818,30 @@ async function minesPick(i, btn){
 
   const safePicks = mines.revealed.size;
   mines.mult = minesMultFor(safePicks, mines.bombs);
+
   $("minesMult").textContent = to2(mines.mult)+"x";
   $("minesStatus").textContent = "LIVE";
+
+  // ✅ AUTO CASHOUT when only mines remain
+  const totalSafe = 25 - mines.bombs;
+  if(safePicks >= totalSafe){
+    await doMinesCashout({ auto:true });
+  }
 }
 
-$("minesStartBtn").onclick = async ()=>{
+$("minesStartBtn").onclick = async ()=> {
   if(!meProfile) return toast("Profile not loaded");
+  if(mines.active) return; // already playing
 
-  const stake=Number($("minesStake").value);
-  const bombs=Number($("minesBombs").value);
+  const stake = Number($("minesStake").value);
+  const bombs = Number($("minesBombs").value);
 
   if(!(stake>0)) return toast("Stake > 0");
   if(stake < 0.01) return toast("Min 0.01");
   if(![1,2,3].includes(bombs)) return toast("Bombs must be 1-3");
 
+  // remove stake now + count wager (your existing logic)
   try{
-    // remove stake now + count wager
     await addWagerAndPayout(stake, 0);
   }catch(e){
     if(String(e).includes("balance")) return toast("Not enough points");
@@ -1775,50 +1850,36 @@ $("minesStartBtn").onclick = async ()=>{
     return;
   }
 
-  mines.active=true;
-  mines.bombs=bombs;
-  mines.stake=stake;
-  mines.revealed=new Set();
-  mines.mult=1.0;
+  // start round
+  mines.active = true;
+  mines.ended = false;
+  mines.bombs = bombs;
+  mines.stake = stake;
+  mines.revealed = new Set();
+  mines.mult = 1.0;
 
-  mines.bombSet=new Set();
+  mines.bombSet = new Set();
   while(mines.bombSet.size < bombs){
     mines.bombSet.add(Math.floor(Math.random()*25));
   }
 
-  $("minesCashBtn").disabled=false;
+  minesResetUI();
   $("minesMult").textContent="1.00x";
   $("minesStatus").textContent="LIVE";
 
-  minesResetUI();
+  // ✅ bet placed indicator (button grey/disabled)
+  setMinesUiState(true);
+
   toast("Mines started");
 };
 
-$("minesCashBtn").onclick = async ()=>{
+$("minesCashBtn").onclick = async ()=> {
   if(!mines.active) return toast("No active round");
-  const safePicks = mines.revealed.size;
-  if(safePicks===0) return toast("Pick at least 1 tile");
-
-  const payout = mines.stake * mines.mult;
-
-  try{
-    const newPts = clamp2(Number(meProfile.pts) + payout);
-    const { error } = await supabase.from("profiles").update({ pts:newPts }).eq("id", session.user.id);
-    if(error) throw error;
-    meProfile.pts=newPts;
-    updateMeUI();
-    sfx(740,0.08,"triangle",0.035);
-    toast(`Cashout +${to2(payout)}`);
-  }catch(e){
-    toast("Cashout failed (DB/RLS)");
-    console.error(e);
-  }
-
-  mines.active=false;
-  $("minesCashBtn").disabled=true;
-  $("minesStatus").textContent="CASHED";
+  await doMinesCashout({ auto:false });
 };
 
+// init
+setMinesUiState(false);
 minesResetUI();
 
 /* AUTH */
