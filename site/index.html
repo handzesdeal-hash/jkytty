@@ -832,6 +832,47 @@ function sfxGem(){
   setTimeout(()=>sfx(1180,0.05,"triangle",0.025), 40);
 }
 
+/* ✅ MONEY/CASHOUT SOUND (added) */
+function sfxCashout(){
+  // "cha-ching" style: two bright pings + tiny coin sparkles
+  try{
+    const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
+    const now = ctx.currentTime;
+
+    const o1 = ctx.createOscillator();
+    const g1 = ctx.createGain();
+    o1.type = "triangle";
+    o1.frequency.setValueAtTime(880, now);
+    o1.frequency.exponentialRampToValueAtTime(1320, now + 0.08);
+    g1.gain.setValueAtTime(0.07, now);
+    g1.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    o1.connect(g1); g1.connect(ctx.destination);
+    o1.start(now); o1.stop(now + 0.13);
+
+    const o2 = ctx.createOscillator();
+    const g2 = ctx.createGain();
+    o2.type = "sine";
+    o2.frequency.setValueAtTime(1560, now + 0.06);
+    o2.frequency.exponentialRampToValueAtTime(980, now + 0.16);
+    g2.gain.setValueAtTime(0.05, now + 0.06);
+    g2.gain.exponentialRampToValueAtTime(0.001, now + 0.20);
+    o2.connect(g2); g2.connect(ctx.destination);
+    o2.start(now + 0.06); o2.stop(now + 0.21);
+
+    for(let i=0;i<6;i++){
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = "square";
+      o.frequency.value = 900 + Math.random()*900;
+      const t = now + 0.10 + i*0.03;
+      g.gain.setValueAtTime(0.02, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t); o.stop(t + 0.04);
+    }
+  }catch(_){}
+}
+
 function monthKey(d=new Date()){
   const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"); return `${y}-${m}`;
 }
@@ -1773,6 +1814,9 @@ async function doMinesCashout({ auto=false } = {}){
 
     meProfile.pts = newPts;
     updateMeUI();
+
+    // ✅ MONEY SOUND on cashout (added)
+    sfxCashout();
 
     // ✅ show mine locations after cashout
     revealAllMines();
