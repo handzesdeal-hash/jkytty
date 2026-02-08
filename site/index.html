@@ -216,6 +216,157 @@ input:focus,select:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4p
 }
 .minesXFloat.bump{ animation: xJump .22s ease-out; }
 
+/* =======================
+   MINES CENTER POPUP — CLEAN & BALANCED
+   ======================= */
+
+.minesCenterPop{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%) scale(.92);
+  width:min(280px, 80%);
+  padding:14px;
+  border-radius:22px;
+
+  /* cleaner glass, less tint */
+  background:
+    radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,.14), transparent 55%),
+    rgba(12,12,18,.78);
+
+  /* ✅ black outline + inner edge */
+  border:1px solid rgba(0,0,0,.85);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.10),
+    0 26px 90px rgba(0,0,0,.75),
+    0 0 28px rgba(34,197,94,.18);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  display:none;
+  z-index:50;
+  text-align:center;
+  pointer-events:none;
+}
+
+/* softer glow ring */
+.minesCenterPop::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  border-radius:24px;
+  background:
+    linear-gradient(135deg,
+      rgba(34,197,94,.0),
+      rgba(34,197,94,.55),
+      rgba(34,197,94,.0)
+    );
+  filter: blur(10px);
+  opacity:.45;
+  z-index:0;
+}
+
+/* inner panel */
+.minesCenterPop .inner{
+  position:relative;
+  z-index:1;
+  border-radius:16px;
+  background: rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.14);
+  padding:14px 14px 12px;
+}
+
+/* label */
+.minesCenterPop .label{
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color: rgba(255,255,255,.70);
+  margin-bottom:8px;
+}
+
+/* ✅ payout still dominant but smaller */
+.minesCenterPop .amt{
+  font-family: var(--mono);
+  font-weight:1000;
+  font-size:34px;
+  line-height:1.05;
+  color: rgba(255,255,255,.96);
+  text-shadow: 0 0 16px rgba(34,197,94,.22);
+}
+
+/* multiplier secondary */
+.minesCenterPop .mx{
+  margin-top:8px;
+  font-family: var(--mono);
+  font-weight:900;
+  font-size:16px;
+  color: rgba(34,197,94,.95);
+}
+
+/* footer */
+.minesCenterPop .sub{
+  margin-top:10px;
+  font-size:12px;
+  font-weight:800;
+  color: rgba(255,255,255,.65);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.minesCenterPop .dot{
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background: rgba(34,197,94,.95);
+  box-shadow: 0 0 10px rgba(34,197,94,.45);
+}
+
+/* pop animation (calmer) */
+@keyframes minesPopIn {
+  0%   { opacity:0; transform:translate(-50%,-50%) scale(.86); }
+  60%  { opacity:1; transform:translate(-50%,-50%) scale(1.03); }
+  100% { opacity:1; transform:translate(-50%,-50%) scale(1); }
+}
+@keyframes minesPopOut {
+  to { opacity:0; transform:translate(-50%,-50%) scale(.96); }
+}
+
+.minesCenterPop.show{
+  display:block;
+  animation: minesPopIn .22s ease-out;
+}
+.minesCenterPop.hide{
+  animation: minesPopOut .18s ease-in forwards;
+}
+
+/* lose variant */
+.minesCenterPop.lose{
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.08),
+    0 26px 90px rgba(0,0,0,.75),
+    0 0 28px rgba(239,68,68,.18);
+}
+.minesCenterPop.lose::before{
+  background:
+    linear-gradient(135deg,
+      rgba(239,68,68,.0),
+      rgba(239,68,68,.55),
+      rgba(239,68,68,.0)
+    );
+}
+.minesCenterPop.lose .mx{
+  color: rgba(239,68,68,.95);
+}
+.minesCenterPop.lose .dot{
+  background: rgba(239,68,68,.95);
+  box-shadow: 0 0 10px rgba(239,68,68,.45);
+}
+
 .app{display:none;grid-template-columns:280px 1fr;min-height:100vh;}
 .app.show{display:grid;}
 @media(max-width:980px){.app{grid-template-columns:1fr}.sidebar{position:sticky;top:0;z-index:50;height:auto}.main{padding-top:10px}}
@@ -585,7 +736,27 @@ tr:last-child td{border-bottom:none;}
           </div>
 
           <div class="minesWrap">
-            <div id="minesGrid"></div>
+            <div style="position:relative; max-width:520px;">
+              <div id="minesGrid"></div>
+              <div class="minesCenterPop" id="minesCenterPop">
+                <span class="p" style="left:22px; top:22px;"></span>
+                <span class="p" style="right:26px; top:28px;"></span>
+                <span class="p" style="left:28px; bottom:22px;"></span>
+                <span class="p" style="right:30px; bottom:18px;"></span>
+
+                <div class="inner">
+                  <div class="label" id="minesPopLabel">CASHED OUT</div>
+
+                  <!-- ✅ payout biggest -->
+                  <div class="amt" id="minesPopAmt">0.00</div>
+
+                  <!-- ✅ multiplier smaller (if you want it) -->
+                  <div class="mx" id="minesPopMx">x1.00</div>
+
+                  <div class="sub"><span class="dot"></span><span id="minesPopSub">added to balance</span></div>
+                </div>
+              </div>
+            </div>
 
             <div class="minesRight">
               <div class="minesRightHd">
@@ -2058,6 +2229,36 @@ function updateMinesTopPayout(){
   $("minesPayoutTop").textContent = stake>0 ? to2(payout) : "—";
 }
 
+function showMinesPop({ amount, mult=null, win=true }){
+  const el = $("minesCenterPop");
+  if(!el) return;
+
+  el.classList.remove("hide");
+  el.classList.toggle("lose", !win);
+
+  $("minesPopLabel").textContent = win ? "CASHED OUT" : "BOMB";
+  $("minesPopAmt").textContent = to2(amount);
+  $("minesPopSub").textContent = win ? "added to balance" : "round lost";
+
+  // ✅ multiplier smaller than payout
+  const mxEl = $("minesPopMx");
+  if(mxEl){
+    if(mult == null){
+      mxEl.style.display = "none";   // hide if you don't want it
+    }else{
+      mxEl.style.display = "";
+      mxEl.textContent = `x${to2(mult)}`;
+    }
+  }
+
+  el.classList.add("show");
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>{
+    el.classList.add("hide");
+    setTimeout(()=>el.classList.remove("show","hide"), 220);
+  }, 2200);
+}
+
 async function doMinesCashout({ auto=false } = {}){
   if(!mines.active || mines.ended) return;
 
@@ -2076,6 +2277,7 @@ async function doMinesCashout({ auto=false } = {}){
 
     meProfile.pts = newPts;
     updateMeUI();
+    showMinesPop({ amount: payout, mult: mines.mult, win:true });
 
     // ✅ play money sound ONCE
     sfxCashout();
@@ -2107,6 +2309,7 @@ async function minesPick(i, btn){
 
     // show all mines
     revealAllMines();
+    showMinesPop({ amount: 0, mult: null, win:false });
 
     endMinesRound("BOMB");
     toast("Boom 💣");
