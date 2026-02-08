@@ -1900,7 +1900,7 @@ $("rouSpinBtn").onclick = async ()=>{
 // - Top old multiplier removed; show Current payout instead
 // =======================
 
-const MINES_HOUSE_EDGE = 0.04; // 4% edge (tweak if you want)
+const MINES_HOUSE_EDGE = 0.01; // 1% house edge (Stake-like feel). Change to 0.04 for 4%.
 
 let mines = {
   active: false,
@@ -1977,36 +1977,25 @@ function endMinesRound(statusLabel){
    Apply house edge:
      mult = fair * (1 - houseEdge)
 ----------------------------------------------------- */
-function combBigInt(n, k){
-  n = BigInt(n); k = BigInt(k);
-  if(k < 0n || k > n) return 0n;
-  if(k > n-k) k = n-k;
-  let res = 1n;
-  for(let i=1n; i<=k; i++){
-    res = (res * (n - (k - i))) / i;
-  }
-  return res;
-}
-
 function minesMultiplier(k, bombs){
-  // k = number of SAFE picks (1..25-bombs)
+  // Stake-like product formula for P(survive k picks):
+  // P = Π_{i=0..k-1} (safe - i) / (total - i)
   const total = 25;
   const safe = total - bombs;
 
-  if(k <= 0) return 1.0;
+  if(k <= 0) return 1.00;
   if(k > safe) k = safe;
 
-  const num = combBigInt(safe, k);
-  const den = combBigInt(total, k);
+  let p = 1.0;
+  for(let i=0; i<k; i++){
+    p *= (safe - i) / (total - i);
+  }
 
-  // prob = num/den (as float)
-  // safe because values here are not gigantic; but we still convert carefully
-  const prob = Number(num) / Number(den);
-  const fair = 1 / Math.max(prob, 1e-12);
+  const fair = 1 / Math.max(p, 1e-15);
   const edged = fair * (1 - MINES_HOUSE_EDGE);
 
-  // clamp + round
-  return Math.max(1.0, Math.round((edged + Number.EPSILON) * 100) / 100);
+  // round to 2 decimals for display
+  return Math.max(1.00, Math.round((edged + Number.EPSILON) * 100) / 100);
 }
 
 function buildMinesLadder(bombs){
