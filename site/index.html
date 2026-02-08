@@ -828,9 +828,13 @@ tr:last-child td{border-bottom:none;}
 .bjActionMobile{display:none;gap:10px;margin-top:12px;}
 .bjActionMobile .bjBtn{width:100%;justify-content:center;font-size:14px;padding:12px 12px;}
 .bjActionMobile .full{grid-column: span 2;}
+.bjActionMobile .barLabel{grid-column: span 2;font-size:11px;color:rgba(255,255,255,.65);letter-spacing:.16em;font-weight:900;text-transform:uppercase;}
 .bjActionMobile .stakeBox{grid-column: span 2;display:flex;align-items:center;gap:10px;}
 .bjActionMobile .stakeBox label{font-size:12px;color:var(--muted);font-weight:900;letter-spacing:.04em;}
 .bjActionMobile .stakeBox input{flex:1;min-width:0;padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.26);color:rgba(255,255,255,.92);font-size:14px;}
+.bjActionMobile .sideBox{grid-column: span 2;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.bjActionMobile .sideBox label{font-size:11px;color:var(--muted);font-weight:900;letter-spacing:.04em;}
+.bjActionMobile .sideBox input{width:110px;padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.26);color:rgba(255,255,255,.92);font-size:13px;}
 @media(max-width:700px){
   .bjActionMobile{display:grid;grid-template-columns:repeat(2,1fr);}
   .bjActionMobile .bjBtn{border-radius:14px;}
@@ -992,7 +996,7 @@ tr:last-child td{border-bottom:none;}
   .bjHandRow::before{ left:-16px; font-size:10px; }
   .bjHandMeta{ font-size:11px; padding:6px 9px; text-align:center; }
   .bjHandCards{ gap:10px; flex-wrap:wrap; }
-  .bjDeck{ width:94px; height:130px; top:10px; right:10px; }
+  .bjDeck{ width:72px; height:102px; top:8px; right:8px; }
   .bjLaneTitle{ left:10px; top:10px; font-size:10px; }
   .bjScorePill{ top:10px; padding:6px 10px; font-size:13px; }
   .bjBtnGrid{ grid-template-columns:1fr; gap:8px; }
@@ -1990,9 +1994,16 @@ alter table public.app_state disable row level security;
               </div>
 
               <div class="bjActionMobile">
+                <div class="barLabel">Bet & Side Bets</div>
                 <div class="stakeBox">
                   <label for="bjStakeM">Bet</label>
                   <input id="bjStakeM" type="number" min="0.01" step="0.01" value="0.10" />
+                </div>
+                <div class="sideBox">
+                  <label for="bjSidePairsM">Pairs</label>
+                  <input id="bjSidePairsM" type="number" min="0" step="0.01" value="0.00" />
+                  <label for="bjSideBustM">Bust</label>
+                  <input id="bjSideBustM" type="number" min="0" step="0.01" value="0.00" />
                 </div>
                 <button class="bjBtn purple full" id="bjBetBtnM">Bet</button>
                 <button class="bjBtn green" id="bjHitBtnM" disabled><span>Hit</span><span class="chip">🂠</span></button>
@@ -3943,6 +3954,20 @@ if(_stk && _stkM){
   _stkM.value = _stk.value;
   _stkM.addEventListener("input", ()=>{ _stk.value = _stkM.value; });
   _stk.addEventListener("input", ()=>{ _stkM.value = _stk.value; });
+}
+
+// Sync side bets between desktop and mobile inputs
+const _pairs=$("bjSidePairs"), _pairsM=$("bjSidePairsM");
+const _bust=$("bjSideBust"), _bustM=$("bjSideBustM");
+if(_pairs && _pairsM){
+  _pairsM.value = _pairs.value;
+  _pairsM.addEventListener("input", ()=>{ _pairs.value = _pairsM.value; });
+  _pairs.addEventListener("input", ()=>{ _pairsM.value = _pairs.value; });
+}
+if(_bust && _bustM){
+  _bustM.value = _bust.value;
+  _bustM.addEventListener("input", ()=>{ _bust.value = _bustM.value; });
+  _bust.addEventListener("input", ()=>{ _bustM.value = _bust.value; });
 }
 
 // Keep BJ balance updated when switching view / refreshing
