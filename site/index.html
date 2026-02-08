@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -650,8 +651,8 @@ tr:last-child td{border-bottom:none;}
 
 .bjWrap{
   display:grid;
-  grid-template-columns: 320px 1fr;
-  gap:14px;
+  grid-template-columns: 300px 1fr;
+  gap:18px;
   align-items:stretch;
 }
 @media(max-width:980px){
@@ -732,6 +733,58 @@ tr:last-child td{border-bottom:none;}
 .bjBtn:hover{ background: rgba(255,255,255,.09); }
 .bjBtn:active{ transform: translateY(1px); }
 .bjBtn:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
+/* availability pulses (outline only) */
+.bjBtn.bjPulseDouble{
+  border-color: rgba(234,179,8,.75);
+  background: linear-gradient(145deg, rgba(234,179,8,.20), rgba(124,58,237,.22));
+  box-shadow:
+    0 0 0 3px rgba(234,179,8,.18),
+    0 12px 40px rgba(0,0,0,.32),
+    inset 0 1px 0 rgba(255,255,255,.14);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: bjPulseDouble 1.5s ease-in-out infinite;
+}
+.bjBtn.bjPulseSplit{
+  border-color: rgba(59,130,246,.75);
+  background: linear-gradient(145deg, rgba(59,130,246,.20), rgba(124,58,237,.22));
+  box-shadow:
+    0 0 0 3px rgba(59,130,246,.18),
+    0 12px 40px rgba(0,0,0,.32),
+    inset 0 1px 0 rgba(255,255,255,.14);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: bjPulseSplit 1.5s ease-in-out infinite;
+}
+
+@keyframes bjPulseDouble{
+  0%,100%{
+    box-shadow:
+      0 0 0 3px rgba(234,179,8,.18),
+      0 12px 40px rgba(0,0,0,.32),
+      inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  50%{
+    box-shadow:
+      0 0 0 6px rgba(234,179,8,.26),
+      0 14px 46px rgba(0,0,0,.36),
+      inset 0 1px 0 rgba(255,255,255,.16);
+  }
+}
+@keyframes bjPulseSplit{
+  0%,100%{
+    box-shadow:
+      0 0 0 3px rgba(59,130,246,.18),
+      0 12px 40px rgba(0,0,0,.32),
+      inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  50%{
+    box-shadow:
+      0 0 0 6px rgba(59,130,246,.26),
+      0 14px 46px rgba(0,0,0,.36),
+      inset 0 1px 0 rgba(255,255,255,.16);
+  }
+}
 
 .bjBtn.red{
   background: linear-gradient(135deg, rgba(239,68,68,.95), rgba(251,113,133,.82));
@@ -753,7 +806,7 @@ tr:last-child td{border-bottom:none;}
   box-shadow:0 14px 55px rgba(0,0,0,.45);
   overflow:hidden;
   position:relative;
-  min-height: 520px;
+  min-height: 560px;
 }
 .bjStage::before{
   content:"";
@@ -791,15 +844,15 @@ tr:last-child td{border-bottom:none;}
 
 .bjArea{
   position:relative;
-  padding:14px;
+  padding:20px;
 }
 .bjLane{
   position:relative;
   display:flex;
   justify-content:center;
   align-items:flex-start;
-  gap:16px;
-  min-height: 160px;
+  gap:18px;
+  min-height: 220px; /* keep dealer/player zones equal height */
 }
 .bjLaneTitle{
   position:absolute;
@@ -812,12 +865,98 @@ tr:last-child td{border-bottom:none;}
   color: rgba(255,255,255,.58);
 }
 .bjLaneInner{
-  margin-top:26px;
+  margin-top:52px; /* drop cards lower so score pills stay visible */
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:14px;
+  align-items:flex-start;
+  min-height: 160px; /* consistent card bed for both lanes */
+}
+
+/* Hide legacy player pill number (per-hand meta now shows totals) */
+#bjPlayerPill{ display:none; }
+
+#bjPlayerCards{
+  display:flex;
+  flex-direction:row;
+  flex-wrap:wrap;
+  align-items:flex-start;
+  justify-content:center;
+  gap:14px 28px; /* spread hands horizontally before stacking */
+}
+
+/* auto-scale player cards when many split hands */
+#bjPlayerCards[data-hands="3"] .bjHandCards .bjCard{ transform: scale(.92); transform-origin: top center; }
+#bjPlayerCards[data-hands="4"] .bjHandCards .bjCard{ transform: scale(.86); transform-origin: top center; }
+#bjPlayerCards[data-hands="5"],
+#bjPlayerCards[data-hands="6"],
+#bjPlayerCards[data-hands="7"] .bjHandCards .bjCard{ transform: scale(.80); transform-origin: top center; }
+
+.bjHandRow{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  min-width: 300px;
+  flex: 1 1 46%;
+  max-width: 48%;
+  position:relative;
+  transition: transform 220ms ease, opacity 180ms ease;
+  background: rgba(255,255,255,.02);
+  border-radius:14px;
+  padding:6px 6px 8px;
+}
+.bjHandRow::before{
+  content: attr(data-hand);
+  position:absolute;
+  left:-22px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:11px;
+  font-weight:1000;
+  color:rgba(255,255,255,.50);
+}
+.bjHandRow.active{
+  transform: translateY(2px) scale(1.02);
+  opacity:1;
+  box-shadow: 0 0 0 2px rgba(124,58,237,.28), 0 10px 28px rgba(0,0,0,.35);
+}
+.bjHandRow:not(.active){
+  opacity:.75;
+}
+
+.bjHandRow.active .bjCard{ opacity:1; filter:none; }
+.bjHandRow:not(.active) .bjCard{ opacity:.6; filter:saturate(.65); }
+.bjHandRow.active .bjHandMeta{ border-color: rgba(124,58,237,.35); background: rgba(124,58,237,.08); }
+.bjHandRow:not(.active) .bjHandMeta{ opacity:.8; }
+
+.bjHandCards{
   display:flex;
   justify-content:center;
   gap:14px;
-  flex-wrap:wrap;
-  min-height: 120px;
+  flex-wrap:nowrap;
+}
+
+@media(max-width:1100px){
+  #bjPlayerCards{ justify-content:center; }
+  .bjHandRow{ flex: 1 1 100%; max-width:100%; }
+}
+
+.bjHandMeta{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:6px 10px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.28);
+  font-weight:900;
+  font-size:12px;
+  color: rgba(255,255,255,.82);
+}
+.bjHandMeta .pill{
+  margin:0;
 }
 .bjScorePill{
   position:absolute;
@@ -842,11 +981,13 @@ tr:last-child td{border-bottom:none;}
   position:absolute;
   top:14px;
   right:14px;
-  width:64px;
-  height:84px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.18);
-  background: linear-gradient(135deg, rgba(124,58,237,.95), rgba(239,68,68,.82));
+  width:110px;
+  height:150px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.14);
+  background:
+    linear-gradient(135deg, #4b2d7a 0%, #31224f 55%, #1a142f 100%);
+  box-shadow:0 20px 45px rgba(0,0,0,.55);
   overflow:hidden;
   z-index:5;
 
@@ -861,26 +1002,31 @@ tr:last-child td{border-bottom:none;}
 
 .bjDeck::before{
   content:"";
-  position:absolute; inset:7px;
+  position:absolute;
+  inset:14px 12px 14px 12px;
   border-radius:12px;
-  border:1px solid rgba(0,0,0,.55);
-  background: rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.45);
+  pointer-events:none;
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='70' height='16'><text x='0' y='12' fill='rgba(255,255,255,0.55)' font-family='Arial' font-size='7' letter-spacing='2'>BET BET BET BET</text></svg>") 0 0 repeat,
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='70' height='16'><text x='0' y='12' fill='rgba(255,255,255,0.55)' font-family='Arial' font-size='7' letter-spacing='2'>BET BET BET BET</text></svg>") 35px 8px repeat;
+  background-size: 70px 16px, 70px 16px;
 }
 
 .bjDeck::after{
-  content:"HANDZES.BET";
+  content:"𝑯𝒁";
   position:absolute;
   inset:0;
   display:flex;
   align-items:center;
   justify-content:center;
   font-weight:1000;
-  letter-spacing:.22em;
-  font-size:9px;
-  color: rgba(255,255,255,.92);
-  text-shadow:0 2px 10px rgba(0,0,0,.55);
-  transform: rotate(-10deg);
-  opacity:.92;
+  font-size:50px;
+  color:rgba(245,240,255,.95);
+  text-shadow:0 2px 16px rgba(0,0,0,.35);
+  opacity:1;
+  font-family: "Cambria Math", "Noto Sans Math", "DejaVu Sans", "Arial Black", sans-serif;
 }
 .bjDeck.bump{ animation: bjDeckBump .16s ease-out; }
 @keyframes bjDeckBump{
@@ -945,29 +1091,33 @@ tr:last-child td{border-bottom:none;}
 
 .bjBack{
   transform: rotateY(180deg);
-  border-color: rgba(255,255,255,.16);
+  border-color: rgba(255,255,255,.12);
   background:
-    linear-gradient(135deg, rgba(124,58,237,.98), rgba(239,68,68,.86));
+    linear-gradient(135deg, #4b2d7a 0%, #31224f 55%, #1a142f 100%);
 }
 .bjBack::before{
   content:"";
-  position:absolute; inset:8px;
+  position:absolute; inset:14px 12px 14px 12px;
   border-radius:12px;
-  border:1px solid rgba(0,0,0,.70);
-  background: rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.45);
+  pointer-events:none;
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='70' height='16'><text x='0' y='12' fill='rgba(255,255,255,0.55)' font-family='Arial' font-size='7' letter-spacing='2'>BET BET BET BET</text></svg>") 0 0 repeat,
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='70' height='16'><text x='0' y='12' fill='rgba(255,255,255,0.55)' font-family='Arial' font-size='7' letter-spacing='2'>BET BET BET BET</text></svg>") 35px 8px repeat;
+  background-size: 70px 16px, 70px 16px;
 }
 .bjBack::after{
-  content:"HANDZES.BET";
+  content:"𝑯𝒁";
   position:absolute; inset:0;
   display:flex;
   align-items:center;
   justify-content:center;
   font-weight:1000;
-  letter-spacing:.22em;
-  font-size:10px;
-  color: rgba(255,255,255,.94);
-  text-shadow:0 2px 10px rgba(0,0,0,.55);
-  transform: rotate(-12deg);
+  font-size:42px;
+  color:rgba(245,240,255,.95);
+  text-shadow:0 2px 16px rgba(0,0,0,.35);
+  font-family: "Cambria Math", "Noto Sans Math", "DejaVu Sans", "Arial Black", sans-serif;
 }
 
 /* Wind trail effect while dealing */
@@ -993,10 +1143,13 @@ tr:last-child td{border-bottom:none;}
 
 /* Winner/Loser outlines */
 .bjWin .bjFace, .bjWin .bjBack{
-  box-shadow:0 0 0 3px rgba(34,197,94,.55), 0 18px 55px rgba(0,0,0,.45);
+  box-shadow:0 0 0 6px rgba(34,255,94,.85), 0 0 16px 6px rgba(34,255,94,.35), 0 18px 55px rgba(0,0,0,.45);
 }
 .bjLose .bjFace, .bjLose .bjBack{
-  box-shadow:0 0 0 3px rgba(239,68,68,.55), 0 18px 55px rgba(0,0,0,.45);
+  box-shadow:0 0 0 6px rgba(255,68,68,.85), 0 0 16px 6px rgba(255,68,68,.35), 0 18px 55px rgba(0,0,0,.45);
+}
+.bjPush .bjFace, .bjPush .bjBack{
+  box-shadow:0 0 0 6px rgba(245,158,11,.85), 0 0 16px 6px rgba(245,158,11,.35), 0 18px 55px rgba(0,0,0,.45);
 }
 
 /* Mines-style popup reused for BJ */
@@ -1084,6 +1237,12 @@ tr:last-child td{border-bottom:none;}
     0 26px 90px rgba(0,0,0,.75),
     0 0 28px rgba(239,68,68,.18);
 }
+.bjCenterPop.push{
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.08),
+    0 26px 90px rgba(0,0,0,.75),
+    0 0 28px rgba(245,158,11,.22);
+}
 .bjCenterPop.lose::before{
   background:
     linear-gradient(135deg,
@@ -1092,9 +1251,21 @@ tr:last-child td{border-bottom:none;}
       rgba(239,68,68,.0)
     );
 }
+.bjCenterPop.push::before{
+  background:
+    linear-gradient(135deg,
+      rgba(245,158,11,.0),
+      rgba(245,158,11,.55),
+      rgba(245,158,11,.0)
+    );
+}
 .bjCenterPop.lose .dot{
   background: rgba(239,68,68,.95);
   box-shadow: 0 0 10px rgba(239,68,68,.45);
+}
+.bjCenterPop.push .dot{
+  background: rgba(245,158,11,.95);
+  box-shadow: 0 0 10px rgba(245,158,11,.45);
 }
 @keyframes bjPopIn{
   0%   { opacity:0; transform:translate(-50%,-50%) scale(.86); }
@@ -1679,7 +1850,7 @@ alter table public.app_state disable row level security;
                 <div class="bjTitle">Actions</div>
 
                 <div class="bjBtnGrid">
-                  <button class="bjBtn" id="bjHitBtn" disabled>
+                  <button class="bjBtn green" id="bjHitBtn" disabled>
                     <span>Hit</span><span class="chip">🂠</span>
                   </button>
 
@@ -2931,6 +3102,22 @@ function bjUpdateShoeUI(){
   if($("bjShoe")) $("bjShoe").textContent = `${bj.shoe.length}`;
 }
 
+function bjSetBetBtn(canBet=true){
+  const betBtn = $("bjBetBtn");
+  if(!betBtn) return;
+  if(canBet){
+    betBtn.disabled = false;
+    betBtn.style.opacity = "1";
+    betBtn.style.cursor = "pointer";
+    betBtn.textContent = "Bet";
+  }else{
+    betBtn.disabled = true;
+    betBtn.style.opacity = "0.55";
+    betBtn.style.cursor = "not-allowed";
+    betBtn.textContent = "Bet placed ✓";
+  }
+}
+
 function bjSetButtons(){
   const inPlay = bj.active && !bj.settled;
   const h = bj.hands[bj.activeHand] || [];
@@ -2945,6 +3132,29 @@ function bjSetButtons(){
   $("bjStandBtn").disabled = !canStand;
   $("bjDoubleBtn").disabled = !canDouble;
   $("bjSplitBtn").disabled = !canSplit;
+
+  // glow states for double / split
+  const dbl = $("bjDoubleBtn"), spl=$("bjSplitBtn");
+  if(dbl){
+    dbl.classList.toggle("bjPulseDouble", canDouble);
+  }
+  if(spl){
+    spl.classList.toggle("bjPulseSplit", canSplit);
+  }
+
+  // update active hand highlight in UI rows
+  const rows = document.querySelectorAll("#bjPlayerCards .bjHandRow");
+  rows.forEach((row,i)=> row.classList.toggle("active", i===bj.activeHand));
+
+  // refresh per-hand meta totals on button refresh
+  rows.forEach((row,i)=>{
+    const meta=row.querySelector(".bjHandMeta");
+    if(!meta) return;
+    const hand=bj.hands[i]||[];
+    const bet=to2(bj.handBets[i]||bj.stake||0);
+    const total = hand.length ? bjHandTotals(hand).sum : "—";
+    meta.textContent = `Hand ${i+1} · Bet ${bet} · Total ${total}`;
+  });
 
   $("bjHandNo").textContent = String(bj.activeHand + 1);
 }
@@ -2966,6 +3176,33 @@ function bjCardEl(card, faceDown=false){
   return wrap;
 }
 
+function bjGetHandRow(idx, create=false){
+  const pBox=$("bjPlayerCards");
+  if(!pBox) return null;
+  const rows = Array.from(pBox.querySelectorAll(".bjHandRow"));
+  if(rows[idx]) return rows[idx];
+  if(!create) return null;
+  const row=document.createElement("div");
+  row.className="bjHandRow" + (idx===bj.activeHand ? " active" : "");
+  row.dataset.hand=String(idx+1);
+  const meta=document.createElement("div");
+  meta.className="bjHandMeta";
+  const cards=document.createElement("div");
+  cards.className="bjHandCards";
+  row.appendChild(meta);
+  row.appendChild(cards);
+  pBox.appendChild(row);
+  return row;
+}
+
+function bjGetHandCards(idx){
+  const row = bjGetHandRow(idx, true);
+  if(!row) return null;
+  let cards = row.querySelector(".bjHandCards");
+  if(!cards){ cards=document.createElement("div"); cards.className="bjHandCards"; row.appendChild(cards); }
+  return cards;
+}
+
 function bjDeckBump(){
   const d=$("bjDeck"); if(!d) return;
   d.classList.remove("bump"); void d.offsetWidth; d.classList.add("bump");
@@ -2976,36 +3213,50 @@ async function bjDealAnim(cardEl, toContainer){
   const deck=$("bjDeck");
   if(!deck || !toContainer) { toContainer.appendChild(cardEl); return; }
 
+  // Snapshot existing card positions for smooth lane shift (FLIP)
+  const prevRects = new Map();
+  Array.from(toContainer.children).forEach(ch=>{
+    prevRects.set(ch, ch.getBoundingClientRect());
+  });
+
   bjDeckBump();
   bjSfx("deal");
 
   // start at deck rect
   const dr = deck.getBoundingClientRect();
-  const tr = toContainer.getBoundingClientRect();
+  
+  // Pre-calc target slot by temporarily mounting the card hidden to let flex gap place it
+  cardEl.style.visibility = "hidden";
+  toContainer.appendChild(cardEl);
+  const tr = cardEl.getBoundingClientRect();
+  toContainer.removeChild(cardEl);
+  cardEl.style.visibility = "";
 
   // create floating clone
   const float = cardEl.cloneNode(true);
   float.classList.add("dealing");
   float.style.position="fixed";
-  
+  float.style.left = "0px";
+  float.style.top = "0px";
+  float.style.zIndex="80";
+  float.style.pointerEvents="none";
   document.body.appendChild(float);
-  
+
   // after append, measure floating card size
   const fw = float.getBoundingClientRect().width;
   const fh = float.getBoundingClientRect().height;
 
-  float.style.left = (dr.left + dr.width/2 - fw/2) + "px";
-  float.style.top  = (dr.top  + dr.height/2 - fh/2) + "px";
-  float.style.zIndex="80";
-  float.style.pointerEvents="none";
+  const startX = dr.left + dr.width/2 - fw/2;
+  const startY = dr.top  + dr.height/2 - fh/2;
+  float.style.left = startX + "px";
+  float.style.top  = startY + "px";
 
-  // end position: center of target container + small random offset
-  const xEnd = tr.left + tr.width/2 - fw/2 + (Math.random()*14-7);
-  const yEnd = tr.top + tr.height/2 - fh/2 + (Math.random()*14-7);
+  const xEnd = tr.left;
+  const yEnd = tr.top;
 
   await float.animate([
     { transform:`translate(0px,0px) rotate(${Math.random()*6-3}deg) scale(.96)`, opacity:1 },
-    { transform:`translate(${xEnd - (dr.left + dr.width/2 - fw/2)}px, ${yEnd - (dr.top + dr.height/2 - fh/2)}px) rotate(${Math.random()*6-3}deg) scale(1)`, opacity:1 }
+    { transform:`translate(${xEnd - startX}px, ${yEnd - startY}px) rotate(${Math.random()*6-3}deg) scale(1)` , opacity:1 }
   ], {
     duration: 380,
     easing: "cubic-bezier(.12,.8,.18,1)"
@@ -3013,6 +3264,37 @@ async function bjDealAnim(cardEl, toContainer){
 
   float.remove();
   toContainer.appendChild(cardEl);
+
+  // Animate existing cards to their new slots (smooth spread)
+  bjAnimateLaneShift(toContainer, prevRects);
+}
+
+function bjAnimateLaneShift(container, prevRects){
+  const cards = Array.from(container.children);
+  const isDealer = container.id === "bjDealerCards";
+  cards.forEach(el=>{
+    const prev = prevRects.get(el);
+    if(!prev) return; // new card handled by deal anim
+    const now = el.getBoundingClientRect();
+    const dx = prev.left - now.left;
+    const dy = prev.top - now.top;
+    if(Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return;
+
+    el.style.transition = "none";
+    el.style.transform = `translate(${dx}px, ${dy}px)`;
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        const duration = (isDealer && cards.length<=2) ? 220 : 260;
+        const easing = (isDealer && cards.length<=2) ? "cubic-bezier(.22,.9,.3,1)" : "cubic-bezier(.16,.84,.22,1)";
+        el.style.transition = `transform ${duration}ms ${easing}`;
+        el.style.transform = "translate(0,0)";
+        setTimeout(()=>{
+          el.style.transition = "";
+          el.style.transform = "";
+        }, duration + 60);
+      });
+    });
+  });
 }
 
 function bjRender(){
@@ -3030,12 +3312,30 @@ function bjRender(){
     dBox.appendChild(el);
   });
 
-  // Player: show only active hand's cards
-  const hand = bj.hands[bj.activeHand] || [];
-  hand.forEach(c=>{
-    const el = bjCardEl(c, false);
-    pBox.appendChild(el);
+  // Player: show all hands stacked with meta and cards
+  bj.hands.forEach((hand, handIdx)=>{
+    const row = bjGetHandRow(handIdx, true);
+    if(!row) return;
+    row.classList.toggle("active", handIdx===bj.activeHand);
+
+    let meta=row.querySelector(".bjHandMeta");
+    if(!meta){ meta=document.createElement("div"); meta.className="bjHandMeta"; row.prepend(meta); }
+    const bet = to2(bj.handBets[handIdx]||bj.stake||0);
+    const total = hand.length ? bjHandTotals(hand).sum : "—";
+    meta.textContent = `Hand ${handIdx+1} · Bet ${bet} · Total ${total}`;
+
+    const cards = bjGetHandCards(handIdx);
+    if(cards){
+      cards.innerHTML="";
+      hand.forEach(c=>{
+        const el = bjCardEl(c, false);
+        cards.appendChild(el);
+      });
+    }
   });
+
+  // set hand count for responsive scaling
+  pBox.dataset.hands = String(bj.hands.length||1);
 
   bjUpdateScoresUI();
   bjSetButtons();
@@ -3066,17 +3366,25 @@ function bjUpdateScoresUI(){
   if(pS) pS.textContent = String(pSum);
 }
 
-function bjShowPop({ win=true, amount=0, text="" }){
+function bjShowPop({ win=true, amount=0, text="", status=null }){
   const el=$("bjCenterPop"); if(!el) return;
-  el.classList.remove("hide");
-  el.classList.toggle("lose", !win);
-  $("bjPopLabel").textContent = win ? "YOU WON" : "YOU LOST";
+  const isPush = status === "push";
+  el.classList.remove("hide","lose","push");
+  el.classList.toggle("lose", !isPush && !win);
+  if(isPush) el.classList.add("push");
+
+  $("bjPopLabel").textContent = isPush ? "PUSH" : (win ? "YOU WON" : "YOU LOST");
   $("bjPopAmt").textContent = to2(amount);
-  $("bjPopSub").textContent = text || (win ? "added to balance" : "deducted from balance");
+  $("bjPopSub").textContent = text || (isPush ? "stake returned" : (win ? "added to balance" : "deducted from balance"));
   const dot=$("bjPopDot");
   if(dot){
-    dot.style.background = win ? "rgba(34,197,94,.95)" : "rgba(239,68,68,.95)";
-    dot.style.boxShadow = win ? "0 0 10px rgba(34,197,94,.45)" : "0 0 10px rgba(239,68,68,.45)";
+    if(isPush){
+      dot.style.background = "rgba(245,158,11,.95)";
+      dot.style.boxShadow = "0 0 10px rgba(245,158,11,.45)";
+    }else{
+      dot.style.background = win ? "rgba(34,197,94,.95)" : "rgba(239,68,68,.95)";
+      dot.style.boxShadow = win ? "0 0 10px rgba(34,197,94,.45)" : "0 0 10px rgba(239,68,68,.45)";
+    }
   }
   el.classList.add("show");
   clearTimeout(el._t);
@@ -3108,12 +3416,36 @@ function bjResetRound(){
   bj.canSplit=false;
   bjRender();
   bjSetButtons();
+  // Hide BJ popup immediately
+  const bjPop = $("bjCenterPop");
+  if(bjPop){
+    bjPop.classList.remove("show", "hide", "lose");
+    clearTimeout(bjPop._t);
+    bjPop.style.display = "none";
+    setTimeout(()=>{ bjPop.style.display = ""; }, 250);
+  }
+
+  // Re-enable Bet button for next round
+  bjSetBetBtn(true);
+
+  // Re-enable Bet button for next round
+  const betBtn = $("bjBetBtn");
+  if(betBtn){
+    betBtn.disabled = false;
+    betBtn.style.opacity = "1";
+    betBtn.style.cursor = "pointer";
+    betBtn.textContent = "Bet";
+  }
 }
 
 function bjComputeCanSplit(){
   const h=bj.hands[bj.activeHand]||[];
   if(h.length!==2) return false;
-  return h[0].r === h[1].r;
+  const r1=h[0].r, r2=h[1].r;
+  const v1=bjCardValue(r1), v2=bjCardValue(r2);
+  // Allow classic pairs OR any two ten-valued cards (K,Q,J,10)
+  if(r1===r2) return true;
+  return v1===10 && v2===10;
 }
 
 async function bjStart(){
@@ -3146,6 +3478,8 @@ async function bjStart(){
   bj.sidePairs=sidePairs;
   bj.sideBust=sideBust;
   bj.handBets=[stake];
+  // Visually grey out Bet button until round ends
+  bjSetBetBtn(false);
 
   // Initial deal
   const dBox=$("bjDealerCards"), pBox=$("bjPlayerCards");
@@ -3153,7 +3487,7 @@ async function bjStart(){
 
   // player 1
   const p1=bjDraw(); bj.hands[0].push(p1);
-  const p1el=bjCardEl(p1,false); await bjDealAnim(p1el, pBox);
+  const p1el=bjCardEl(p1,false); await bjDealAnim(p1el, bjGetHandCards(0)||pBox);
 
   // dealer up
   const d1=bjDraw(); bj.dealer.push(d1);
@@ -3161,7 +3495,7 @@ async function bjStart(){
 
   // player 2
   const p2=bjDraw(); bj.hands[0].push(p2);
-  const p2el=bjCardEl(p2,false); await bjDealAnim(p2el, pBox);
+  const p2el=bjCardEl(p2,false); await bjDealAnim(p2el, bjGetHandCards(0)||pBox);
 
   // dealer hole (face down)
   const d2=bjDraw(); bj.dealer.push(d2);
@@ -3171,6 +3505,7 @@ async function bjStart(){
   // enable actions
   bj.canDouble=true;
   bj.canSplit=bjComputeCanSplit();
+  bjRender(); // ensure rows exist & labeled before interactions
   bjSetButtons();
   bjUpdateScoresUI();
 
@@ -3205,7 +3540,12 @@ async function bjStart(){
     // Bust Out side bet only if dealer busts -> not possible on BJ
     // credit winnings
     const totalWin = clamp2(mainPayout + sideWin);
-    if(totalWin>0){
+    if(pBJ && dBJ){
+      // Push case: show orange push banner
+      await bjCredit(totalWin);
+      bjSfx("tap");
+      bjShowPop({ win:false, amount: totalWin, text:"stake returned", status:"push" });
+    }else if(totalWin>0){
       await bjCredit(totalWin);
       bjSfx("win");
       bjShowPop({ win:true, amount: totalWin, text:"added to balance" });
@@ -3217,6 +3557,7 @@ async function bjStart(){
     bj.settled=true; bj.active=false;
     bjMarkOutcome();
     bjSetButtons();
+    bjSetBetBtn(true);
     return;
   }
 
@@ -3228,7 +3569,6 @@ async function bjStart(){
   }
 
   toast("Blackjack started");
-  bjRender();
 }
 
 async function bjRevealHole(withFlipSound=false){
@@ -3248,7 +3588,7 @@ async function bjHit(){
   if(!bj.active || bj.settled) return;
   bjSfx("tap");
 
-  const pBox=$("bjPlayerCards");
+  const pBox=bjGetHandCards(bj.activeHand) || $("bjPlayerCards");
   const card=bjDraw();
   bj.hands[bj.activeHand].push(card);
 
@@ -3257,8 +3597,9 @@ async function bjHit(){
 
   const total=bjHandTotals(bj.hands[bj.activeHand]).sum;
   bj.canDouble=false;
-  bj.canSplit=false;
+  bj.canSplit=bjComputeCanSplit();
   bjUpdateScoresUI();
+  bjRender();
   bjSetButtons();
 
   if(total>21){
@@ -3291,16 +3632,22 @@ async function bjDouble(){
 
   await bjHit();
   if(!bj.settled){
-    await bjStand();
+    await bjStand(true); // double locks the hand; advance to next/settle
   }
 }
 
 async function bjSplit(){
   if(!bj.active || bj.settled) return;
   const h=bj.hands[bj.activeHand]||[];
-  if(h.length!==2 || h[0].r!==h[1].r) return;
+  if(h.length!==2) return;
+  // allow exact pairs or any two ten-valued cards
+  const v1=bjCardValue(h[0].r), v2=bjCardValue(h[1].r);
+  const isPair = h[0].r===h[1].r;
+  const isTenCombo = v1===10 && v2===10;
+  if(!(isPair || isTenCombo)) return;
 
-  const extra = bj.stake;
+  const baseBet = bj.handBets[bj.activeHand] || bj.stake;
+  const extra = baseBet;
   if(Number(meProfile.pts) < extra) return toast("Not enough points to split");
 
   // take extra wager now
@@ -3315,29 +3662,28 @@ async function bjSplit(){
 
   bjSfx("tap");
 
-  // create two hands
+  // split current hand into two hands (insert new hand after active)
   const c1=h[0], c2=h[1];
-  bj.hands = [ [c1], [c2] ];
-  bj.handBets = [ bj.stake, bj.stake ];
-  bj.activeHand = 0;
+  bj.hands[bj.activeHand] = [c1];
+  bj.hands.splice(bj.activeHand+1, 0, [c2]);
+  bj.handBets.splice(bj.activeHand+1, 0, baseBet);
 
-  // deal one card to each hand
-  const pBox=$("bjPlayerCards");
-  // render first hand lane then deal one
+  // render rows then deal one card to each split hand into its row
   bjRender();
-  const a1=bjDraw(); bj.hands[0].push(a1);
-  await bjDealAnim(bjCardEl(a1,false), pBox);
+  const row0 = bjGetHandCards(bj.activeHand) || $("bjPlayerCards");
+  const a1=bjDraw(); bj.hands[bj.activeHand].push(a1);
+  await bjDealAnim(bjCardEl(a1,false), row0);
   bjRender();
 
-  // switch to hand2, render, deal one
-  bj.activeHand=1; bjRender();
-  const a2=bjDraw(); bj.hands[1].push(a2);
-  await bjDealAnim(bjCardEl(a2,false), pBox);
+  const secondIdx = bj.activeHand+1;
+  const row1 = bjGetHandCards(secondIdx) || $("bjPlayerCards");
+  const a2=bjDraw(); bj.hands[secondIdx].push(a2);
+  await bjDealAnim(bjCardEl(a2,false), row1);
 
-  // go back to hand1
-  bj.activeHand=0;
+  // stay on the original (left) hand
   bj.canSplit=false;
   bj.canDouble=true; // allow double on split hand if 2 cards
+  bj.canSplit=bjComputeCanSplit();
   bjSetButtons();
   bjUpdateScoresUI();
   toast("Split");
@@ -3373,15 +3719,13 @@ function bjOutcomeForHand(playerCards, dealerCards){
 async function bjStand(fromBust=false){
   if(!bj.active || bj.settled) return;
 
-  // If split: move to next hand if exists & not finished
+  // If split: advance through hands sequentially
   const p = bjHandTotals(bj.hands[bj.activeHand]).sum;
-  const isDone = (p>=21) || fromBust;
-
-  if(bj.hands.length>1 && bj.activeHand===0 && isDone){
-    // switch to hand 2
-    bj.activeHand=1;
+  const moreHands = bj.hands.length>1 && bj.activeHand < bj.hands.length-1;
+  if(moreHands){
+    bj.activeHand += 1;
     bj.canDouble=true;
-    bj.canSplit=false;
+    bj.canSplit=bjComputeCanSplit();
     bjSetButtons();
     bjRender();
     return;
@@ -3429,12 +3773,16 @@ async function bjStand(fromBust=false){
   }
 
   // show banner amount:
-  // - if any credit >0 -> show won credit
-  // - else show lost total wager (main+side)
+  // - credit > wager -> win
+  // - credit == wager -> push
+  // - else -> lose
   const totalWager = clamp2(bj.stake + bj.sidePairs + bj.sideBust + (bj.hands.length>1 ? bj.stake : 0));
-  if(totalCredit>0){
+  if(totalCredit > totalWager){
     bjSfx("win");
     bjShowPop({ win:true, amount: totalCredit, text:"added to balance" });
+  }else if(totalCredit === totalWager){
+    bjSfx("tap");
+    bjShowPop({ win:false, amount: totalWager, text:"stake returned", status:"push" });
   }else{
     bjSfx("lose");
     bjShowPop({ win:false, amount: totalWager, text:"lost this round" });
@@ -3443,40 +3791,46 @@ async function bjStand(fromBust=false){
   bj.settled=true; bj.active=false;
   bjMarkOutcome();
   bjSetButtons();
+  bjSetBetBtn(true);
   toast("Round settled");
 }
 
 function bjMarkOutcome(){
-  // Add outlines: green winner / red loser (dealer vs active player hand view)
+  // Add outlines per hand: green win / red lose / yellow push
   const dBox=$("bjDealerCards");
   const pBox=$("bjPlayerCards");
   if(!dBox || !pBox) return;
 
   const dealerTotal=bjHandTotals(bj.dealer).sum;
-
-  // Determine outcome for CURRENT displayed hand
-  const h=bj.hands[bj.activeHand] || [];
-  const res=bjOutcomeForHand(h, bj.dealer);
+  const dealerEls=[...dBox.children];
+  const handRows=[...pBox.querySelectorAll(".bjHandRow")];
 
   // clear classes
-  [...dBox.children].forEach(el=>el.classList.remove("bjWin","bjLose"));
-  [...pBox.children].forEach(el=>el.classList.remove("bjWin","bjLose"));
+  dealerEls.forEach(el=>el.classList.remove("bjWin","bjLose","bjPush"));
+  handRows.forEach(el=>el.classList.remove("bjWin","bjLose","bjPush"));
 
-  if(res==="win"){
-    // player green, dealer red
-    [...pBox.children].forEach(el=>el.classList.add("bjWin"));
-    [...dBox.children].forEach(el=>el.classList.add("bjLose"));
-  }else if(res==="lose"){
-    [...pBox.children].forEach(el=>el.classList.add("bjLose"));
-    [...dBox.children].forEach(el=>el.classList.add("bjWin"));
-  }else{
-    // push -> no outlines
-  }
+  const outcomes=[];
 
-  // If dealer busts, highlight dealer red and player green
-  if(dealerTotal>21){
-    [...dBox.children].forEach(el=>{ el.classList.remove("bjWin"); el.classList.add("bjLose"); });
-    [...pBox.children].forEach(el=>{ el.classList.remove("bjLose"); el.classList.add("bjWin"); });
+  bj.hands.forEach((hand, idx)=>{
+    const row = bjGetHandRow(idx, false) || handRows[idx];
+    const res = bjOutcomeForHand(hand, bj.dealer);
+    outcomes.push(res);
+    if(!row) return;
+    if(res==="win") row.classList.add("bjWin");
+    else if(res==="lose") row.classList.add("bjLose");
+    else row.classList.add("bjPush");
+  });
+
+  // Only tint dealer if all outcomes match; mixed results leave dealer neutral
+  const uniq = Array.from(new Set(outcomes.filter(Boolean)));
+  if(uniq.length===1){
+    const res=uniq[0];
+    if(res==="win") dealerEls.forEach(el=>el.classList.add("bjLose"));
+    else if(res==="lose") dealerEls.forEach(el=>el.classList.add("bjWin"));
+    else dealerEls.forEach(el=>el.classList.add("bjPush"));
+  }else if(uniq.length && dealerTotal>21){
+    // Dealer bust with mixed outcomes: still show dealer as losing
+    dealerEls.forEach(el=>el.classList.add("bjLose"));
   }
 }
 
