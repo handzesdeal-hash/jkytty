@@ -1783,21 +1783,13 @@ function revealAllMines(){
   const tiles = [...grid.children];
 
   tiles.forEach((t, idx)=>{
-    // already clicked safe tile -> leave it as is
-    if(mines.revealed.has(idx)) return;
-
     if(mines.bombSet.has(idx)){
       t.textContent = "💣";
       t.style.background = "rgba(239,68,68,.12)";
       t.classList.add("bombHit");
-    } else {
-      t.innerHTML = gemYellow();
-      t.style.background = "rgba(34,197,94,.08)";
-      t.classList.add("gemHit");
     }
   });
 }
-
 
 function endMinesRound(statusLabel){
   mines.active = false;
@@ -1826,7 +1818,7 @@ async function doMinesCashout({ auto=false } = {}){
     // ✅ show mine locations after cashout
     revealAllMines();
 
-    sfxCashout();
+    sfx(740,0.08,"triangle",0.035);
     toast(auto ? `Auto cashout +${to2(payout)}` : `Cashout +${to2(payout)}`);
 
     endMinesRound("CASHED");
@@ -1878,73 +1870,69 @@ async function minesPick(i, btn){
   }
 }
 
-// 🔥 HARD-REBIND MINES BUTTONS (removes old cached listeners)
-function hardRebindMinesButtons(){
-  const startOld = $("minesStartBtn");
-  const cashOld  = $("minesCashBtn");
+$("minesStartBtn").onclick = async ()=> {
+  if(!meProfile) return toast("Profile not loaded");
+  if(mines.active) return; // already playing
 
-  const startNew = startOld.cloneNode(true);
-  const cashNew  = cashOld.cloneNode(true);
+  const stake = Number($("minesStake").value);
+  const bombs = Number($("minesBombs").value);
 
-  startOld.parentNode.replaceChild(startNew, startOld);
-  cashOld.parentNode.replaceChild(cashNew, cashOld);
+  if(!(stake>0)) return toast("Stake > 0");
+  if(stake < 0.01) return toast("Min 0.01");
+  if(![1,2,3].includes(bombs)) return toast("Bombs must be 1-3");
 
-  // ✅ rebind to NEW logic only
-  startNew.onclick = async ()=> {
-    if(!meProfile) return toast("Profile not loaded");
-    if(mines.active) return; // already playing
+  // remove stake now + count wager (your existing logic)
+  try{
+    await addWagerAndPayout(stake, 0);
+  }catch(e){
+    if(String(e).includes("balance")) return toast("Not enough points");
+    toast("Mines start error (DB/RLS/SQL)");
+    console.error(e);
+    return;
+  }
 
-    const stake = Number($("minesStake").value);
-    const bombs = Number($("minesBombs").value);
+  // start round
+  mines.active = true;
+  mines.ended = false;
+  mines.bombs = bombs;
+  mines.stake = stake;
+  mines.revealed = new Set();
+  mines.mult = 1.0;
 
-    if(!(stake>0)) return toast("Stake > 0");
-    if(stake < 0.01) return toast("Min 0.01");
-    if(![1,2,3].includes(bombs)) return toast("Bombs must be 1-3");
+  mines.bombSet = new Set();
+  while(mines.bombSet.size < bombs){
+    mines.bombSet.add(Math.floor(Math.random()*25));
+  }
 
-    // take stake now + count wager
-    try{
-      await addWagerAndPayout(stake, 0);
-    }catch(e){
-      if(String(e).includes("balance")) return toast("Not enough points");
-      toast("Mines start error (DB/RLS/SQL)");
-      console.error(e);
-      return;
-    }
+  minesResetUI();
+  $("minesMult").textContent="1.00x";
+  $("minesStatus").textContent="LIVE";
 
-    mines.active = true;
-    mines.ended = false;
-    mines.bombs = bombs;
-    mines.stake = stake;
-    mines.revealed = new Set();
-    mines.mult = 1.0;
+  // ✅ bet placed indicator (button grey/disabled)
+  setMinesUiState(true);
 
-    mines.bombSet = new Set();
-    while(mines.bombSet.size < bombs){
-      mines.bombSet.add(Math.floor(Math.random()*25));
-    }
+  toast("Mines started");
+};
 
-    minesResetUI();
-    $("minesMult").textContent="1.00x";
-    $("minesStatus").textContent="LIVE";
-    setMinesUiState(true);
-
-    sfx(520,0.05,"sine",0.03);
-    toast("Mines started");
-  };
-
-  cashNew.onclick = async ()=> {
-    if(!mines.active) return toast("No active round");
-    await doMinesCashout({ auto:false });
-  };
-}
-
-// ✅ call after minesResetUI + setMinesUiState init
-hardRebindMinesButtons();
-
+$("minesCashBtn").onclick = async ()=> {
+  if(!mines.active) return toast("No active round");
+  await doMinesCashout({ auto:false });
+};
 
 // init
 setMinesUiState(false);
 minesResetUI();
+
+
+// =======================
+// MINES (IMPROVED)
+// - Start button disables/greys while round is active (bet placed)
+// - Auto cashout when all safe tiles are revealed (only mines left)
+// - Reveal mine locations after cashout (manual or auto)
+// =======================
+
+
+
 
 /* AUTH */
 $("btnSignIn").onclick=async ()=>{
