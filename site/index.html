@@ -829,12 +829,10 @@ tr:last-child td{border-bottom:none;}
 .bjActionMobile .bjBtn{width:100%;justify-content:center;font-size:14px;padding:12px 12px;}
 .bjActionMobile .full{grid-column: span 2;}
 .bjActionMobile .barLabel{grid-column: span 2;font-size:11px;color:rgba(255,255,255,.65);letter-spacing:.16em;font-weight:900;text-transform:uppercase;}
-.bjActionMobile .stakeBox{grid-column: span 2;display:flex;align-items:center;gap:10px;}
-.bjActionMobile .stakeBox label{font-size:12px;color:var(--muted);font-weight:900;letter-spacing:.04em;}
-.bjActionMobile .stakeBox input{flex:1;min-width:0;padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.26);color:rgba(255,255,255,.92);font-size:14px;}
-.bjActionMobile .sideBox{grid-column: span 2;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.bjActionMobile .sideBox label{font-size:11px;color:var(--muted);font-weight:900;letter-spacing:.04em;}
-.bjActionMobile .sideBox input{width:110px;padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.26);color:rgba(255,255,255,.92);font-size:13px;}
+.bjActionMobile .bjBetRow{grid-column: span 2;display:grid;grid-template-columns:1.2fr 1fr 1fr auto;gap:8px;align-items:end;}
+.bjActionMobile .bjBetRow label{font-size:11px;color:var(--muted);font-weight:900;letter-spacing:.04em;display:block;margin-bottom:4px;}
+.bjActionMobile .bjBetRow input{width:100%;padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.26);color:rgba(255,255,255,.92);font-size:13px;}
+.bjActionMobile .bjBetRow .bjBtn{padding:11px 12px;min-width:92px;}
 @media(max-width:700px){
   .bjActionMobile{display:grid;grid-template-columns:repeat(2,1fr);}
   .bjActionMobile .bjBtn{border-radius:14px;}
@@ -1995,17 +1993,21 @@ alter table public.app_state disable row level security;
 
               <div class="bjActionMobile">
                 <div class="barLabel">Bet & Side Bets</div>
-                <div class="stakeBox">
-                  <label for="bjStakeM">Bet</label>
-                  <input id="bjStakeM" type="number" min="0.01" step="0.01" value="0.10" />
+                <div class="bjBetRow">
+                  <div>
+                    <label for="bjStakeM">Bet</label>
+                    <input id="bjStakeM" type="number" min="0.01" step="0.01" value="0.10" />
+                  </div>
+                  <div>
+                    <label for="bjSidePairsM">Pairs</label>
+                    <input id="bjSidePairsM" type="number" min="0" step="0.01" value="0.00" />
+                  </div>
+                  <div>
+                    <label for="bjSideBustM">Bust</label>
+                    <input id="bjSideBustM" type="number" min="0" step="0.01" value="0.00" />
+                  </div>
+                  <button class="bjBtn purple" id="bjBetBtnM">Bet</button>
                 </div>
-                <div class="sideBox">
-                  <label for="bjSidePairsM">Pairs</label>
-                  <input id="bjSidePairsM" type="number" min="0" step="0.01" value="0.00" />
-                  <label for="bjSideBustM">Bust</label>
-                  <input id="bjSideBustM" type="number" min="0" step="0.01" value="0.00" />
-                </div>
-                <button class="bjBtn purple full" id="bjBetBtnM">Bet</button>
                 <button class="bjBtn green" id="bjHitBtnM" disabled><span>Hit</span><span class="chip">🂠</span></button>
                 <button class="bjBtn red" id="bjStandBtnM" disabled><span>Stand</span><span class="chip">✋</span></button>
                 <button class="bjBtn" id="bjSplitBtnM" disabled><span>Split</span><span class="chip">⇄</span></button>
