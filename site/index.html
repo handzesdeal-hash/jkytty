@@ -840,26 +840,34 @@ function sfxCashout(){
 
     const o = ctx.createOscillator();
     const g = ctx.createGain();
+    const f = ctx.createBiquadFilter();
 
-    // Whoosh character (sawtooth gives that "riser" feel)
-    o.type = "sawtooth";
+    // Soft airy whoosh
+    o.type = "triangle";
 
-    // Start low → end high (cashout rise)
-    o.frequency.setValueAtTime(180, now);
-    o.frequency.exponentialRampToValueAtTime(1600, now + 0.14);
+    // Smooth upward glide
+    o.frequency.setValueAtTime(260, now);
+    o.frequency.exponentialRampToValueAtTime(1900, now + 0.22);
 
-    // Volume envelope (fast attack, fast decay)
+    // Low-pass filter = cinematic air (no harshness)
+    f.type = "lowpass";
+    f.frequency.setValueAtTime(1200, now);
+    f.frequency.exponentialRampToValueAtTime(4000, now + 0.22);
+
+    // Volume envelope (very smooth)
     g.gain.setValueAtTime(0.0001, now);
-    g.gain.exponentialRampToValueAtTime(0.06, now + 0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+    g.gain.exponentialRampToValueAtTime(0.055, now + 0.06);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.26);
 
-    o.connect(g);
+    o.connect(f);
+    f.connect(g);
     g.connect(ctx.destination);
 
     o.start(now);
-    o.stop(now + 0.18);
+    o.stop(now + 0.28);
   }catch(_){}
 }
+
 
 
 function monthKey(d=new Date()){
