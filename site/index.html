@@ -516,6 +516,7 @@ input:focus,select:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4p
 .mobileNav{display:none;position:sticky;top:10px;z-index:60;margin-bottom:12px;}
 .mobileNavInner{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.32);border-radius:16px;padding:12px;box-shadow:0 12px 38px rgba(0,0,0,.35);}
 .mobileNav .navBtn{padding:12px 14px;font-size:14px;background:rgba(255,255,255,.05);border:1px solid transparent;}
+.bjHomeTop{display:none;margin:10px auto 0 auto;padding:9px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.32);color:rgba(255,255,255,.9);font-weight:900;letter-spacing:.08em;}
 .mobileNav .navBtn.active{background:rgba(124,58,237,.18);border-color:rgba(167,139,250,.22)}
 @media(max-width:900px){
   .sidebar{display:none;}
@@ -523,6 +524,7 @@ input:focus,select:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4p
   .mobileNav{display:block;}
   .main{padding-top:12px;}
 }
+.bjMobileFocus .bjHomeTop{display:block;}
 .sidebar{
   height:100vh;overflow:auto;padding:14px 12px 16px;border-right:1px solid rgba(255,255,255,.08);
   background: rgba(0,0,0,.30);backdrop-filter: blur(14px);
@@ -1509,6 +1511,7 @@ tr:last-child td{border-bottom:none;}
         <button class="navBtn" data-view="case"><span>Daily Case</span></button>
         <button class="navBtn" data-view="admin" id="mobileAdminNav" style="display:none;"><span>Admin</span></button>
       </div>
+      <button class="bjHomeTop" id="bjHomeBtnTop" style="display:none;">Home</button>
     </div>
 
     <section id="view-home">
@@ -3967,6 +3970,7 @@ $("bjStandBtnM") && ($("bjStandBtnM").onclick = ()=>bjStand(false));
 $("bjDoubleBtnM") && ($("bjDoubleBtnM").onclick = bjDouble);
 $("bjSplitBtnM") && ($("bjSplitBtnM").onclick = bjSplit);
 $("bjHomeBtnM") && ($("bjHomeBtnM").onclick = ()=>setView("home"));
+$("bjHomeBtnTop") && ($("bjHomeBtnTop").onclick = ()=>setView("home"));
 
 // Keep mobile stake input in sync with desktop stake
 const _stk=$("bjStake"), _stkM=$("bjStakeM");
