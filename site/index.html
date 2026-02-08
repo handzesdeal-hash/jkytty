@@ -838,33 +838,66 @@ function sfxCashout(){
     const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
     const now = ctx.currentTime;
 
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    const f = ctx.createBiquadFilter();
+    /* ===== MAIN AIR WHOOSH ===== */
+    const air = ctx.createOscillator();
+    const airGain = ctx.createGain();
+    const airFilter = ctx.createBiquadFilter();
 
-    // Soft airy whoosh
-    o.type = "triangle";
+    air.type = "triangle";
+    air.frequency.setValueAtTime(180, now);
+    air.frequency.exponentialRampToValueAtTime(2400, now + 0.32);
 
-    // Smooth upward glide
-    o.frequency.setValueAtTime(260, now);
-    o.frequency.exponentialRampToValueAtTime(1900, now + 0.22);
+    airFilter.type = "lowpass";
+    airFilter.frequency.setValueAtTime(900, now);
+    airFilter.frequency.exponentialRampToValueAtTime(5200, now + 0.32);
 
-    // Low-pass filter = cinematic air (no harshness)
-    f.type = "lowpass";
-    f.frequency.setValueAtTime(1200, now);
-    f.frequency.exponentialRampToValueAtTime(4000, now + 0.22);
+    airGain.gain.setValueAtTime(0.0001, now);
+    airGain.gain.exponentialRampToValueAtTime(0.06, now + 0.08);
+    airGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
 
-    // Volume envelope (very smooth)
-    g.gain.setValueAtTime(0.0001, now);
-    g.gain.exponentialRampToValueAtTime(0.055, now + 0.06);
-    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.26);
+    air.connect(airFilter);
+    airFilter.connect(airGain);
+    airGain.connect(ctx.destination);
 
-    o.connect(f);
-    f.connect(g);
-    g.connect(ctx.destination);
+    air.start(now);
+    air.stop(now + 0.45);
 
-    o.start(now);
-    o.stop(now + 0.28);
+    /* ===== SUB LIFT (BODY) ===== */
+    const sub = ctx.createOscillator();
+    const subGain = ctx.createGain();
+
+    sub.type = "sine";
+    sub.frequency.setValueAtTime(90, now);
+    sub.frequency.exponentialRampToValueAtTime(260, now + 0.28);
+
+    subGain.gain.setValueAtTime(0.0001, now);
+    subGain.gain.exponentialRampToValueAtTime(0.04, now + 0.1);
+    subGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.38);
+
+    sub.connect(subGain);
+    subGain.connect(ctx.destination);
+
+    sub.start(now);
+    sub.stop(now + 0.4);
+
+    /* ===== SOFT SUCCESS TAIL ===== */
+    const tail = ctx.createOscillator();
+    const tailGain = ctx.createGain();
+
+    tail.type = "sine";
+    tail.frequency.setValueAtTime(1600, now + 0.22);
+    tail.frequency.exponentialRampToValueAtTime(900, now + 0.5);
+
+    tailGain.gain.setValueAtTime(0.0001, now + 0.22);
+    tailGain.gain.exponentialRampToValueAtTime(0.025, now + 0.3);
+    tailGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+
+    tail.connect(tailGain);
+    tailGain.connect(ctx.destination);
+
+    tail.start(now + 0.22);
+    tail.stop(now + 0.62);
+
   }catch(_){}
 }
 
