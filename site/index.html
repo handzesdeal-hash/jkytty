@@ -572,7 +572,7 @@ input:focus,select:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4p
 .levelText{font-size:11px;color:var(--muted);margin-top:4px;display:flex;justify-content:space-between}
 
 .section{margin-top:12px;border:1px solid rgba(255,255,255,.10);background: rgba(0,0,0,.16);border-radius:18px;overflow:hidden;box-shadow:0 14px 55px rgba(0,0,0,.45);}
-.sectionHd{padding:14px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;position:relative;}
+.sectionHd{padding:14px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;}
 .sectionHd h3{margin:0;font-size:14px;}
 .sub{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.35;}
 .sectionBd{padding:14px;}
@@ -825,17 +825,16 @@ tr:last-child td{border-bottom:none;}
   border-color: rgba(255,255,255,.16);
 }
 
-.bjActionMobile{display:none;gap:3px;margin-top:2px;}
-.bjActionMobile .bjBtn{width:100%;justify-content:center;font-size:10.5px;padding:5px 7px;}
+.bjActionMobile{display:none;gap:10px;margin-top:12px;}
+.bjActionMobile .bjBtn{width:100%;justify-content:center;font-size:14px;padding:12px 12px;}
 .bjActionMobile .full{grid-column: span 2;}
 .bjActionMobile .barLabel{grid-column: span 2;font-size:11px;color:rgba(255,255,255,.65);letter-spacing:.16em;font-weight:900;text-transform:uppercase;}
-.bjActionMobile .bjBetRow{grid-column: span 2;display:grid;grid-template-columns:1.2fr 1fr 1fr auto;gap:3px;align-items:end;}
+.bjActionMobile .bjBetRow{grid-column: span 2;display:grid;grid-template-columns:1.2fr 1fr 1fr auto;gap:8px;align-items:end;}
 .bjActionMobile .bjBetRow label{font-size:11px;color:var(--muted);font-weight:900;letter-spacing:.04em;display:block;margin-bottom:4px;}
-.bjActionMobile .bjBetRow input{width:100%;padding:5px 7px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.26);color:rgba(255,255,255,.92);font-size:10.5px;}
-.bjActionMobile .bjBetRow .bjBtn{padding:5px 7px;min-width:62px;}
+.bjActionMobile .bjBetRow input{width:100%;padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.26);color:rgba(255,255,255,.92);font-size:13px;}
+.bjActionMobile .bjBetRow .bjBtn{padding:11px 12px;min-width:92px;}
 @media(max-width:700px){
   #bjHomeBtnM{display:inline-flex;align-items:center;gap:6px;padding:9px 12px;border-radius:12px;font-size:12px;}
-  body.bjMobileFocus #bjHomeBtnM{position:absolute; left:50%; transform:translateX(-50%); top:8px;}
 }
 @media(max-width:700px){
   .bjActionMobile{display:grid;grid-template-columns:repeat(2,1fr);}
@@ -844,11 +843,8 @@ tr:last-child td{border-bottom:none;}
   .bjLeft .bjBlock:nth-child(2){display:none;}
   body.bjMobileFocus .topbar{display:none;}
   body.bjMobileFocus .mobileNav{display:none;}
-  body.bjMobileFocus .main{padding:8px 10px; overflow:hidden; height:100vh;}
-  body.bjMobileFocus{overflow:hidden;}
-  body.bjMobileFocus .sectionBd{max-height:calc(100vh - 72px); overflow:hidden; padding:10px;}
+  body.bjMobileFocus .main{padding:8px;}
   body.bjMobileFocus #view-blackjack{margin-top:0;}
-  body.bjMobileFocus .sectionHd{padding-top:32px;}
 }
 
 .bjStage{
@@ -996,28 +992,28 @@ tr:last-child td{border-bottom:none;}
 }
 
 @media(max-width:640px){
-  .bjArea{ padding:8px; }
-  .bjStage{ min-height: 420px; }
-  .bjLane{ gap:4px; min-height: 140px; }
-  .bjLaneInner{ margin-top:22px; gap:2px; min-height:88px; }
-  #bjPlayerCards{ gap:4px; }
-  .bjHandRow{ min-width:150px; flex: 1 1 50%; max-width:50%; padding:2px 2px 4px; }
-  .bjHandRow::before{ left:-12px; font-size:9px; }
-  .bjHandMeta{ font-size:9.5px; padding:3px 6px; text-align:center; }
-  .bjHandCards{ gap:2px; flex-wrap:nowrap; }
-  .bjDeck{ width:52px; height:76px; top:6px; right:6px; }
-  .bjLaneTitle{ left:8px; top:8px; font-size:9px; }
-  .bjScorePill{ top:8px; padding:4px 8px; font-size:11.5px; }
-  .bjBtnGrid{ grid-template-columns:1fr; gap:5px; }
-  .bjBtn{ padding:10px 10px; font-size:13px; }
-  .bjRow{ gap:5px; }
+  .bjArea{ padding:12px; }
+  .bjStage{ min-height: 500px; }
+  .bjLane{ gap:10px; min-height: 170px; }
+  .bjLaneInner{ margin-top:36px; gap:8px; min-height:120px; }
+  #bjPlayerCards{ gap:10px; }
+  .bjHandRow{ min-width:210px; flex: 1 1 100%; max-width:100%; padding:6px 6px 10px; }
+  .bjHandRow::before{ left:-16px; font-size:10px; }
+  .bjHandMeta{ font-size:11px; padding:6px 9px; text-align:center; }
+  .bjHandCards{ gap:8px; flex-wrap:wrap; }
+  .bjDeck{ width:68px; height:96px; top:6px; right:6px; }
+  .bjLaneTitle{ left:10px; top:10px; font-size:10px; }
+  .bjScorePill{ top:10px; padding:6px 10px; font-size:13px; }
+  .bjBtnGrid{ grid-template-columns:1fr; gap:8px; }
+  .bjBtn{ padding:14px 14px; font-size:15px; }
+  .bjRow{ gap:8px; }
 }
 
 @media(max-width:700px){
   /* extra shrink when multiple hands on mobile to avoid scrolling */
-  #bjPlayerCards[data-hands="2"] .bjHandCards .bjCard{ transform: scale(.60); transform-origin: top center; }
-  #bjPlayerCards[data-hands="3"] .bjHandCards .bjCard{ transform: scale(.50); transform-origin: top center; }
-  #bjPlayerCards[data-hands="4"] .bjHandCards .bjCard{ transform: scale(.42); transform-origin: top center; }
+  #bjPlayerCards[data-hands="2"] .bjHandCards .bjCard{ transform: scale(.86); transform-origin: top center; }
+  #bjPlayerCards[data-hands="3"] .bjHandCards .bjCard{ transform: scale(.78); transform-origin: top center; }
+  #bjPlayerCards[data-hands="4"] .bjHandCards .bjCard{ transform: scale(.72); transform-origin: top center; }
 }
 
 .bjHandMeta{
@@ -1139,15 +1135,6 @@ tr:last-child td{border-bottom:none;}
   border:1px solid rgba(0,0,0,.70);
   box-shadow:0 18px 55px rgba(0,0,0,.45);
   overflow:hidden;
-}
-@media(max-width:700px){
-  .bjCard{ width:64px; height:92px; }
-  /* override FLIP gap inheritance to keep rows tight */
-  #bjDealerCards, #bjPlayerCards{ gap:4px !important; }
-}
-@media(max-width:700px){
-  #bjPlayerCards .bjHandCards{ --bjCardScale: 1; }
-  #bjPlayerCards .bjHandCards .bjCard{ transform: scale(var(--bjCardScale)) !important; transform-origin: top center; }
 }
 .bjFace{
   background: rgba(255,255,255,.96);
@@ -3235,21 +3222,6 @@ function bjUpdateShoeUI(){
   if($("bjShoe")) $("bjShoe").textContent = `${bj.shoe.length}`;
 }
 
-function bjScaleHandsMobile(){
-  if(window.innerWidth>700) return;
-  const rows=document.querySelectorAll("#bjPlayerCards .bjHandCards");
-  rows.forEach((cards,i)=>{
-    const len=bj.hands[i]?.length||0;
-    let s=1;
-    if(len>=6) s=0.50;
-    else if(len===5) s=0.56;
-    else if(len===4) s=0.62;
-    else if(len===3) s=0.70;
-    else if(len===2) s=0.78;
-    cards.style.setProperty("--bjCardScale", s);
-  });
-}
-
 function bjSetBetBtn(canBet=true){
   const btns=["bjBetBtn","bjBetBtnM"].map($).filter(Boolean);
   btns.forEach(b=>{
@@ -3304,8 +3276,6 @@ function bjSetButtons(){
     const total = hand.length ? bjHandTotals(hand).sum : "—";
     meta.textContent = `Hand ${i+1} · Bet ${bet} · Total ${total}`;
   });
-
-  bjScaleHandsMobile();
 
   $("bjHandNo").textContent = String(bj.activeHand + 1);
 }
@@ -3487,9 +3457,6 @@ function bjRender(){
 
   // set hand count for responsive scaling
   pBox.dataset.hands = String(bj.hands.length||1);
-
-  // mobile per-hand scaling to keep cards in view when many cards/splits
-  bjScaleHandsMobile();
 
   bjUpdateScoresUI();
   bjSetButtons();
