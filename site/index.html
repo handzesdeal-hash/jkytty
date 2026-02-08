@@ -825,6 +825,13 @@ tr:last-child td{border-bottom:none;}
   border-color: rgba(255,255,255,.16);
 }
 
+.bjActionMobile{display:none;gap:10px;margin-top:12px;}
+.bjActionMobile .bjBtn{width:100%;justify-content:center;font-size:15px;padding:14px 14px;}
+@media(max-width:700px){
+  .bjActionMobile{display:grid;grid-template-columns:repeat(2,1fr);}
+  .bjActionMobile .bjBtn{border-radius:14px;}
+}
+
 .bjStage{
   border:1px solid rgba(255,255,255,.10);
   background: rgba(0,0,0,.16);
@@ -971,7 +978,7 @@ tr:last-child td{border-bottom:none;}
 
 @media(max-width:640px){
   .bjArea{ padding:12px; }
-  .bjStage{ min-height: 480px; }
+  .bjStage{ min-height: 520px; }
   .bjLane{ gap:12px; min-height: 190px; }
   .bjLaneInner{ margin-top:44px; gap:10px; min-height:130px; }
   #bjPlayerCards{ gap:10px; }
@@ -1974,6 +1981,13 @@ alter table public.app_state disable row level security;
                   </div>
                 </div>
 
+              </div>
+
+              <div class="bjActionMobile">
+                <button class="bjBtn green" id="bjHitBtnM" disabled><span>Hit</span><span class="chip">🂠</span></button>
+                <button class="bjBtn red" id="bjStandBtnM" disabled><span>Stand</span><span class="chip">✋</span></button>
+                <button class="bjBtn" id="bjSplitBtnM" disabled><span>Split</span><span class="chip">⇄</span></button>
+                <button class="bjBtn" id="bjDoubleBtnM" disabled><span>Double</span><span class="chip">⧉</span></button>
               </div>
             </div>
 
@@ -3193,19 +3207,19 @@ function bjSetButtons(){
   const canDouble = inPlay && bj.canDouble && h.length===2;
   const canSplit = inPlay && bj.canSplit && h.length===2;
 
-  $("bjHitBtn").disabled = !canHit;
-  $("bjStandBtn").disabled = !canStand;
-  $("bjDoubleBtn").disabled = !canDouble;
-  $("bjSplitBtn").disabled = !canSplit;
+  const hitBtns=["bjHitBtn","bjHitBtnM"].map($).filter(Boolean);
+  const standBtns=["bjStandBtn","bjStandBtnM"].map($).filter(Boolean);
+  const dblBtns=["bjDoubleBtn","bjDoubleBtnM"].map($).filter(Boolean);
+  const splitBtns=["bjSplitBtn","bjSplitBtnM"].map($).filter(Boolean);
+
+  hitBtns.forEach(btn=>btn.disabled = !canHit);
+  standBtns.forEach(btn=>btn.disabled = !canStand);
+  dblBtns.forEach(btn=>btn.disabled = !canDouble);
+  splitBtns.forEach(btn=>btn.disabled = !canSplit);
 
   // glow states for double / split
-  const dbl = $("bjDoubleBtn"), spl=$("bjSplitBtn");
-  if(dbl){
-    dbl.classList.toggle("bjPulseDouble", canDouble);
-  }
-  if(spl){
-    spl.classList.toggle("bjPulseSplit", canSplit);
-  }
+  [...dblBtns].forEach(d=>d.classList.toggle("bjPulseDouble", canDouble));
+  [...splitBtns].forEach(s=>s.classList.toggle("bjPulseSplit", canSplit));
 
   // update active hand highlight in UI rows
   const rows = document.querySelectorAll("#bjPlayerCards .bjHandRow");
@@ -3904,6 +3918,10 @@ $("bjHitBtn") && ($("bjHitBtn").onclick = bjHit);
 $("bjStandBtn") && ($("bjStandBtn").onclick = ()=>bjStand(false));
 $("bjDoubleBtn") && ($("bjDoubleBtn").onclick = bjDouble);
 $("bjSplitBtn") && ($("bjSplitBtn").onclick = bjSplit);
+$("bjHitBtnM") && ($("bjHitBtnM").onclick = bjHit);
+$("bjStandBtnM") && ($("bjStandBtnM").onclick = ()=>bjStand(false));
+$("bjDoubleBtnM") && ($("bjDoubleBtnM").onclick = bjDouble);
+$("bjSplitBtnM") && ($("bjSplitBtnM").onclick = bjSplit);
 
 // Keep BJ balance updated when switching view / refreshing
 function bjOnViewEnter(){
