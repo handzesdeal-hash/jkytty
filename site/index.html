@@ -3855,7 +3855,8 @@ async function bjStand(fromBust=false){
   // - credit > wager -> win
   // - credit == wager -> push
   // - else -> lose
-  const totalWager = clamp2(bj.stake + bj.sidePairs + bj.sideBust + (bj.hands.length>1 ? bj.stake : 0));
+  const totalHandsWager = (bj.handBets||[]).reduce((s,v)=>s + Number(v||0), 0);
+  const totalWager = clamp2(totalHandsWager + bj.sidePairs + bj.sideBust);
   if(totalCredit > totalWager){
     bjSfx("win");
     bjShowPop({ win:true, amount: totalCredit, text:"added to balance" });
