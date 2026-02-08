@@ -864,34 +864,11 @@ function sfxGem(){
 /* ✅ MONEY/CASHOUT SOUND (MP3) */
 function sfxCashout(){
   try{
-    unlockAudioOnce();           // make sure audio is unlocked
+    unlockAudioOnce();            // make sure audio is unlocked
     cashoutSound.currentTime = 0; // replay instantly
     cashoutSound.play();
   }catch(_){}
 }
-
-    glug.stop(now + 0.23);
-
-    /* ===== HAPPY "AH" SPARKLE ===== */
-    const ah = ctx.createOscillator();
-    const ahGain = ctx.createGain();
-
-    ah.type = "triangle";
-    ah.frequency.setValueAtTime(1200, now + 0.2);
-
-    ahGain.gain.setValueAtTime(0.0001, now + 0.2);
-    ahGain.gain.exponentialRampToValueAtTime(0.025, now + 0.24);
-    ahGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
-
-    ah.connect(ahGain);
-    ahGain.connect(ctx.destination);
-
-    ah.start(now + 0.2);
-    ah.stop(now + 0.35);
-
-  }catch(_){}
-}
-
 
 
 function monthKey(d=new Date()){
