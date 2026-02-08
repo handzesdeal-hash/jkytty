@@ -90,8 +90,6 @@ input:focus,select:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4p
 #minesGrid{
   display:grid;
   grid-template-columns:repeat(5,1fr);
-  #bjDealerCards{ flex-wrap:nowrap; overflow-x:auto; padding-bottom:4px; }
-  #bjDealerCards .bjCard{ flex:0 0 auto; }
   gap:10px;
   max-width:520px;
 }
@@ -523,8 +521,6 @@ input:focus,select:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4p
   .sidebar{display:none;}
   .app{grid-template-columns:1fr;}
   .mobileNav{display:block;}
-  .bjHandCards{ flex-wrap:nowrap; overflow-x:auto; padding-bottom:4px; }
-  .bjHandCards .bjCard{ flex:0 0 auto; }
   .main{padding-top:12px;}
 }
 .sidebar{
@@ -838,17 +834,10 @@ tr:last-child td{border-bottom:none;}
 .bjActionMobile .bjBetRow input{width:100%;padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.26);color:rgba(255,255,255,.92);font-size:13px;}
 .bjActionMobile .bjBetRow .bjBtn{padding:11px 12px;min-width:92px;}
 @media(max-width:700px){
-  #bjHomeBtnM{display:inline-flex;align-items:center;gap:6px;padding:9px 12px;border-radius:12px;font-size:12px;}
-}
-@media(max-width:700px){
   .bjActionMobile{display:grid;grid-template-columns:repeat(2,1fr);}
   .bjActionMobile .bjBtn{border-radius:14px;}
   .bjLeft .bjBlock:nth-child(1),
   .bjLeft .bjBlock:nth-child(2){display:none;}
-  body.bjMobileFocus .topbar{display:none;}
-  body.bjMobileFocus .mobileNav{display:none;}
-  body.bjMobileFocus .main{padding:8px;}
-  body.bjMobileFocus #view-blackjack{margin-top:0;}
 }
 
 .bjStage{
@@ -997,27 +986,20 @@ tr:last-child td{border-bottom:none;}
 
 @media(max-width:640px){
   .bjArea{ padding:12px; }
-  .bjStage{ min-height: 500px; }
-  .bjLane{ gap:10px; min-height: 170px; }
-  .bjLaneInner{ margin-top:36px; gap:8px; min-height:120px; }
+  .bjStage{ min-height: 520px; }
+  .bjLane{ gap:12px; min-height: 190px; }
+  .bjLaneInner{ margin-top:44px; gap:10px; min-height:130px; }
   #bjPlayerCards{ gap:10px; }
-  .bjHandRow{ min-width:210px; flex: 1 1 100%; max-width:100%; padding:6px 6px 10px; }
+  .bjHandRow{ min-width:230px; flex: 1 1 100%; max-width:100%; padding:6px 6px 10px; }
   .bjHandRow::before{ left:-16px; font-size:10px; }
   .bjHandMeta{ font-size:11px; padding:6px 9px; text-align:center; }
-  .bjHandCards{ gap:8px; flex-wrap:wrap; }
-  .bjDeck{ width:68px; height:96px; top:6px; right:6px; }
+  .bjHandCards{ gap:10px; flex-wrap:wrap; }
+  .bjDeck{ width:72px; height:102px; top:8px; right:8px; }
   .bjLaneTitle{ left:10px; top:10px; font-size:10px; }
   .bjScorePill{ top:10px; padding:6px 10px; font-size:13px; }
   .bjBtnGrid{ grid-template-columns:1fr; gap:8px; }
   .bjBtn{ padding:14px 14px; font-size:15px; }
   .bjRow{ gap:8px; }
-}
-
-@media(max-width:700px){
-  /* extra shrink when multiple hands on mobile to avoid scrolling */
-  #bjPlayerCards[data-hands="2"] .bjHandCards .bjCard{ transform: scale(.86); transform-origin: top center; }
-  #bjPlayerCards[data-hands="3"] .bjHandCards .bjCard{ transform: scale(.78); transform-origin: top center; }
-  #bjPlayerCards[data-hands="4"] .bjHandCards .bjCard{ transform: scale(.72); transform-origin: top center; }
 }
 
 .bjHandMeta{
@@ -1891,7 +1873,6 @@ alter table public.app_state disable row level security;
             <div class="sub">Shuffle-style UI • Flip animation • Wind deal • Side bets</div>
           </div>
           <div class="chip">LIVE</div>
-          <button class="bjBtn" id="bjHomeBtnM" style="display:none;">Home</button>
         </div>
 
         <div class="sectionBd">
@@ -2299,11 +2280,9 @@ function setView(v){
   ["home","games","dice","roulette","mines","blackjack","sports","leaderboard","bets","case","admin"].forEach(id=>{
     const el=$("view-"+id); if(el) el.style.display=(id===v)?"":"none";
   });
-  const mobile = window.innerWidth<=900;
-  if(mobile){
+  if(window.innerWidth<=900){
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
-  document.body.classList.toggle("bjMobileFocus", mobile && v==="blackjack");
   if(v==="leaderboard") refreshLeaderboard();
   if(v==="admin") { loadUsersList(); loadAdminEvents(); }
   if(v==="case") refreshCaseUI();
@@ -3970,7 +3949,6 @@ $("bjHitBtnM") && ($("bjHitBtnM").onclick = bjHit);
 $("bjStandBtnM") && ($("bjStandBtnM").onclick = ()=>bjStand(false));
 $("bjDoubleBtnM") && ($("bjDoubleBtnM").onclick = bjDouble);
 $("bjSplitBtnM") && ($("bjSplitBtnM").onclick = bjSplit);
-$("bjHomeBtnM") && ($("bjHomeBtnM").onclick = ()=>setView("home"));
 
 // Keep mobile stake input in sync with desktop stake
 const _stk=$("bjStake"), _stkM=$("bjStakeM");
