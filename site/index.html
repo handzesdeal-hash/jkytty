@@ -1670,7 +1670,7 @@ async function loadAdminEvents(){
 }
 
 /* GAMES: Dice / Roulette / Mines */
-["diceRollBtn","rouSpinBtn","minesStartBtn","minesCashBtn","openCaseBtn","mConfirm"].forEach(id=>{
+["diceRollBtn","rouSpinBtn","minesStartBtn","openCaseBtn","mConfirm"].forEach(id=>{
   const el=$(id); if(el) el.addEventListener("click", ()=>sfx(520,0.05,"sine",0.03));
 });
 
@@ -1783,13 +1783,21 @@ function revealAllMines(){
   const tiles = [...grid.children];
 
   tiles.forEach((t, idx)=>{
+    // already clicked safe tile -> leave it as is
+    if(mines.revealed.has(idx)) return;
+
     if(mines.bombSet.has(idx)){
       t.textContent = "💣";
       t.style.background = "rgba(239,68,68,.12)";
       t.classList.add("bombHit");
+    } else {
+      t.innerHTML = gemYellow();
+      t.style.background = "rgba(34,197,94,.08)";
+      t.classList.add("gemHit");
     }
   });
 }
+
 
 function endMinesRound(statusLabel){
   mines.active = false;
@@ -1818,7 +1826,7 @@ async function doMinesCashout({ auto=false } = {}){
     // ✅ show mine locations after cashout
     revealAllMines();
 
-    sfx(740,0.08,"triangle",0.035);
+    sfxCashout();
     toast(auto ? `Auto cashout +${to2(payout)}` : `Cashout +${to2(payout)}`);
 
     endMinesRound("CASHED");
