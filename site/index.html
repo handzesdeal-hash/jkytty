@@ -1143,6 +1143,10 @@ tr:last-child td{border-bottom:none;}
 @media(max-width:700px){
   .bjCard{ width:70px; height:100px; }
 }
+@media(max-width:700px){
+  #bjPlayerCards .bjHandCards{ --bjCardScale: 1; }
+  #bjPlayerCards .bjHandCards .bjCard{ transform: scale(var(--bjCardScale)) !important; transform-origin: top center; }
+}
 .bjFace{
   background: rgba(255,255,255,.96);
   display:flex;
@@ -3229,6 +3233,21 @@ function bjUpdateShoeUI(){
   if($("bjShoe")) $("bjShoe").textContent = `${bj.shoe.length}`;
 }
 
+function bjScaleHandsMobile(){
+  if(window.innerWidth>700) return;
+  const rows=document.querySelectorAll("#bjPlayerCards .bjHandCards");
+  rows.forEach((cards,i)=>{
+    const len=bj.hands[i]?.length||0;
+    let s=1;
+    if(len>=6) s=0.50;
+    else if(len===5) s=0.56;
+    else if(len===4) s=0.62;
+    else if(len===3) s=0.70;
+    else if(len===2) s=0.78;
+    cards.style.setProperty("--bjCardScale", s);
+  });
+}
+
 function bjSetBetBtn(canBet=true){
   const btns=["bjBetBtn","bjBetBtnM"].map($).filter(Boolean);
   btns.forEach(b=>{
@@ -3283,6 +3302,8 @@ function bjSetButtons(){
     const total = hand.length ? bjHandTotals(hand).sum : "—";
     meta.textContent = `Hand ${i+1} · Bet ${bet} · Total ${total}`;
   });
+
+  bjScaleHandsMobile();
 
   $("bjHandNo").textContent = String(bj.activeHand + 1);
 }
@@ -3464,6 +3485,9 @@ function bjRender(){
 
   // set hand count for responsive scaling
   pBox.dataset.hands = String(bj.hands.length||1);
+
+  // mobile per-hand scaling to keep cards in view when many cards/splits
+  bjScaleHandsMobile();
 
   bjUpdateScoresUI();
   bjSetButtons();
