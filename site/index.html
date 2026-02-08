@@ -30,7 +30,7 @@ body{
   overflow-x:hidden;
 }
 .glow{filter: drop-shadow(0 0 10px rgba(167,139,250,.35)) drop-shadow(0 0 22px rgba(124,58,237,.18));}
-.iconSvg{width:18px;height:18px;vertical-align:-3px;margin-left:6px}
+.iconSvg{width:26px;height:26px;vertical-align:-3px;margin-left:0}
 .iconPoop{width:22px;height:22px;vertical-align:-5px;margin-left:6px;filter: drop-shadow(0 0 10px rgba(0,0,0,.6));}
 
 @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-4px)} 40%{transform:translateX(4px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)} }
@@ -393,90 +393,85 @@ input:focus,select:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4p
 }
 
 /* =======================
-   BOOM EXPLOSION EFFECT
+   BOMB ICON + EXPLOSION (anchored to tile)
    ======================= */
-@keyframes boomRing {
-  0%   { transform:translate(-50%,-50%) scale(.25); opacity:0; }
-  15%  { opacity:1; }
-  100% { transform:translate(-50%,-50%) scale(1.6); opacity:0; }
-}
-@keyframes boomFlash {
-  0%   { opacity:0; transform:translate(-50%,-50%) scale(.75); }
-  20%  { opacity:1; }
-  100% { opacity:0; transform:translate(-50%,-50%) scale(1.15); }
+.bombIcon{
+  font-size:30px;line-height:1;display:inline-flex;align-items:center;justify-content:center;
+  filter: drop-shadow(0 0 10px rgba(239,68,68,.65)) drop-shadow(0 0 22px rgba(239,68,68,.35));
+  animation: bombPulse 0.85s ease-in-out infinite;
 }
 
-.boomFx{
+@keyframes bombPulse{
+  0%,100%{ transform: scale(1); filter: drop-shadow(0 0 10px rgba(239,68,68,.55)) drop-shadow(0 0 22px rgba(239,68,68,.30)); }
+  50%{ transform: scale(1.06); filter: drop-shadow(0 0 14px rgba(239,68,68,.75)) drop-shadow(0 0 28px rgba(239,68,68,.45)); }
+}
+
+/* explosion container anchored to tile */
+.boom{
   position:absolute;
   left:50%;
   top:50%;
-  width:120px;
-  height:120px;
   transform:translate(-50%,-50%);
+  width:10px;
+  height:10px;
   pointer-events:none;
-  z-index:5;
+  z-index:10;
 }
-.boomFx::before{
+
+/* big shockwave ring */
+.boom::before{
   content:"";
   position:absolute;
-  inset:0;
+  inset:-52px;
   border-radius:999px;
-  border:2px solid rgba(239,68,68,.75);
-  box-shadow: 0 0 24px rgba(239,68,68,.25), inset 0 0 18px rgba(239,68,68,.20);
-  animation: boomRing .55s ease-out forwards;
-}
-.boomFx::after{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:50%;
-  width:82px;
-  height:82px;
-  transform:translate(-50%,-50%);
-  border-radius:999px;
-  background: radial-gradient(circle,
-    rgba(255,255,255,.85) 0%,
-    rgba(239,68,68,.55) 35%,
-    rgba(239,68,68,0) 70%
-  );
+  background:
+    radial-gradient(circle,
+      rgba(255,255,255,.30) 0%,
+      rgba(239,68,68,.42) 18%,
+      rgba(239,68,68,.18) 38%,
+      rgba(239,68,68,0) 72%);
   filter: blur(1px);
-  animation: boomFlash .35s ease-out forwards;
+  animation: boomRing .34s ease-out forwards;
 }
 
-/* =======================
-   BOMB PULSE (revealed)
-   ======================= */
-@keyframes bombPulse {
-  0%   { transform: scale(1); filter: drop-shadow(0 0 10px rgba(239,68,68,.38)) drop-shadow(0 0 26px rgba(239,68,68,.18)); }
-  50%  { transform: scale(1.05); filter: drop-shadow(0 0 18px rgba(239,68,68,.60)) drop-shadow(0 0 46px rgba(239,68,68,.26)); }
-  100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(239,68,68,.38)) drop-shadow(0 0 26px rgba(239,68,68,.18)); }
-}
-.bombPulseSvg{
-  animation: bombPulse 1.1s ease-in-out infinite;
-  transform-origin: 50% 50%;
+@keyframes boomRing{
+  0%{ transform:scale(.18); opacity:0; }
+  18%{ opacity:1; }
+  100%{ transform:scale(1.25); opacity:0; }
 }
 
-/* =======================
-   SPARK PARTICLES (no canvas)
-   ======================= */
-@keyframes sparkFly {
-  0%   { transform: translate(0,0) scale(.9); opacity: 0; }
-  10%  { opacity: 1; }
-  100% { transform: translate(var(--dx), var(--dy)) scale(.2); opacity: 0; }
+/* hot core flash */
+.boom::after{
+  content:"";
+  position:absolute;
+  inset:-20px;
+  border-radius:999px;
+  background: radial-gradient(circle, rgba(255,255,255,.55), rgba(239,68,68,.22), rgba(239,68,68,0) 70%);
+  animation: boomFlash .22s ease-out forwards;
 }
+@keyframes boomFlash{
+  0%{ transform:scale(.55); opacity:0; }
+  30%{ opacity:1; }
+  100%{ transform:scale(1.2); opacity:0; }
+}
+
+/* sparks */
 .spark{
   position:absolute;
   left:50%;
   top:50%;
-  width:10px;
-  height:3px;
+  width:4px;
+  height:16px;
   border-radius:999px;
-  transform: translate(-50%,-50%);
-  background: linear-gradient(90deg, rgba(255,255,255,.95), rgba(239,68,68,.95));
-  box-shadow: 0 0 14px rgba(239,68,68,.30);
-  pointer-events:none;
-  z-index:6;
-  animation: sparkFly .55s ease-out forwards;
+  transform-origin:50% 100%;
+  background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,180,180,.92), rgba(239,68,68,.95), rgba(239,68,68,0));
+  filter: drop-shadow(0 0 12px rgba(239,68,68,.55)) drop-shadow(0 0 22px rgba(239,68,68,.25));
+  animation: sparkFly .52s ease-out forwards;
+}
+
+@keyframes sparkFly{
+  0%{ transform: translate(-50%,-50%) rotate(var(--a)) translateY(0) scale(1); opacity:1; }
+  100%{ transform: translate(-50%,-50%) rotate(var(--a)) translateY(-74px) scale(.55); opacity:0; }
 }
 
 @keyframes sparkDot {
@@ -547,7 +542,11 @@ input:focus,select:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4p
 .topbar{
   display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
   border:1px solid rgba(255,255,255,.10);background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
-  border-radius:18px;padding:12px;box-shadow: var(--shadow);backdrop-filter: blur(14px);position:sticky;top:10px;z-index:40;
+  border-radius:18px;padding:12px;box-shadow: var(--shadow);position:sticky;top:10px;z-index:40;
+  /* remove heavy blur (causes moving seam/artifact). keep a subtle solid bg */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgba(0,0,0,.45);
 }
 .centerBrand{display:flex;align-items:center;gap:12px;margin:0 auto;opacity:.98;}
 .mark2{width:26px;height:26px;border-radius:10px;background:linear-gradient(135deg, rgba(124,58,237,.95), rgba(239,68,68,.85));border:1px solid rgba(255,255,255,.18);}
@@ -2267,6 +2266,9 @@ function minesResetUI(){
     b.style.height="70px";
     b.style.borderRadius="16px";
     b.style.background="rgba(0,0,0,.35)";
+    // anchor for explosion effects
+    b.style.position = "relative";
+    b.style.overflow = "visible";
     b.textContent=" ";
     b.onclick=()=>minesPick(i,b);
     grid.appendChild(b);
@@ -2280,13 +2282,8 @@ function revealAllMines(){
   tiles.forEach((t, idx)=>{
     if(mines.bombSet.has(idx)){
       t.innerHTML = bombRed();
-      t.classList.add("minesBombTile","bombHit");
+      t.classList.add("minesBombTile","bombHit","bombPulse");
       t.style.position = "relative";
-      
-      // tiny subtle sparks sometimes (optional)
-      if(Math.random() < 0.18){
-        spawnSparks(t, 5);
-      }
     }
   });
 }
@@ -2462,6 +2459,24 @@ function spawnSparks(btn, n=10){
   }
 }
 
+// spawn a centered explosion (ring + sparks) on a tile
+function spawnExplosionOn(btn){
+  if(!btn) return;
+  const boom = document.createElement("div");
+  boom.className = "boom";
+
+  // 8 sparks around
+  for(let i=0;i<8;i++){
+    const s = document.createElement("div");
+    s.className = "spark";
+    s.style.setProperty("--a", (i*45) + "deg");
+    boom.appendChild(s);
+  }
+
+  btn.appendChild(boom);
+  setTimeout(()=>boom.remove(), 520);
+}
+
 async function doMinesCashout({ auto=false } = {}){
   if(!mines.active || mines.ended) return;
 
@@ -2505,23 +2520,22 @@ async function minesPick(i, btn){
 
   // BOMB clicked
   if(mines.bombSet.has(i)){
-    btn.innerHTML = bombRed();
-    btn.classList.add("minesBombTile","bombHit");
+    // keep tile background normal (no red square)
+    btn.style.background = "rgba(0,0,0,.35)";
+    btn.style.borderColor = "rgba(255,255,255,.14)";
+
+    // bomb icon glows (not the tile)
+    btn.innerHTML = `<div class="bombIcon">💣</div>`;
+    btn.classList.add("bombHit");
+
+    // explosion only on clicked tile
+    spawnExplosionOn(btn);
+
     sfxBomb();
 
-    // show all mines
+    // reveal other bombs (no explosions for them)
     revealAllMines();
     showMinesPop({ amount: 0, mult: null, win:false });
-
-    // 💥 BOOM ring + flash
-    btn.style.position = "relative";
-    const fx = document.createElement("div");
-    fx.className = "boomFx";
-    btn.appendChild(fx);
-    setTimeout(()=>fx.remove(), 650);
-
-    // ✨ Sparks
-    spawnSparks(btn, 12);
 
     endMinesRound("BOMB");
     toast("Boom 💣");
