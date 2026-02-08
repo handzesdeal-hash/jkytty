@@ -838,61 +838,62 @@ function sfxCashout(){
     const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
     const now = ctx.currentTime;
 
-    /* ===== MAIN HAPPY STRING ===== */
-    const str = ctx.createOscillator();
-    const strGain = ctx.createGain();
+    /* ===== SIP (small inhale) ===== */
+    const sip = ctx.createOscillator();
+    const sipGain = ctx.createGain();
 
-    str.type = "triangle";
-    str.frequency.setValueAtTime(880, now);      // A5
-    str.frequency.exponentialRampToValueAtTime(1320, now + 0.12); // E6
+    sip.type = "sine";
+    sip.frequency.setValueAtTime(900, now);
+    sip.frequency.exponentialRampToValueAtTime(600, now + 0.08);
 
-    strGain.gain.setValueAtTime(0.0001, now);
-    strGain.gain.exponentialRampToValueAtTime(0.05, now + 0.03);
-    strGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+    sipGain.gain.setValueAtTime(0.0001, now);
+    sipGain.gain.exponentialRampToValueAtTime(0.03, now + 0.02);
+    sipGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
 
-    str.connect(strGain);
-    strGain.connect(ctx.destination);
+    sip.connect(sipGain);
+    sipGain.connect(ctx.destination);
 
-    str.start(now);
-    str.stop(now + 0.26);
+    sip.start(now);
+    sip.stop(now + 0.11);
 
-    /* ===== SECOND STRING (HARMONY) ===== */
-    const str2 = ctx.createOscillator();
-    const str2Gain = ctx.createGain();
+    /* ===== GLUG (liquid drop) ===== */
+    const glug = ctx.createOscillator();
+    const glugGain = ctx.createGain();
 
-    str2.type = "triangle";
-    str2.frequency.setValueAtTime(660, now);     // E5
-    str2.frequency.exponentialRampToValueAtTime(990, now + 0.14); // B5
+    glug.type = "triangle";
+    glug.frequency.setValueAtTime(520, now + 0.09);
+    glug.frequency.exponentialRampToValueAtTime(260, now + 0.18);
 
-    str2Gain.gain.setValueAtTime(0.0001, now);
-    str2Gain.gain.exponentialRampToValueAtTime(0.035, now + 0.04);
-    str2Gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
+    glugGain.gain.setValueAtTime(0.0001, now + 0.09);
+    glugGain.gain.exponentialRampToValueAtTime(0.05, now + 0.12);
+    glugGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
 
-    str2.connect(str2Gain);
-    str2Gain.connect(ctx.destination);
+    glug.connect(glugGain);
+    glugGain.connect(ctx.destination);
 
-    str2.start(now);
-    str2.stop(now + 0.3);
+    glug.start(now + 0.09);
+    glug.stop(now + 0.23);
 
-    /* ===== SPARKLE TICK (JOY) ===== */
-    const sparkle = ctx.createOscillator();
-    const sparkleGain = ctx.createGain();
+    /* ===== HAPPY "AH" SPARKLE ===== */
+    const ah = ctx.createOscillator();
+    const ahGain = ctx.createGain();
 
-    sparkle.type = "sine";
-    sparkle.frequency.setValueAtTime(2200, now + 0.08);
+    ah.type = "triangle";
+    ah.frequency.setValueAtTime(1200, now + 0.2);
 
-    sparkleGain.gain.setValueAtTime(0.0001, now + 0.08);
-    sparkleGain.gain.exponentialRampToValueAtTime(0.025, now + 0.12);
-    sparkleGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+    ahGain.gain.setValueAtTime(0.0001, now + 0.2);
+    ahGain.gain.exponentialRampToValueAtTime(0.025, now + 0.24);
+    ahGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
 
-    sparkle.connect(sparkleGain);
-    sparkleGain.connect(ctx.destination);
+    ah.connect(ahGain);
+    ahGain.connect(ctx.destination);
 
-    sparkle.start(now + 0.08);
-    sparkle.stop(now + 0.22);
+    ah.start(now + 0.2);
+    ah.stop(now + 0.35);
 
   }catch(_){}
 }
+
 
 
 
