@@ -803,6 +803,35 @@ $("tabSignIn").onclick=()=>setAuthTab("in");
 $("tabSignUp").onclick=()=>setAuthTab("up");
 
 let session=null, meProfile=null, isAdmin=false, events=[], myBets=[], usersList=[];
+// ✅ MP3 cashout sound
+const cashoutSound = new Audio("./sounds/cashout.mp3");
+cashoutSound.preload = "auto";
+cashoutSound.volume = 0.85;
+
+// Browsers require "user gesture" before sound can play.
+// This unlocks audio on the first click/tap anywhere.
+let __audioUnlocked = false;
+function unlockAudioOnce(){
+  if(__audioUnlocked) return;
+  __audioUnlocked = true;
+  try{
+    // unlock WebAudio too (for your sfx beeps)
+    const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
+    if(ctx && ctx.state === "suspended") ctx.resume();
+
+    // unlock HTMLAudio
+    cashoutSound.muted = true;
+    cashoutSound.play().then(()=>{
+      cashoutSound.pause();
+      cashoutSound.currentTime = 0;
+      cashoutSound.muted = false;
+    }).catch(()=>{
+      cashoutSound.muted = false;
+    });
+  }catch(_){}
+}
+window.addEventListener("pointerdown", unlockAudioOnce, { once:true });
+window.addEventListener("keydown", unlockAudioOnce, { once:true });
 
 
 function sfx(freq=520, dur=0.06, type="sine", gain=0.04){
@@ -832,46 +861,15 @@ function sfxGem(){
   setTimeout(()=>sfx(1180,0.05,"triangle",0.025), 40);
 }
 
-/* ✅ MONEY/CASHOUT SOUND (added) */
+/* ✅ MONEY/CASHOUT SOUND (MP3) */
 function sfxCashout(){
   try{
-    const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
-    const now = ctx.currentTime;
+    unlockAudioOnce();           // make sure audio is unlocked
+    cashoutSound.currentTime = 0; // replay instantly
+    cashoutSound.play();
+  }catch(_){}
+}
 
-    /* ===== SIP (small inhale) ===== */
-    const sip = ctx.createOscillator();
-    const sipGain = ctx.createGain();
-
-    sip.type = "sine";
-    sip.frequency.setValueAtTime(900, now);
-    sip.frequency.exponentialRampToValueAtTime(600, now + 0.08);
-
-    sipGain.gain.setValueAtTime(0.0001, now);
-    sipGain.gain.exponentialRampToValueAtTime(0.03, now + 0.02);
-    sipGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
-
-    sip.connect(sipGain);
-    sipGain.connect(ctx.destination);
-
-    sip.start(now);
-    sip.stop(now + 0.11);
-
-    /* ===== GLUG (liquid drop) ===== */
-    const glug = ctx.createOscillator();
-    const glugGain = ctx.createGain();
-
-    glug.type = "triangle";
-    glug.frequency.setValueAtTime(520, now + 0.09);
-    glug.frequency.exponentialRampToValueAtTime(260, now + 0.18);
-
-    glugGain.gain.setValueAtTime(0.0001, now + 0.09);
-    glugGain.gain.exponentialRampToValueAtTime(0.05, now + 0.12);
-    glugGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
-
-    glug.connect(glugGain);
-    glugGain.connect(ctx.destination);
-
-    glug.start(now + 0.09);
     glug.stop(now + 0.23);
 
     /* ===== HAPPY "AH" SPARKLE ===== */
