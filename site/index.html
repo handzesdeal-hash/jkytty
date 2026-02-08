@@ -1878,54 +1878,69 @@ async function minesPick(i, btn){
   }
 }
 
-$("minesStartBtn").onclick = async ()=> {
-  if(!meProfile) return toast("Profile not loaded");
-  if(mines.active) return; // already playing
+// 🔥 HARD-REBIND MINES BUTTONS (removes old cached listeners)
+function hardRebindMinesButtons(){
+  const startOld = $("minesStartBtn");
+  const cashOld  = $("minesCashBtn");
 
-  const stake = Number($("minesStake").value);
-  const bombs = Number($("minesBombs").value);
+  const startNew = startOld.cloneNode(true);
+  const cashNew  = cashOld.cloneNode(true);
 
-  if(!(stake>0)) return toast("Stake > 0");
-  if(stake < 0.01) return toast("Min 0.01");
-  if(![1,2,3].includes(bombs)) return toast("Bombs must be 1-3");
+  startOld.parentNode.replaceChild(startNew, startOld);
+  cashOld.parentNode.replaceChild(cashNew, cashOld);
 
-  // remove stake now + count wager (your existing logic)
-  try{
-    await addWagerAndPayout(stake, 0);
-  }catch(e){
-    if(String(e).includes("balance")) return toast("Not enough points");
-    toast("Mines start error (DB/RLS/SQL)");
-    console.error(e);
-    return;
-  }
+  // ✅ rebind to NEW logic only
+  startNew.onclick = async ()=> {
+    if(!meProfile) return toast("Profile not loaded");
+    if(mines.active) return; // already playing
 
-  // start round
-  mines.active = true;
-  mines.ended = false;
-  mines.bombs = bombs;
-  mines.stake = stake;
-  mines.revealed = new Set();
-  mines.mult = 1.0;
+    const stake = Number($("minesStake").value);
+    const bombs = Number($("minesBombs").value);
 
-  mines.bombSet = new Set();
-  while(mines.bombSet.size < bombs){
-    mines.bombSet.add(Math.floor(Math.random()*25));
-  }
+    if(!(stake>0)) return toast("Stake > 0");
+    if(stake < 0.01) return toast("Min 0.01");
+    if(![1,2,3].includes(bombs)) return toast("Bombs must be 1-3");
 
-  minesResetUI();
-  $("minesMult").textContent="1.00x";
-  $("minesStatus").textContent="LIVE";
+    // take stake now + count wager
+    try{
+      await addWagerAndPayout(stake, 0);
+    }catch(e){
+      if(String(e).includes("balance")) return toast("Not enough points");
+      toast("Mines start error (DB/RLS/SQL)");
+      console.error(e);
+      return;
+    }
 
-  // ✅ bet placed indicator (button grey/disabled)
-  setMinesUiState(true);
+    mines.active = true;
+    mines.ended = false;
+    mines.bombs = bombs;
+    mines.stake = stake;
+    mines.revealed = new Set();
+    mines.mult = 1.0;
 
-  toast("Mines started");
-};
+    mines.bombSet = new Set();
+    while(mines.bombSet.size < bombs){
+      mines.bombSet.add(Math.floor(Math.random()*25));
+    }
 
-$("minesCashBtn").onclick = async ()=> {
-  if(!mines.active) return toast("No active round");
-  await doMinesCashout({ auto:false });
-};
+    minesResetUI();
+    $("minesMult").textContent="1.00x";
+    $("minesStatus").textContent="LIVE";
+    setMinesUiState(true);
+
+    sfx(520,0.05,"sine",0.03);
+    toast("Mines started");
+  };
+
+  cashNew.onclick = async ()=> {
+    if(!mines.active) return toast("No active round");
+    await doMinesCashout({ auto:false });
+  };
+}
+
+// ✅ call after minesResetUI + setMinesUiState init
+hardRebindMinesButtons();
+
 
 // init
 setMinesUiState(false);
