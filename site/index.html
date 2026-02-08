@@ -841,9 +841,9 @@ function sfxCashout(){
 
     const o1 = ctx.createOscillator();
     const g1 = ctx.createGain();
-    o1.type = "triangle";
+    o1.type = "square";
     o1.frequency.setValueAtTime(880, now);
-    o1.frequency.exponentialRampToValueAtTime(1320, now + 0.08);
+    o1.frequency.exponentialRampToValueAtTime(900, now + 0.08);
     g1.gain.setValueAtTime(0.07, now);
     g1.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
     o1.connect(g1); g1.connect(ctx.destination);
