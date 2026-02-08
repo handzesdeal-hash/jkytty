@@ -643,6 +643,472 @@ tr:last-child td{border-bottom:none;}
   background: rgba(0,0,0,.62);box-shadow: var(--shadow);backdrop-filter: blur(12px);display:none;max-width:calc(100% - 24px);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12.5px;z-index:1000;}
 .toast.show{display:block;}
+
+/* =======================
+   BLACKJACK (Shuffle-style)
+   ======================= */
+
+.bjWrap{
+  position:relative;
+  padding:14px;
+}
+
+.bjStage{
+  position:relative;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.22);
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:0 18px 60px rgba(0,0,0,.55);
+}
+
+.bjStage::before{
+  content:"";
+  position:absolute; inset:-45%;
+  background:
+    radial-gradient(closest-side at 25% 25%, rgba(124,58,237,.26), transparent 60%),
+    radial-gradient(closest-side at 75% 18%, rgba(239,68,68,.18), transparent 60%),
+    conic-gradient(from 180deg, rgba(167,139,250,.14), transparent, rgba(239,68,68,.10), transparent);
+  filter: blur(3px);
+  pointer-events:none;
+}
+
+.bjTopRow{
+  position:relative;
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  background: rgba(0,0,0,.24);
+  backdrop-filter: blur(10px);
+}
+
+.bjTitle{
+  font-weight:1000;
+  letter-spacing:.22em;
+  font-size:12px;
+  text-transform:uppercase;
+  color: rgba(255,255,255,.92);
+}
+.bjSub{
+  margin-top:4px;
+  font-size:12px;
+  color: rgba(255,255,255,.62);
+  font-weight:900;
+}
+
+.bjDeckArea{
+  position:relative;
+  display:flex;
+  align-items:flex-start;
+  justify-content:flex-end;
+  min-width:120px;
+}
+
+.bjDeck{
+  width:70px;height:92px;
+  border-radius:14px;
+  position:relative;
+  border:1px solid rgba(255,255,255,.16);
+  background:
+    radial-gradient(80px 80px at 30% 20%, rgba(255,255,255,.12), transparent 55%),
+    linear-gradient(135deg, rgba(124,58,237,.85), rgba(239,68,68,.75));
+  box-shadow:0 18px 55px rgba(0,0,0,.65);
+  overflow:hidden;
+}
+.bjDeck::after{
+  content:"HANDZES.BET";
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:1000;
+  letter-spacing:.18em;
+  font-size:9.5px;
+  color: rgba(255,255,255,.92);
+  text-shadow:0 6px 18px rgba(0,0,0,.65);
+  transform: rotate(-10deg);
+  opacity:.92;
+}
+.bjDeck .stack{
+  position:absolute; inset:0;
+}
+.bjDeck .stack::before,
+.bjDeck .stack::after{
+  content:"";
+  position:absolute;
+  width:70px;height:92px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.18);
+  filter: blur(.2px);
+}
+.bjDeck .stack::before{ transform: translate(3px,3px); opacity:.55; }
+.bjDeck .stack::after{ transform: translate(6px,6px); opacity:.38; }
+
+.bjBody{
+  position:relative;
+  padding:14px;
+}
+
+.bjTable{
+  position:relative;
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,.10);
+  background:
+    radial-gradient(900px 300px at 50% 0%, rgba(34,197,94,.10), transparent 65%),
+    radial-gradient(900px 300px at 50% 100%, rgba(124,58,237,.10), transparent 65%),
+    rgba(0,0,0,.22);
+  padding:14px;
+  overflow:hidden;
+}
+
+.bjHands{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:14px;
+}
+
+.bjHandBox{
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.22);
+  border-radius:18px;
+  padding:12px;
+  position:relative;
+  overflow:hidden;
+}
+
+.bjHandHd{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+.bjHandName{
+  font-weight:1000;
+  letter-spacing:.14em;
+  font-size:11px;
+  text-transform:uppercase;
+  color: rgba(255,255,255,.86);
+}
+.bjPts{
+  font-family: var(--mono);
+  font-weight:1000;
+  font-size:12.5px;
+  color: rgba(255,255,255,.92);
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.30);
+}
+
+.bjCards{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+  min-height:104px;
+  position:relative;
+}
+
+.bjCard{
+  width:70px;
+  height:92px;
+  position:relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.bjCardInner{
+  position:absolute; inset:0;
+  transform-style: preserve-3d;
+  transition: transform .52s cubic-bezier(.2,.85,.15,1);
+}
+.bjCard.flip .bjCardInner{ transform: rotateY(180deg); }
+
+.bjFace, .bjBack{
+  position:absolute; inset:0;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.18);
+  backface-visibility: hidden;
+  box-shadow:0 16px 50px rgba(0,0,0,.55);
+  overflow:hidden;
+}
+
+.bjBack{
+  background:
+    radial-gradient(90px 90px at 30% 20%, rgba(255,255,255,.14), transparent 55%),
+    linear-gradient(135deg, rgba(124,58,237,.88), rgba(239,68,68,.74));
+  display:flex;align-items:center;justify-content:center;
+  transform: rotateY(0deg);
+}
+.bjBack span{
+  font-weight:1000;
+  letter-spacing:.18em;
+  font-size:9.5px;
+  color: rgba(255,255,255,.92);
+  text-shadow:0 6px 18px rgba(0,0,0,.65);
+  transform: rotate(-10deg);
+}
+
+.bjFace{
+  transform: rotateY(180deg);
+  background:
+    radial-gradient(90px 90px at 30% 20%, rgba(255,255,255,.16), transparent 55%),
+    linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.86));
+  color:#0b0b0f;
+}
+
+.bjFace .top,
+.bjFace .bot{
+  position:absolute;
+  font-family: var(--mono);
+  font-weight:1000;
+  font-size:12px;
+}
+.bjFace .top{ left:8px; top:8px; }
+.bjFace .bot{ right:8px; bottom:8px; transform: rotate(180deg); }
+
+.bjFace .mid{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:30px;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,.15));
+}
+
+.bjFace.red{ color:#b10f2e; }
+.bjFace.red .mid{ color:#b10f2e; }
+.bjFace.black{ color:#0b0b0f; }
+.bjFace.black .mid{ color:#0b0b0f; }
+
+/* deal animation: from deck to target */
+@keyframes bjDealIn{
+  0%{ transform: translate(var(--sx), var(--sy)) rotate(-8deg) scale(.92); opacity:0; }
+  60%{ opacity:1; }
+  100%{ transform: translate(0,0) rotate(0deg) scale(1); opacity:1; }
+}
+.bjCard.dealIn{
+  animation: bjDealIn .42s cubic-bezier(.18,.9,.14,1);
+}
+
+/* wind trail */
+@keyframes bjWind{
+  0%{ opacity:0; transform: translate(var(--wx), var(--wy)) scale(.6); filter: blur(1px); }
+  30%{ opacity:.65; }
+  100%{ opacity:0; transform: translate(calc(var(--wx) * .1), calc(var(--wy) * .1)) scale(1.3); filter: blur(6px); }
+}
+.bjWind{
+  position:absolute;
+  width:56px;height:18px;
+  border-radius:999px;
+  background: linear-gradient(90deg, rgba(255,255,255,.0), rgba(255,255,255,.22), rgba(167,139,250,.0));
+  pointer-events:none;
+  animation: bjWind .35s ease-out forwards;
+  mix-blend-mode: screen;
+}
+
+/* Controls */
+.bjControls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:12px;
+  align-items:flex-end;
+}
+
+.bjBox{
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
+  border-radius:18px;
+  padding:12px;
+  width:100%;
+}
+
+.bjBoxHd{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.bjBoxHd .lbl{
+  font-weight:1000;
+  letter-spacing:.16em;
+  font-size:11px;
+  text-transform:uppercase;
+  color: rgba(255,255,255,.80);
+}
+.bjBoxHd .mini{
+  font-size:12px;
+  font-weight:900;
+  color: rgba(255,255,255,.62);
+}
+
+.bjBetGrid{
+  display:grid;
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
+  gap:10px;
+}
+@media(max-width:980px){
+  .bjBetGrid{ grid-template-columns: repeat(2, minmax(160px, 1fr)); }
+}
+@media(max-width:520px){
+  .bjBetGrid{ grid-template-columns: 1fr; }
+}
+.bjField label{ display:block; font-size:11px; color: rgba(255,255,255,.62); font-weight:900; }
+.bjField input{
+  width:100%;
+  margin-top:6px;
+  padding:11px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.22);
+  color: rgba(255,255,255,.92);
+  outline:none;
+  font-size:13px;
+}
+.bjField input:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4px rgba(124,58,237,.16)}
+
+.bjSideList{
+  margin-top:10px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.bjSidePill{
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.22);
+  font-size:12px;
+  font-weight:950;
+}
+.bjSidePill b{ font-family:var(--mono); }
+
+.btn.standRed{
+  background: linear-gradient(135deg, rgba(239,68,68,.95), rgba(251,113,133,.82));
+  border-color: rgba(255,255,255,.16);
+}
+
+/* Reuse Mines-style popup for BJ (win/lose) */
+.bjCenterPop{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%) scale(.92);
+  width:min(320px, 84%);
+  padding:14px;
+  border-radius:22px;
+  background:
+    radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,.14), transparent 55%),
+    rgba(12,12,18,.78);
+  border:1px solid rgba(0,0,0,.85);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.10),
+    0 26px 90px rgba(0,0,0,.75),
+    0 0 28px rgba(34,197,94,.18);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display:none;
+  z-index:60;
+  text-align:center;
+  pointer-events:none;
+}
+
+.bjCenterPop::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  border-radius:24px;
+  background:
+    linear-gradient(135deg,
+      rgba(34,197,94,.0),
+      rgba(34,197,94,.55),
+      rgba(34,197,94,.0)
+    );
+  filter: blur(10px);
+  opacity:.45;
+  z-index:0;
+}
+
+.bjCenterPop .inner{
+  position:relative;
+  z-index:1;
+  border-radius:16px;
+  background: rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.14);
+  padding:14px 14px 12px;
+}
+
+.bjCenterPop .label{
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color: rgba(255,255,255,.70);
+  margin-bottom:8px;
+}
+.bjCenterPop .amt{
+  font-family: var(--mono);
+  font-weight:1000;
+  font-size:34px;
+  line-height:1.05;
+  color: rgba(255,255,255,.96);
+  text-shadow: 0 0 16px rgba(34,197,94,.22);
+}
+.bjCenterPop .mx{
+  margin-top:8px;
+  font-family: var(--mono);
+  font-weight:900;
+  font-size:14px;
+  color: rgba(34,197,94,.95);
+}
+.bjCenterPop .sub{
+  margin-top:10px;
+  font-size:12px;
+  font-weight:800;
+  color: rgba(255,255,255,.65);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.bjCenterPop .dot{
+  width:8px;height:8px;border-radius:999px;
+  background: rgba(34,197,94,.95);
+  box-shadow: 0 0 10px rgba(34,197,94,.45);
+}
+@keyframes bjPopIn {
+  0%   { opacity:0; transform:translate(-50%,-50%) scale(.86); }
+  60%  { opacity:1; transform:translate(-50%,-50%) scale(1.03); }
+  100% { opacity:1; transform:translate(-50%,-50%) scale(1); }
+}
+@keyframes bjPopOut {
+  to { opacity:0; transform:translate(-50%,-50%) scale(.96); }
+}
+.bjCenterPop.show{ display:block; animation: bjPopIn .22s ease-out; }
+.bjCenterPop.hide{ animation: bjPopOut .18s ease-in forwards; }
+
+.bjCenterPop.lose{
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.08),
+    0 26px 90px rgba(0,0,0,.75),
+    0 0 28px rgba(239,68,68,.18);
+}
+.bjCenterPop.lose::before{
+  background:
+    linear-gradient(135deg,
+      rgba(239,68,68,.0),
+      rgba(239,68,68,.55),
+      rgba(239,68,68,.0)
+    );
+}
+.bjCenterPop.lose .mx{ color: rgba(239,68,68,.95); }
+.bjCenterPop.lose .dot{
+  background: rgba(239,68,68,.95);
+  box-shadow: 0 0 10px rgba(239,68,68,.45);
+}
 </style>
 </head>
 <body>
@@ -917,6 +1383,127 @@ tr:last-child td{border-bottom:none;}
           </div>
 
           <div class="sub" style="margin-top:10px;">25 tiles. Multipliers update every correct pick. Auto cashout when all safe tiles are found.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-blackjack" style="display:none;">
+      <div class="section">
+        <div class="sectionHd">
+          <div>
+            <h3>Blackjack</h3>
+            <div class="sub">Shuffle-style: flip animation, deck dealing, wind effects, win/lose banner.</div>
+          </div>
+          <div class="chip">LIVE</div>
+        </div>
+
+        <div class="sectionBd bjWrap">
+          <div class="bjStage">
+
+            <div class="bjTopRow">
+              <div>
+                <div class="bjTitle">HANDZES.BET BLACKJACK</div>
+                <div class="bjSub">
+                  Dealer hits on 16 • Stands on 17 • Blackjack pays 2.5× (demo)
+                </div>
+              </div>
+
+              <div class="bjDeckArea">
+                <div class="bjDeck" id="bjDeck" title="Deck">
+                  <div class="stack"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bjBody">
+              <div class="bjTable">
+
+                <div class="bjHands">
+
+                  <div class="bjHandBox">
+                    <div class="bjHandHd">
+                      <div class="bjHandName">Dealer</div>
+                      <div class="bjPts" id="bjDealerPts">—</div>
+                    </div>
+                    <div class="bjCards" id="bjDealerCards"></div>
+                  </div>
+
+                  <div class="bjHandBox">
+                    <div class="bjHandHd">
+                      <div class="bjHandName">Player</div>
+                      <div class="bjPts" id="bjPlayerPts">—</div>
+                    </div>
+                    <div class="bjCards" id="bjPlayerCards"></div>
+
+                    <div class="bjSub" style="margin-top:10px;">
+                      Active hand: <span class="mono" id="bjHandLabel">MAIN</span>
+                      <span class="muted">•</span>
+                      Status: <span class="mono" id="bjStatus">—</span>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- Popup like Mines (win/lose) -->
+                <div class="bjCenterPop" id="bjCenterPop">
+                  <div class="inner">
+                    <div class="label" id="bjPopLabel">RESULT</div>
+                    <div class="amt" id="bjPopAmt">0.00</div>
+                    <div class="mx" id="bjPopMx">+0.00</div>
+                    <div class="sub"><span class="dot"></span><span id="bjPopSub">added to balance</span></div>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="bjControls">
+
+                <div class="bjBox">
+                  <div class="bjBoxHd">
+                    <div class="lbl">Bets (standard + side bets)</div>
+                    <div class="mini">Set stakes, then Deal</div>
+                  </div>
+
+                  <div class="bjBetGrid">
+                    <div class="bjField">
+                      <label>Main stake</label>
+                      <input id="bjStake" type="number" min="0.01" step="0.01" value="0.10"/>
+                    </div>
+
+                    <div class="bjField">
+                      <label>Perfect Pairs stake</label>
+                      <input id="bjPPStake" type="number" min="0" step="0.01" value="0.00"/>
+                    </div>
+
+                    <div class="bjField">
+                      <label>Bust Out stake</label>
+                      <input id="bjBOStake" type="number" min="0" step="0.01" value="0.00"/>
+                    </div>
+
+                    <div class="bjField">
+                      <label>Info</label>
+                      <input id="bjInfo" value="Back of cards: HANDZES.BET" disabled />
+                    </div>
+                  </div>
+
+                  <div class="bjSideList">
+                    <div class="bjSidePill">1) Perfect Pairs <span class="muted">pays</span> <b>11×</b></div>
+                    <div class="bjSidePill">2) Bust Out <span class="muted">pays</span> <b>2×</b></div>
+                  </div>
+
+                  <div class="row" style="margin-top:12px; justify-content:flex-end;">
+                    <button class="btn purple" id="bjDealBtn">Deal</button>
+                    <button class="btn" id="bjHitBtn" disabled>Hit</button>
+                    <button class="btn standRed" id="bjStandBtn" disabled>Stand</button>
+                    <button class="btn" id="bjDoubleBtn" disabled>Double</button>
+                    <button class="btn" id="bjSplitBtn" disabled>Split</button>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1398,7 +1985,7 @@ function updateMeUI(){
 
 function setView(v){
   document.querySelectorAll(".navBtn[data-view]").forEach(b=>b.classList.toggle("active", b.dataset.view===v));
-  ["home","games","dice","roulette","mines","sports","leaderboard","bets","case","admin"].forEach(id=>{
+  ["home","games","dice","roulette","mines","blackjack","sports","leaderboard","bets","case","admin"].forEach(id=>{
     const el=$("view-"+id); if(el) el.style.display=(id===v)?"":"none";
   });
   if(v==="leaderboard") refreshLeaderboard();
@@ -1623,6 +2210,7 @@ function renderGames(){
       if(g.name==="Dice") setView("dice");
       else if(g.name==="Roulette") setView("roulette");
       else if(g.name==="Mines") setView("mines");
+      else if(g.name==="Blackjack") setView("blackjack");
       else toast("Coming soon");
     };
     return el;
@@ -2163,6 +2751,752 @@ async function loadAdminEvents(){
     await loadMyBets();
     updateMeUI();
   });
+}
+
+// =======================
+// BLACKJACK (Shuffle-style)
+// - flip anim, deck dealing, wind trail
+// - split, double, stand red
+// - standard + side bets (Perfect Pairs, Bust Out)
+// - win/lose popup like Mines
+// =======================
+
+const BJ = {
+  active:false,
+  phase:"idle", // idle | player | dealer | settled
+  deck:[],
+  dealer:[],
+  playerHands:[[]], // hand0, hand1 (split)
+  activeHand:0,
+  stake:0,
+  stakePP:0,
+  stakeBO:0,
+  didDouble:[false,false],
+  side:{ ppWin:false, boWin:false, ppPaid:false, boPaid:false },
+  settled:false
+};
+
+const bjEls = {
+  deck: $("bjDeck"),
+  dealerCards: $("bjDealerCards"),
+  playerCards: $("bjPlayerCards"),
+  dealerPts: $("bjDealerPts"),
+  playerPts: $("bjPlayerPts"),
+  status: $("bjStatus"),
+  handLabel: $("bjHandLabel"),
+  stake: $("bjStake"),
+  pp: $("bjPPStake"),
+  bo: $("bjBOStake"),
+  deal: $("bjDealBtn"),
+  hit: $("bjHitBtn"),
+  stand: $("bjStandBtn"),
+  dbl: $("bjDoubleBtn"),
+  split: $("bjSplitBtn"),
+  pop: $("bjCenterPop"),
+  popLabel: $("bjPopLabel"),
+  popAmt: $("bjPopAmt"),
+  popMx: $("bjPopMx"),
+  popSub: $("bjPopSub"),
+};
+
+function bjToastSafe(msg){
+  try{ toast(msg); }catch(_){}
+}
+
+// --- SFX (more "casino") ---
+function sfxClick(){ sfx(520,0.05,"sine",0.03); }
+function sfxDeal(){
+  // short "whoosh + click"
+  try{
+    const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
+    const o=ctx.createOscillator(); const g=ctx.createGain();
+    o.type="triangle";
+    o.frequency.setValueAtTime(520, ctx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(220, ctx.currentTime+0.08);
+    g.gain.setValueAtTime(0.06, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.10);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime+0.11);
+  }catch(_){}
+}
+function sfxFlip(){
+  // "snap"
+  try{
+    const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
+    const o=ctx.createOscillator(); const g=ctx.createGain();
+    o.type="square";
+    o.frequency.setValueAtTime(980, ctx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(440, ctx.currentTime+0.06);
+    g.gain.setValueAtTime(0.05, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.07);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime+0.08);
+  }catch(_){}
+}
+function sfxWin(){
+  sfx(880,0.06,"triangle",0.035);
+  setTimeout(()=>sfx(1180,0.07,"triangle",0.032), 60);
+  setTimeout(()=>sfx(1480,0.08,"triangle",0.030), 120);
+}
+function sfxLose(){
+  try{
+    const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
+    const o=ctx.createOscillator(); const g=ctx.createGain();
+    o.type="sawtooth";
+    o.frequency.setValueAtTime(220, ctx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(70, ctx.currentTime+0.18);
+    g.gain.setValueAtTime(0.07, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.22);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime+0.23);
+  }catch(_){}
+}
+
+// --- Cards ---
+const BJ_SUITS = ["♠","♥","♦","♣"];
+function bjBuildDeck(){
+  const deck=[];
+  for(const s of BJ_SUITS){
+    for(let r=1;r<=13;r++){
+      deck.push({ r, s });
+    }
+  }
+  // shuffle
+  for(let i=deck.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [deck[i],deck[j]]=[deck[j],deck[i]];
+  }
+  return deck;
+}
+function bjRankStr(r){
+  if(r===1) return "A";
+  if(r===11) return "J";
+  if(r===12) return "Q";
+  if(r===13) return "K";
+  return String(r);
+}
+function bjValueFor(r){
+  if(r===1) return 11;        // Ace default 11
+  if(r>=10) return 10;
+  return r;
+}
+function bjHandTotal(cards){
+  let total=0, aces=0;
+  for(const c of cards){
+    total += bjValueFor(c.r);
+    if(c.r===1) aces++;
+  }
+  while(total>21 && aces>0){
+    total -= 10; // convert Ace 11 -> 1
+    aces--;
+  }
+  return total;
+}
+function bjIsBlackjack(cards){
+  return cards.length===2 && bjHandTotal(cards)===21;
+}
+function bjCanSplit(hand){
+  return hand.length===2 && hand[0].r===hand[1].r;
+}
+
+// --- DOM card node (starts face down, flip later) ---
+function bjCreateCardNode({ card, faceUp=false }){
+  const wrap = document.createElement("div");
+  wrap.className = "bjCard" + (faceUp ? " flip" : "");
+  const inner = document.createElement("div");
+  inner.className="bjCardInner";
+
+  const back=document.createElement("div");
+  back.className="bjBack";
+  back.innerHTML = `<span>HANDZES.BET</span>`;
+
+  const face=document.createElement("div");
+  const red = (card.s==="♥" || card.s==="♦");
+  face.className="bjFace " + (red ? "red":"black");
+  const rStr=bjRankStr(card.r);
+  face.innerHTML = `
+    <div class="top">${rStr}${card.s}</div>
+    <div class="mid">${card.s}</div>
+    <div class="bot">${rStr}${card.s}</div>
+  `;
+
+  inner.appendChild(back);
+  inner.appendChild(face);
+  wrap.appendChild(inner);
+  return wrap;
+}
+
+function bjSpawnWind(targetEl, fromDeckEl){
+  if(!targetEl || !fromDeckEl) return;
+  const tRect = targetEl.getBoundingClientRect();
+  const dRect = fromDeckEl.getBoundingClientRect();
+  const wx = (dRect.left - tRect.left) * 0.25;
+  const wy = (dRect.top - tRect.top) * 0.25;
+
+  const w = document.createElement("div");
+  w.className="bjWind";
+  w.style.setProperty("--wx", wx.toFixed(1)+"px");
+  w.style.setProperty("--wy", wy.toFixed(1)+"px");
+  w.style.left = "12px";
+  w.style.top  = "18px";
+  targetEl.appendChild(w);
+  setTimeout(()=>w.remove(), 420);
+}
+
+// Deal animation: set CSS vars for "from deck"
+function bjAnimateFromDeck(cardEl, containerEl){
+  if(!cardEl || !containerEl || !bjEls.deck) return;
+  const cRect = containerEl.getBoundingClientRect();
+  const dRect = bjEls.deck.getBoundingClientRect();
+
+  const sx = (dRect.left - cRect.left);
+  const sy = (dRect.top - cRect.top);
+
+  cardEl.style.setProperty("--sx", sx.toFixed(1)+"px");
+  cardEl.style.setProperty("--sy", sy.toFixed(1)+"px");
+  cardEl.classList.add("dealIn");
+
+  // wind trail
+  bjSpawnWind(containerEl, bjEls.deck);
+
+  setTimeout(()=>cardEl.classList.remove("dealIn"), 500);
+}
+
+function bjSetButtons(){
+  const canAct = BJ.active && BJ.phase==="player";
+  const hand = BJ.playerHands[BJ.activeHand] || [];
+  const canSplitNow = canAct && BJ.playerHands.length===1 && bjCanSplit(hand) && !BJ.didDouble[BJ.activeHand];
+  const canDoubleNow = canAct && hand.length===2 && !BJ.didDouble[BJ.activeHand];
+
+  bjEls.hit.disabled   = !canAct;
+  bjEls.stand.disabled = !canAct;
+  bjEls.dbl.disabled   = !canDoubleNow;
+  bjEls.split.disabled = !canSplitNow;
+
+  // deal only when idle/settled
+  bjEls.deal.disabled = BJ.active;
+}
+
+function bjUpdateTotalsUI(){
+  const dealerShown = BJ.dealer.map((c,idx)=>{
+    // if first dealer card hidden while player phase:
+    if(BJ.phase==="player" && idx===0) return null;
+    return c;
+  }).filter(Boolean);
+
+  const dealerTotal = (BJ.phase==="player")
+    ? (dealerShown.length ? bjHandTotal(dealerShown) : 0)
+    : bjHandTotal(BJ.dealer);
+
+  const playerTotal = bjHandTotal(BJ.playerHands[BJ.activeHand] || []);
+
+  bjEls.dealerPts.textContent = BJ.dealer.length ? (BJ.phase==="player" ? (dealerShown.length ? String(dealerTotal) : "—") : String(dealerTotal)) : "—";
+  bjEls.playerPts.textContent = BJ.playerHands[0].length ? String(playerTotal) : "—";
+  bjEls.handLabel.textContent = BJ.playerHands.length>1 ? (BJ.activeHand===0 ? "MAIN" : "SPLIT") : "MAIN";
+  bjEls.status.textContent = BJ.active ? (BJ.phase.toUpperCase()) : "—";
+}
+
+function bjClearTable(){
+  bjEls.dealerCards.innerHTML="";
+  bjEls.playerCards.innerHTML="";
+  bjEls.dealerPts.textContent="—";
+  bjEls.playerPts.textContent="—";
+  bjEls.status.textContent="—";
+  bjEls.handLabel.textContent="MAIN";
+}
+
+function bjShowPop({ label, amount, deltaText, win=true, sub }){
+  const el = bjEls.pop;
+  if(!el) return;
+
+  el.classList.remove("hide");
+  el.classList.toggle("lose", !win);
+
+  bjEls.popLabel.textContent = label;
+  bjEls.popAmt.textContent   = to2(amount);
+  bjEls.popMx.textContent    = deltaText || "";
+  bjEls.popSub.textContent   = sub || (win ? "added to balance" : "removed from balance");
+
+  el.classList.add("show");
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>{
+    el.classList.add("hide");
+    setTimeout(()=>el.classList.remove("show","hide"), 220);
+  }, 2200);
+}
+
+function bjHidePopImmediate(){
+  const el = bjEls.pop;
+  if(!el) return;
+  clearTimeout(el._t);
+  el.classList.remove("hide");
+  el.classList.remove("show");
+}
+
+async function bjDebitTotalStake(){
+  // main stake + side stakes
+  const main = Number(bjEls.stake.value || 0);
+  const pp   = Number(bjEls.pp.value || 0);
+  const bo   = Number(bjEls.bo.value || 0);
+  const total = main + pp + bo;
+
+  if(!(main>0)) throw new Error("main_stake");
+  if(main < 0.01) throw new Error("min_main");
+  if(pp<0 || bo<0) throw new Error("side_invalid");
+  if(total <= 0) throw new Error("total_stake");
+  if(Number(meProfile?.pts||0) < total) throw new Error("balance");
+
+  // We reuse your wallet/wager function: subtract stake now, payout later.
+  await addWagerAndPayout(total, 0);
+
+  BJ.stake = main;
+  BJ.stakePP = pp;
+  BJ.stakeBO = bo;
+}
+
+function bjSideResolvePerfectPairs(){
+  // Perfect Pairs: if player's first 2 cards same rank => win (11x stake) (demo)
+  if(BJ.side.ppPaid) return 0;
+  BJ.side.ppPaid = true;
+  const hand = BJ.playerHands[0] || [];
+  if(hand.length>=2 && hand[0].r===hand[1].r && BJ.stakePP>0){
+    BJ.side.ppWin = true;
+    return BJ.stakePP * 11;
+  }
+  return 0;
+}
+function bjSideResolveBustOut(dealerBusted){
+  // Bust Out: if dealer busts => pays 2x stake (demo)
+  if(BJ.side.boPaid) return 0;
+  BJ.side.boPaid = true;
+  if(dealerBusted && BJ.stakeBO>0){
+    BJ.side.boWin = true;
+    return BJ.stakeBO * 2;
+  }
+  return 0;
+}
+
+// render player cards (supports split display)
+function bjRenderPlayer(){
+  bjEls.playerCards.innerHTML="";
+  // show both hands if split (stacked)
+  if(BJ.playerHands.length===1){
+    BJ.playerHands[0].forEach((c, idx)=>{
+      const node = bjCreateCardNode({ card:c, faceUp:true });
+      bjEls.playerCards.appendChild(node);
+    });
+  }else{
+    // two mini rows inside
+    const wrap = document.createElement("div");
+    wrap.style.display="grid";
+    wrap.style.gridTemplateColumns="1fr";
+    wrap.style.gap="10px";
+    BJ.playerHands.forEach((hand, hi)=>{
+      const row = document.createElement("div");
+      row.style.display="flex";
+      row.style.flexWrap="wrap";
+      row.style.gap="10px";
+      row.style.alignItems="center";
+      row.style.padding="10px";
+      row.style.borderRadius="14px";
+      row.style.border="1px solid rgba(255,255,255,.10)";
+      row.style.background = hi===BJ.activeHand ? "rgba(255,255,255,.05)" : "rgba(0,0,0,.18)";
+      row.innerHTML = `<div class="chip" style="margin-right:10px;">${hi===0?"MAIN":"SPLIT"}</div>`;
+      hand.forEach(c=>{
+        const node = bjCreateCardNode({ card:c, faceUp:true });
+        row.appendChild(node);
+      });
+      wrap.appendChild(row);
+    });
+    bjEls.playerCards.appendChild(wrap);
+  }
+}
+
+function bjRenderDealer({ reveal=false } = {}){
+  bjEls.dealerCards.innerHTML="";
+  BJ.dealer.forEach((c, idx)=>{
+    const faceUp = reveal ? true : !(idx===0); // first card hidden while playing
+    const node = bjCreateCardNode({ card:c, faceUp });
+    bjEls.dealerCards.appendChild(node);
+  });
+}
+
+async function bjDealCard(to="player", { faceUp=true } = {}){
+  const card = BJ.deck.pop();
+  if(!card) BJ.deck = bjBuildDeck();
+
+  const target = (to==="dealer") ? BJ.dealer : BJ.playerHands[BJ.activeHand];
+  target.push(card);
+
+  // Create node face down then flip if needed
+  const node = bjCreateCardNode({ card, faceUp:false });
+
+  const container = (to==="dealer") ? bjEls.dealerCards : bjEls.playerCards;
+
+  // if player and split layout, render via bjRenderPlayer after push
+  if(to==="player" && BJ.playerHands.length>1){
+    bjRenderPlayer();
+    bjUpdateTotalsUI();
+    sfxDeal();
+    return;
+  }
+
+  container.appendChild(node);
+  bjAnimateFromDeck(node, container);
+  sfxDeal();
+
+  // flip if faceUp
+  if(faceUp){
+    setTimeout(()=>{
+      node.classList.add("flip");
+      sfxFlip();
+    }, 140);
+  }
+
+  bjUpdateTotalsUI();
+}
+
+function bjResetRoundState(){
+  BJ.active=false;
+  BJ.phase="idle";
+  BJ.deck = bjBuildDeck();
+  BJ.dealer=[];
+  BJ.playerHands=[[]];
+  BJ.activeHand=0;
+  BJ.didDouble=[false,false];
+  BJ.side={ ppWin:false, boWin:false, ppPaid:false, boPaid:false };
+  BJ.settled=false;
+  BJ.stake=0; BJ.stakePP=0; BJ.stakeBO=0;
+}
+
+async function bjStartRound(){
+  bjHidePopImmediate();
+
+  if(!meProfile) return bjToastSafe("Profile not loaded");
+  if(BJ.active) return;
+
+  try{
+    await bjDebitTotalStake();
+  }catch(e){
+    const msg = String(e);
+    if(msg.includes("balance")) return bjToastSafe("Not enough points");
+    if(msg.includes("main_stake")) return bjToastSafe("Main stake must be > 0");
+    return bjToastSafe("Blackjack: stake error");
+  }
+
+  BJ.active=true;
+  BJ.phase="player";
+  BJ.dealer=[];
+  BJ.playerHands=[[]];
+  BJ.activeHand=0;
+  BJ.didDouble=[false,false];
+  BJ.side={ ppWin:false, boWin:false, ppPaid:false, boPaid:false };
+  BJ.settled=false;
+
+  bjClearTable();
+  bjSetButtons();
+
+  // Initial deal: P D P D (dealer first hidden)
+  await bjDealCard("player", { faceUp:true });
+  await new Promise(r=>setTimeout(r, 160));
+  await bjDealCard("dealer", { faceUp:false });
+  await new Promise(r=>setTimeout(r, 160));
+  await bjDealCard("player", { faceUp:true });
+  await new Promise(r=>setTimeout(r, 160));
+  await bjDealCard("dealer", { faceUp:true });
+
+  // Side bet: Perfect Pairs resolves immediately after player has 2 cards
+  const sidePP = bjSideResolvePerfectPairs();
+  if(sidePP>0){
+    // pay side bet instantly (demo feel)
+    try{
+      const newPts = clamp2(Number(meProfile.pts) + sidePP);
+      const { error } = await supabase.from("profiles").update({ pts:newPts }).eq("id", session.user.id);
+      if(!error){
+        meProfile.pts=newPts; updateMeUI();
+        bjShowPop({ label:"PERFECT PAIRS", amount: sidePP, deltaText:`+${to2(sidePP)}`, win:true, sub:"side bet paid" });
+        sfxWin();
+      }
+    }catch(_){}
+  }
+
+  // Check blackjack
+  const p0 = BJ.playerHands[0];
+  const d0 = BJ.dealer;
+  const pBJ = bjIsBlackjack(p0);
+  const dBJ = bjIsBlackjack(d0);
+
+  if(pBJ || dBJ){
+    // Reveal dealer and settle
+    BJ.phase="dealer";
+    bjRenderDealer({ reveal:true });
+    await new Promise(r=>setTimeout(r, 220));
+    await bjSettleRound();
+    return;
+  }
+
+  bjUpdateTotalsUI();
+  bjSetButtons();
+  bjToastSafe("Blackjack started");
+}
+
+function bjCurrentHand(){
+  return BJ.playerHands[BJ.activeHand] || [];
+}
+
+async function bjHit(){
+  if(!BJ.active || BJ.phase!=="player") return;
+  await bjDealCard("player", { faceUp:true });
+
+  const total = bjHandTotal(bjCurrentHand());
+  if(total>21){
+    // bust current hand
+    if(BJ.playerHands.length>1 && BJ.activeHand===0){
+      BJ.activeHand=1;
+      bjRenderPlayer();
+      bjUpdateTotalsUI();
+      bjSetButtons();
+      bjToastSafe("Main hand busted — playing split hand");
+      return;
+    }
+    // if split and second bust too -> settle
+    await bjSettleRound();
+    return;
+  }
+  bjSetButtons();
+}
+
+async function bjStand(){
+  if(!BJ.active || BJ.phase!=="player") return;
+
+  // If split and standing on first hand -> switch to second
+  if(BJ.playerHands.length>1 && BJ.activeHand===0){
+    BJ.activeHand=1;
+    bjRenderPlayer();
+    bjUpdateTotalsUI();
+    bjSetButtons();
+    bjToastSafe("Now playing split hand");
+    return;
+  }
+
+  // go dealer
+  BJ.phase="dealer";
+  bjRenderDealer({ reveal:true });
+  bjUpdateTotalsUI();
+  bjSetButtons();
+  await new Promise(r=>setTimeout(r, 240));
+  await bjDealerPlay();
+  await bjSettleRound();
+}
+
+async function bjDouble(){
+  if(!BJ.active || BJ.phase!=="player") return;
+  const hand = bjCurrentHand();
+  if(hand.length!==2) return;
+
+  const extra = BJ.stake; // same as main stake
+  if(Number(meProfile?.pts||0) < extra) return bjToastSafe("Not enough points to double");
+
+  // debit extra stake immediately, count as wager too
+  try{
+    await addWagerAndPayout(extra, 0);
+  }catch(_){
+    return bjToastSafe("Double failed");
+  }
+
+  BJ.didDouble[BJ.activeHand]=true;
+
+  // one hit then auto stand (for that hand)
+  await bjDealCard("player", { faceUp:true });
+
+  const total = bjHandTotal(bjCurrentHand());
+  if(total>21){
+    // bust
+    if(BJ.playerHands.length>1 && BJ.activeHand===0){
+      BJ.activeHand=1;
+      bjRenderPlayer();
+      bjUpdateTotalsUI();
+      bjSetButtons();
+      return;
+    }
+    await bjSettleRound();
+    return;
+  }
+
+  // act as stand
+  await bjStand();
+}
+
+async function bjSplit(){
+  if(!BJ.active || BJ.phase!=="player") return;
+  if(BJ.playerHands.length!==1) return;
+
+  const hand = BJ.playerHands[0];
+  if(!bjCanSplit(hand)) return;
+
+  // need another main stake to split
+  if(Number(meProfile?.pts||0) < BJ.stake) return bjToastSafe("Not enough points to split");
+
+  try{
+    await addWagerAndPayout(BJ.stake, 0);
+  }catch(_){
+    return bjToastSafe("Split failed");
+  }
+
+  // split into two hands
+  const c1 = hand[0];
+  const c2 = hand[1];
+  BJ.playerHands = [[c1],[c2]];
+  BJ.activeHand = 0;
+  BJ.didDouble=[false,false];
+
+  bjRenderPlayer();
+  bjUpdateTotalsUI();
+
+  // deal one card to each hand
+  await new Promise(r=>setTimeout(r, 150));
+  await bjDealCard("player", { faceUp:true });
+  // move to second hand temporarily to deal
+  BJ.activeHand=1;
+  await new Promise(r=>setTimeout(r, 150));
+  await bjDealCard("player", { faceUp:true });
+  // back to first hand for play
+  BJ.activeHand=0;
+
+  bjRenderPlayer();
+  bjUpdateTotalsUI();
+  bjSetButtons();
+  bjToastSafe("Split activated");
+}
+
+async function bjDealerPlay(){
+  // dealer hits <=16, stands >=17
+  while(true){
+    const t = bjHandTotal(BJ.dealer);
+    if(t>=17) break;
+    await new Promise(r=>setTimeout(r, 260));
+    await bjDealCard("dealer", { faceUp:true });
+  }
+}
+
+function bjHandOutcome(playerCards, dealerCards){
+  const p = bjHandTotal(playerCards);
+  const d = bjHandTotal(dealerCards);
+
+  if(p>21) return "lose";
+  if(d>21) return "win";
+  if(p>d) return "win";
+  if(p<d) return "lose";
+  return "push";
+}
+
+async function bjSettleRound(){
+  if(!BJ.active || BJ.settled) return;
+  BJ.settled=true;
+  BJ.phase="settled";
+  bjSetButtons();
+
+  // reveal dealer
+  bjRenderDealer({ reveal:true });
+  bjUpdateTotalsUI();
+
+  const dealerTotal = bjHandTotal(BJ.dealer);
+  const dealerBust = dealerTotal>21;
+
+  // Side bet: Bust Out resolves after dealer play
+  const sideBO = bjSideResolveBustOut(dealerBust);
+
+  // Main payouts
+  let payoutTotal = 0;
+  let profitTotal = 0;
+
+  // In split mode, each hand uses main stake (plus double if used)
+  for(let hi=0; hi<BJ.playerHands.length; hi++){
+    const hand = BJ.playerHands[hi];
+    const didD = !!BJ.didDouble[hi];
+    const stakeHand = BJ.stake * (didD ? 2 : 1);
+
+    const pBJ = bjIsBlackjack(hand);
+    const dBJ = bjIsBlackjack(BJ.dealer);
+
+    let payout = 0;
+
+    if(pBJ && !dBJ){
+      // blackjack pays 2.5× (demo)
+      payout = stakeHand * 2.5;
+    }else if(dBJ && !pBJ){
+      payout = 0;
+    }else{
+      const out = bjHandOutcome(hand, BJ.dealer);
+      if(out==="win") payout = stakeHand * 2;
+      else if(out==="push") payout = stakeHand * 1;
+      else payout = 0;
+    }
+
+    payoutTotal += payout;
+    profitTotal += (payout - stakeHand);
+  }
+
+  // add side bet payouts (if any)
+  payoutTotal += sideBO;
+
+  // credit payoutTotal to balance
+  try{
+    const newPts = clamp2(Number(meProfile.pts) + payoutTotal);
+    const { error } = await supabase.from("profiles").update({ pts:newPts }).eq("id", session.user.id);
+    if(!error){
+      meProfile.pts=newPts;
+      updateMeUI();
+    }
+  }catch(e){
+    console.error(e);
+  }
+
+  // popup: show WON or LOST
+  const totalDebited = (BJ.stake + BJ.stakePP + BJ.stakeBO) + (BJ.playerHands.length>1 ? BJ.stake : 0) + (BJ.didDouble[0]?BJ.stake:0) + (BJ.didDouble[1]?BJ.stake:0);
+  // NOTE: totalDebited is "approx display"; real debits were done live (deal/split/double).
+  const net = (payoutTotal - 0); // payout only; we display net as +/- vs what was risked in main hands
+  const label = (payoutTotal>0) ? "YOU WON" : "YOU LOST";
+
+  if(payoutTotal>0){
+    bjShowPop({
+      label,
+      amount: payoutTotal,
+      deltaText: `+${to2(payoutTotal)}`,
+      win:true,
+      sub: (BJ.side.ppWin || BJ.side.boWin) ? "includes side bets" : "added to balance"
+    });
+    sfxWin();
+    // you already have mp3 cashout sound – reuse it for "big win"
+    try{ sfxCashout(); }catch(_){}
+  }else{
+    bjShowPop({
+      label,
+      amount: (BJ.stake||0), // show main stake as "lost" headline
+      deltaText: `-${to2(BJ.stake||0)}`,
+      win:false,
+      sub: "round lost"
+    });
+    sfxLose();
+  }
+
+  BJ.active=false;
+  bjSetButtons();
+  bjToastSafe("Round settled");
+}
+
+// Wire buttons
+if(bjEls.deal){
+  bjEls.deal.onclick = async ()=>{ sfxClick(); await bjStartRound(); };
+  bjEls.hit.onclick  = async ()=>{ sfxClick(); await bjHit(); };
+  bjEls.stand.onclick= async ()=>{ sfxClick(); await bjStand(); };
+  bjEls.dbl.onclick  = async ()=>{ sfxClick(); await bjDouble(); };
+  bjEls.split.onclick= async ()=>{ sfxClick(); await bjSplit(); };
+
+  // init deck once
+  BJ.deck = bjBuildDeck();
+  bjSetButtons();
+  bjClearTable();
 }
 
 /* GAMES: Dice / Roulette / Mines */
