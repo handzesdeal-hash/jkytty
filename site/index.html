@@ -521,6 +521,8 @@ input:focus,select:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4p
   .sidebar{display:none;}
   .app{grid-template-columns:1fr;}
   .mobileNav{display:block;}
+  .bjHandCards{ flex-wrap:nowrap; overflow-x:auto; padding-bottom:4px; }
+  .bjHandCards .bjCard{ flex:0 0 auto; }
   .main{padding-top:12px;}
 }
 .sidebar{
@@ -1000,9 +1002,8 @@ tr:last-child td{border-bottom:none;}
   .bjHandRow{ min-width:210px; flex: 1 1 100%; max-width:100%; padding:6px 6px 10px; }
   .bjHandRow::before{ left:-16px; font-size:10px; }
   .bjHandMeta{ font-size:11px; padding:6px 9px; text-align:center; }
-  .bjHandCards{ gap:6px; flex-wrap:nowrap; overflow-x:auto; padding-bottom:4px; }
-  .bjHandCards .bjCard{ transform: scale(.78); transform-origin: top left; }
-  .bjDeck{ width:58px; height:84px; top:4px; right:4px; }
+  .bjHandCards{ gap:8px; flex-wrap:wrap; }
+  .bjDeck{ width:68px; height:96px; top:6px; right:6px; }
   .bjLaneTitle{ left:10px; top:10px; font-size:10px; }
   .bjScorePill{ top:10px; padding:6px 10px; font-size:13px; }
   .bjBtnGrid{ grid-template-columns:1fr; gap:8px; }
