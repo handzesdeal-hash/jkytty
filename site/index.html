@@ -943,6 +943,24 @@ tr:last-child td{border-bottom:none;}
   .bjHandRow{ flex: 1 1 100%; max-width:100%; }
 }
 
+@media(max-width:640px){
+  .bjArea{ padding:12px; }
+  .bjStage{ min-height: 480px; }
+  .bjLane{ gap:12px; min-height: 190px; }
+  .bjLaneInner{ margin-top:44px; gap:10px; min-height:130px; }
+  #bjPlayerCards{ gap:10px; }
+  .bjHandRow{ min-width:230px; flex: 1 1 100%; max-width:100%; padding:6px 6px 10px; }
+  .bjHandRow::before{ left:-16px; font-size:10px; }
+  .bjHandMeta{ font-size:11px; padding:6px 9px; text-align:center; }
+  .bjHandCards{ gap:10px; flex-wrap:wrap; }
+  .bjDeck{ width:94px; height:130px; top:10px; right:10px; }
+  .bjLaneTitle{ left:10px; top:10px; font-size:10px; }
+  .bjScorePill{ top:10px; padding:6px 10px; font-size:13px; }
+  .bjBtnGrid{ grid-template-columns:1fr; gap:8px; }
+  .bjBtn{ padding:14px 14px; font-size:15px; }
+  .bjRow{ gap:8px; }
+}
+
 .bjHandMeta{
   display:flex;
   align-items:center;
