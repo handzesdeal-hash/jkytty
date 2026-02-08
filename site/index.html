@@ -513,6 +513,16 @@ input:focus,select:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4p
 .app{display:none;grid-template-columns:280px 1fr;min-height:100vh;}
 .app.show{display:grid;}
 @media(max-width:980px){.app{grid-template-columns:1fr}.sidebar{position:sticky;top:0;z-index:50;height:auto}.main{padding-top:10px}}
+.mobileNav{display:none;position:sticky;top:10px;z-index:60;margin-bottom:12px;}
+.mobileNavInner{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.32);border-radius:16px;padding:10px;box-shadow:0 12px 38px rgba(0,0,0,.35);}
+.mobileNav .navBtn{padding:10px 12px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid transparent;}
+.mobileNav .navBtn.active{background:rgba(124,58,237,.18);border-color:rgba(167,139,250,.22)}
+@media(max-width:900px){
+  .sidebar{display:none;}
+  .app{grid-template-columns:1fr;}
+  .mobileNav{display:block;}
+  .main{padding-top:12px;}
+}
 .sidebar{
   height:100vh;overflow:auto;padding:14px 12px 16px;border-right:1px solid rgba(255,255,255,.08);
   background: rgba(0,0,0,.30);backdrop-filter: blur(14px);
@@ -1440,6 +1450,22 @@ tr:last-child td{border-bottom:none;}
       </div>
     </div>
 
+    <div class="mobileNav" aria-label="Mobile navigation">
+      <div class="mobileNavInner">
+        <button class="navBtn active" data-view="home"><span>Home</span></button>
+        <button class="navBtn" data-view="games"><span>Games</span></button>
+        <button class="navBtn" data-view="blackjack"><span>Blackjack</span></button>
+        <button class="navBtn" data-view="dice"><span>Dice</span></button>
+        <button class="navBtn" data-view="roulette"><span>Roulette</span></button>
+        <button class="navBtn" data-view="mines"><span>Mines</span></button>
+        <button class="navBtn" data-view="sports"><span>Sports</span></button>
+        <button class="navBtn" data-view="leaderboard"><span>Leaderboard</span></button>
+        <button class="navBtn" data-view="bets"><span>My Bets</span></button>
+        <button class="navBtn" data-view="case"><span>Daily Case</span></button>
+        <button class="navBtn" data-view="admin" id="mobileAdminNav" style="display:none;"><span>Admin</span></button>
+      </div>
+    </div>
+
     <section id="view-home">
       <div class="section">
         <div class="sectionHd">
@@ -2191,6 +2217,8 @@ function updateMeUI(){
   $("adminDot").style.boxShadow = isAdmin ? "0 0 0 4px rgba(34,197,94,.14)" : "0 0 0 4px rgba(167,139,250,.14)";
   $("adminText").textContent = isAdmin ? "Admin" : "User";
   $("adminNavWrap").style.display = isAdmin ? "" : "none";
+  const mobileAdmin=$("mobileAdminNav");
+  if(mobileAdmin) mobileAdmin.style.display = isAdmin ? "" : "none";
 }
 
 function setView(v){
@@ -2198,6 +2226,9 @@ function setView(v){
   ["home","games","dice","roulette","mines","blackjack","sports","leaderboard","bets","case","admin"].forEach(id=>{
     const el=$("view-"+id); if(el) el.style.display=(id===v)?"":"none";
   });
+  if(window.innerWidth<=900){
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
   if(v==="leaderboard") refreshLeaderboard();
   if(v==="admin") { loadUsersList(); loadAdminEvents(); }
   if(v==="case") refreshCaseUI();
