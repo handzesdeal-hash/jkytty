@@ -7,24 +7,24 @@
 <meta name="theme-color" content="#07040f"/>
 <style>
 :root{
-  --bg:#050508; --bg2:#070614;
-  --text:rgba(255,255,255,.92); --muted:rgba(255,255,255,.62);
-  --stroke:rgba(255,255,255,.10);
-  --purple:#7c3aed; --purple2:#a78bfa; --red:#ef4444; --green:#22c55e; --amber:#f59e0b;
-  --shadow:0 18px 60px rgba(0,0,0,.62);
-  --shadow2:0 10px 40px rgba(0,0,0,.55);
-  --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-  --sans:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+--bg:#050508; --bg2:#070614;
+--text:rgba(255,255,255,.92); --muted:rgba(255,255,255,.62);
+--stroke:rgba(255,255,255,.10);
+--purple:#7c3aed; --purple2:#a78bfa; --red:#ef4444; --green:#22c55e; --amber:#f59e0b;
+--shadow:0 18px 60px rgba(0,0,0,.62);
+--shadow2:0 10px 40px rgba(0,0,0,.55);
+--mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+--sans:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
-  margin:0;color:var(--text);font-family:var(--sans);
-  background:
-    radial-gradient(1200px 900px at 18% 12%, rgba(124,58,237,.22), transparent 60%),
-    radial-gradient(1200px 900px at 82% 12%, rgba(239,68,68,.14), transparent 60%),
-    linear-gradient(180deg, var(--bg), var(--bg2));
-  overflow-x:hidden;
+margin:0;color:var(--text);font-family:var(--sans);
+background:
+radial-gradient(1200px 900px at 18% 12%, rgba(124,58,237,.22), transparent 60%),
+radial-gradient(1200px 900px at 82% 12%, rgba(239,68,68,.14), transparent 60%),
+linear-gradient(180deg, var(--bg), var(--bg2));
+overflow-x:hidden;
 }
 .glow{filter: drop-shadow(0 0 10px rgba(167,139,250,.35)) drop-shadow(0 0 22px rgba(124,58,237,.18));}
 .iconSvg{width:18px;height:18px;vertical-align:-3px;margin-left:6px}
@@ -39,8 +39,8 @@ body{
 .authWrap{min-height:100vh;display:none;align-items:center;justify-content:center;padding:22px;}
 .authWrap.show{display:flex;}
 .authCard{
-  width:min(520px,100%);border-radius:22px;border:1px solid rgba(255,255,255,.12);
-  background: rgba(0,0,0,.32);box-shadow: var(--shadow);backdrop-filter: blur(14px);overflow:hidden;
+width:min(520px,100%);border-radius:22px;border:1px solid rgba(255,255,255,.12);
+background: rgba(0,0,0,.32);box-shadow: var(--shadow);backdrop-filter: blur(14px);overflow:hidden;
 }
 .authTop{padding:16px;border-bottom:1px solid rgba(255,255,255,.10);display:flex;align-items:center;gap:12px;}
 .mark{width:44px;height:44px;border-radius:16px;background:linear-gradient(135deg, rgba(124,58,237,.95), rgba(239,68,68,.88));border:1px solid rgba(255,255,255,.18);box-shadow:0 10px 28px rgba(0,0,0,.55);}
@@ -51,22 +51,15 @@ body{
 .tab.active{background:rgba(124,58,237,.20);border-color:rgba(167,139,250,.22)}
 label{font-size:12px;color:var(--muted);font-weight:900;}
 input,select{
-  width:100%;margin-top:6px;padding:11px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);
-  background: rgba(0,0,0,.22);color: rgba(255,255,255,.92);outline:none;font-size:13px;
+width:100%;margin-top:6px;padding:11px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);
+background: rgba(0,0,0,.22);color: rgba(255,255,255,.92);outline:none;font-size:13px;
 }
 input:focus,select:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4px rgba(124,58,237,.16)}
 .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
 .btn{
-  border:1px solid rgba(255,255,255,.12);background: rgba(255,255,255,.06);color: rgba(255,255,255,.92);
-  padding:11px 12px;border-radius:14px;font-weight:950;font-size:13px;cursor:pointer;user-select:none;
+border:1px solid rgba(255,255,255,.12);background: rgba(255,255,255,.06);color: rgba(255,255,255,.92);
+padding:11px 12px;border-radius:14px;font-weight:950;font-size:13px;cursor:pointer;user-select:none;
 }
-/* Mines start button "bet placed" state */
-.btn.betPlaced{
-  opacity:.62 !important;
-  cursor:not-allowed !important;
-  filter:saturate(.85);
-}
-
 .btn:hover{background: rgba(255,255,255,.09)}
 .btn:active{transform: translateY(1px)}
 .btn.purple{background: linear-gradient(135deg, rgba(124,58,237,.95), rgba(167,139,250,.72));border-color:rgba(255,255,255,.16)}
@@ -79,36 +72,36 @@ input:focus,select:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4p
 .app.show{display:grid;}
 @media(max-width:980px){.app{grid-template-columns:1fr}.sidebar{position:sticky;top:0;z-index:50;height:auto}.main{padding-top:10px}}
 .sidebar{
-  height:100vh;overflow:auto;padding:14px 12px 16px;border-right:1px solid rgba(255,255,255,.08);
-  background: rgba(0,0,0,.30);backdrop-filter: blur(14px);
+height:100vh;overflow:auto;padding:14px 12px 16px;border-right:1px solid rgba(255,255,255,.08);
+background: rgba(0,0,0,.30);backdrop-filter: blur(14px);
 }
 .brand{display:flex;align-items:center;gap:10px;padding:10px 10px 12px;border-radius:16px;border:1px solid rgba(255,255,255,.10);
-  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));box-shadow: var(--shadow2)}
+background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));box-shadow: var(--shadow2)}
 .logo{width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg, rgba(124,58,237,.95), rgba(239,68,68,.88));
-  border:1px solid rgba(255,255,255,.18);box-shadow:0 10px 28px rgba(0,0,0,.55)}
+border:1px solid rgba(255,255,255,.18);box-shadow:0 10px 28px rgba(0,0,0,.55)}
 .brand b{letter-spacing:.22em;font-weight:1000;}
 .brand small{display:block;color:var(--muted);margin-top:2px;font-size:12px;}
 .sideTitle{margin-top:12px;padding:10px 10px 6px;color: rgba(255,255,255,.50);font-size:11px;font-weight:950;letter-spacing:.18em;text-transform:uppercase;}
 .navBtn{
-  width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border-radius:16px;border:1px solid transparent;
-  background:transparent;color: rgba(255,255,255,.86);cursor:pointer;font-weight:950;font-size:13px;user-select:none;
+width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border-radius:16px;border:1px solid transparent;
+background:transparent;color: rgba(255,255,255,.86);cursor:pointer;font-weight:950;font-size:13px;user-select:none;
 }
 .navBtn:hover{background: rgba(255,255,255,.06)}
 .navBtn.active{background: rgba(124,58,237,.18);border-color: rgba(167,139,250,.22)}
 .chip{font-family:var(--mono);font-size:11px;padding:4px 9px;border-radius:999px;border:1px solid rgba(255,255,255,.12);
-  background: rgba(0,0,0,.18);color: rgba(255,255,255,.78);white-space:nowrap;}
+background: rgba(0,0,0,.18);color: rgba(255,255,255,.78);white-space:nowrap;}
 .chip.ok{border-color: rgba(34,197,94,.22);background: rgba(34,197,94,.10);}
 .sideCard{margin-top:10px;border:1px solid rgba(255,255,255,.10);background: rgba(0,0,0,.22);border-radius:18px;padding:12px;box-shadow:0 16px 50px rgba(0,0,0,.45);}
 .pill{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);
-  background: rgba(0,0,0,.18);color: rgba(255,255,255,.72);font-size:12px;margin-top:8px;}
+background: rgba(0,0,0,.18);color: rgba(255,255,255,.72);font-size:12px;margin-top:8px;}
 .pill:first-child{margin-top:0}
 .mono{font-family:var(--mono)}
 .muted{color:var(--muted)}
 .main{padding:14px 16px 42px;overflow:auto;}
 .topbar{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
-  border:1px solid rgba(255,255,255,.10);background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
-  border-radius:18px;padding:12px;box-shadow: var(--shadow);backdrop-filter: blur(14px);position:sticky;top:10px;z-index:40;
+display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+border:1px solid rgba(255,255,255,.10);background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+border-radius:18px;padding:12px;box-shadow: var(--shadow);backdrop-filter: blur(14px);position:sticky;top:10px;z-index:40;
 }
 .centerBrand{display:flex;align-items:center;gap:12px;margin:0 auto;opacity:.98;}
 .mark2{width:26px;height:26px;border-radius:10px;background:linear-gradient(135deg, rgba(124,58,237,.95), rgba(239,68,68,.85));border:1px solid rgba(255,255,255,.18);}
@@ -132,15 +125,15 @@ input:focus,select:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4p
 @media(max-width:980px){.grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:520px){.grid{grid-template-columns:1fr;}}
 .tile{border:1px solid rgba(255,255,255,.10);background: rgba(0,0,0,.35);border-radius:18px;overflow:hidden;cursor:pointer;user-select:none;
-  transition: transform .08s ease, border-color .15s ease, background .15s ease;box-shadow:0 18px 55px rgba(0,0,0,.50);}
+transition: transform .08s ease, border-color .15s ease, background .15s ease;box-shadow:0 18px 55px rgba(0,0,0,.50);}
 .tile:hover{transform: translateY(-1px);border-color: rgba(255,255,255,.18);background: rgba(0,0,0,.44);}
 .tileArt{height:120px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
 .tileArt::before{content:"";position:absolute;inset:-40%;
-  background:
-    radial-gradient(closest-side at 30% 30%, rgba(124,58,237,.55), transparent 60%),
-    radial-gradient(closest-side at 70% 30%, rgba(239,68,68,.28), transparent 60%),
-    conic-gradient(from 180deg, rgba(167,139,250,.24), transparent, rgba(239,68,68,.20), transparent);
-  filter: blur(2px);
+background:
+radial-gradient(closest-side at 30% 30%, rgba(124,58,237,.55), transparent 60%),
+radial-gradient(closest-side at 70% 30%, rgba(239,68,68,.28), transparent 60%),
+conic-gradient(from 180deg, rgba(167,139,250,.24), transparent, rgba(239,68,68,.20), transparent);
+filter: blur(2px);
 }
 .tileArt span{position:relative;font-size:34px}
 .tileBody{padding:12px;}
@@ -171,7 +164,7 @@ tr:last-child td{border-bottom:none;}
 .oddsGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;}
 @media(max-width:760px){.oddsGrid{grid-template-columns:1fr;}}
 .oddBtn{border:1px solid rgba(255,255,255,.12);background: rgba(0,0,0,.50);border-radius:18px;padding:14px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;min-height:86px;user-select:none;
-  transition: transform .08s ease, background .15s ease, border-color .15s ease;}
+transition: transform .08s ease, background .15s ease, border-color .15s ease;}
 .oddBtn:hover{background: rgba(0,0,0,.62);border-color: rgba(255,255,255,.18);}
 .oddBtn:active{transform: translateY(1px);}
 .oddBtn.selected{outline:2px solid rgba(167,139,250,.55);box-shadow:0 0 0 4px rgba(124,58,237,.18);}
@@ -187,14 +180,14 @@ tr:last-child td{border-bottom:none;}
 /* case */
 .caseBox{border:1px solid rgba(255,255,255,.10);background: rgba(0,0,0,.28);border-radius:18px;padding:12px;}
 .caseStage{position:relative;height:140px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:
-  radial-gradient(650px 260px at 20% 30%, rgba(124,58,237,.32), transparent 60%),
-  radial-gradient(650px 260px at 80% 30%, rgba(239,68,68,.18), transparent 60%),
-  rgba(0,0,0,.38);overflow:hidden;}
+radial-gradient(650px 260px at 20% 30%, rgba(124,58,237,.32), transparent 60%),
+radial-gradient(650px 260px at 80% 30%, rgba(239,68,68,.18), transparent 60%),
+rgba(0,0,0,.38);overflow:hidden;}
 .caseLine{position:absolute;top:0;bottom:0;left:50%;width:2px;transform:translateX(-1px);
-  background:linear-gradient(180deg, transparent, rgba(255,255,255,.7), transparent);filter:drop-shadow(0 0 14px rgba(255,255,255,.18));pointer-events:none;}
+background:linear-gradient(180deg, transparent, rgba(255,255,255,.7), transparent);filter:drop-shadow(0 0 14px rgba(255,255,255,.18));pointer-events:none;}
 .caseTrack{position:absolute;top:50%;left:0;transform:translateY(-50%);display:flex;gap:14px;align-items:center;will-change:transform;padding:0 20px;}
 .caseItem{width:120px;height:80px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background: rgba(0,0,0,.55);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 18px 55px rgba(0,0,0,.55);user-select:none;}
+display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 18px 55px rgba(0,0,0,.55);user-select:none;}
 .caseItem .amt{font-family:var(--mono);font-weight:950;}
 .caseItem .lbl{font-size:11px;color:var(--muted);margin-top:2px;}
 .probList{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
@@ -202,8 +195,8 @@ tr:last-child td{border-bottom:none;}
 .prob{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background: rgba(0,0,0,.22);font-size:12px;}
 
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;padding:10px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.14);
-  background: rgba(0,0,0,.62);box-shadow: var(--shadow);backdrop-filter: blur(12px);display:none;max-width:calc(100% - 24px);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12.5px;z-index:1000;}
+background: rgba(0,0,0,.62);box-shadow: var(--shadow);backdrop-filter: blur(12px);display:none;max-width:calc(100% - 24px);
+white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12.5px;z-index:1000;}
 .toast.show{display:block;}
 </style>
 </head>
@@ -211,440 +204,440 @@ tr:last-child td{border-bottom:none;}
 
 <!-- SVG ICONS -->
 <svg width="0" height="0" style="position:absolute">
-  <defs>
-    <linearGradient id="gYellow" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#fde68a"/><stop offset="1" stop-color="#f59e0b"/>
-    </linearGradient>
-    <linearGradient id="gBlue" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#93c5fd"/><stop offset="1" stop-color="#2563eb"/>
-    </linearGradient>
-    <filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="2.6" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
+<defs>
+<linearGradient id="gYellow" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#fde68a"/><stop offset="1" stop-color="#f59e0b"/>
+</linearGradient>
+<linearGradient id="gBlue" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#93c5fd"/><stop offset="1" stop-color="#2563eb"/>
+</linearGradient>
+<filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%">
+<feGaussianBlur stdDeviation="2.6" result="b"/>
+<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+</filter>
+</defs>
 </svg>
 
 <section class="authWrap" id="authWrap">
-  <div class="authCard">
-    <div class="authTop">
-      <div class="mark"></div>
-      <div><b>HANDZES.BET</b></div>
-    </div>
-    <div class="authBody">
-      <div class="tabs">
-        <button class="tab active" id="tabSignIn">Sign in</button>
-        <button class="tab" id="tabSignUp">Sign up</button>
-      </div>
+<div class="authCard">
+<div class="authTop">
+<div class="mark"></div>
+<div><b>HANDZES.BET</b></div>
+</div>
+<div class="authBody">
+<div class="tabs">
+<button class="tab active" id="tabSignIn">Sign in</button>
+<button class="tab" id="tabSignUp">Sign up</button>
+</div>
 
-      <div id="signInBox">
-        <label>Email</label>
-        <input id="inEmail" type="email" placeholder="Email" />
-        <div style="height:10px"></div>
-        <label>Password</label>
-        <input id="inPass" type="password" placeholder="Password" />
-        <div class="row">
-          <button class="btn purple" id="btnSignIn" style="flex:1;">Sign in</button>
-          <button class="btn" id="btnForgot" style="flex:1;">Reset password</button>
-        </div>
-      </div>
+<div id="signInBox">
+<label>Email</label>
+<input id="inEmail" type="email" placeholder="Email" />
+<div style="height:10px"></div>
+<label>Password</label>
+<input id="inPass" type="password" placeholder="Password" />
+<div class="row">
+<button class="btn purple" id="btnSignIn" style="flex:1;">Sign in</button>
+<button class="btn" id="btnForgot" style="flex:1;">Reset password</button>
+</div>
+</div>
 
-      <div id="signUpBox" style="display:none;">
-        <label>Username</label>
-        <input id="upName" placeholder="Username" />
-        <div style="height:10px"></div>
-        <label>Email</label>
-        <input id="upEmail" type="email" placeholder="Email" />
-        <div style="height:10px"></div>
-        <label>Password</label>
-        <input id="upPass" type="password" placeholder="Password" />
-        <div class="row">
-          <button class="btn purple" id="btnSignUp" style="flex:1;">Create account</button>
-        </div>
-      </div>
+<div id="signUpBox" style="display:none;">
+<label>Username</label>
+<input id="upName" placeholder="Username" />
+<div style="height:10px"></div>
+<label>Email</label>
+<input id="upEmail" type="email" placeholder="Email" />
+<div style="height:10px"></div>
+<label>Password</label>
+<input id="upPass" type="password" placeholder="Password" />
+<div class="row">
+<button class="btn purple" id="btnSignUp" style="flex:1;">Create account</button>
+</div>
+</div>
 
-      <div class="small" id="setupHint" style="display:none;">
-        Paste your Supabase URL + anon key in the code first.
-      </div>
-    </div>
-  </div>
+<div class="small" id="setupHint" style="display:none;">
+Paste your Supabase URL + anon key in the code first.
+</div>
+</div>
+</div>
 </section>
 
 <div class="app" id="app">
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="logo"></div>
-      <div>
-        <b>HANDZES.BET</b>
-        <small>games • sports • leaderboard</small>
-      </div>
-    </div>
+<aside class="sidebar">
+<div class="brand">
+<div class="logo"></div>
+<div>
+<b>HANDZES.BET</b>
+<small>games • sports • leaderboard</small>
+</div>
+</div>
 
-    <div class="sideTitle">Menu</div>
-    <button class="navBtn active" data-view="home"><span>Home</span><span class="chip" id="chipEvents">0</span></button>
-    <button class="navBtn" data-view="games"><span>Games</span><span class="chip" id="chipGames">8</span></button>
-    <button class="navBtn" data-view="sports"><span>Sports</span><span class="chip" id="chipSports">0</span></button>
-    <button class="navBtn" data-view="leaderboard"><span>Leaderboard</span><span class="chip" id="chipLb">0</span></button>
-    <button class="navBtn" data-view="bets"><span>My Bets</span><span class="chip" id="chipMyBets">0</span></button>
-    <button class="navBtn" data-view="case"><span>Daily Case</span><span class="chip">🎁</span></button>
+<div class="sideTitle">Menu</div>
+<button class="navBtn active" data-view="home"><span>Home</span><span class="chip" id="chipEvents">0</span></button>
+<button class="navBtn" data-view="games"><span>Games</span><span class="chip" id="chipGames">8</span></button>
+<button class="navBtn" data-view="sports"><span>Sports</span><span class="chip" id="chipSports">0</span></button>
+<button class="navBtn" data-view="leaderboard"><span>Leaderboard</span><span class="chip" id="chipLb">0</span></button>
+<button class="navBtn" data-view="bets"><span>My Bets</span><span class="chip" id="chipMyBets">0</span></button>
+<button class="navBtn" data-view="case"><span>Daily Case</span><span class="chip">🎁</span></button>
 
-    <div id="adminNavWrap" style="display:none;">
-      <div class="sideTitle">Admin</div>
-      <button class="navBtn" data-view="admin"><span>Admin Panel</span><span class="chip ok">ADMIN</span></button>
-    </div>
+<div id="adminNavWrap" style="display:none;">
+<div class="sideTitle">Admin</div>
+<button class="navBtn" data-view="admin"><span>Admin Panel</span><span class="chip ok">ADMIN</span></button>
+</div>
 
-    <div class="sideTitle">Account</div>
-    <div class="sideCard">
-      <div class="pill"><span class="muted">User</span><span class="mono" id="meName">—</span></div>
-      <div class="pill"><span class="muted">Balance</span><span><span class="mono" id="mePts">0.00</span> <span id="gemSmall"></span></span></div>
-      <div class="pill"><span class="muted">Default stake</span>
-        <span>
-          <input id="defaultStake" type="number" min="0.01" step="0.01" value="0.10"
-            style="width:110px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.26);color:rgba(255,255,255,.92);" />
-        </span>
-      </div>
-    </div>
+<div class="sideTitle">Account</div>
+<div class="sideCard">
+<div class="pill"><span class="muted">User</span><span class="mono" id="meName">—</span></div>
+<div class="pill"><span class="muted">Balance</span><span><span class="mono" id="mePts">0.00</span> <span id="gemSmall"></span></span></div>
+<div class="pill"><span class="muted">Default stake</span>
+<span>
+<input id="defaultStake" type="number" min="0.01" step="0.01" value="0.10"
+style="width:110px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.26);color:rgba(255,255,255,.92);" />
+</span>
+</div>
+</div>
 
-    <div class="sideTitle">Actions</div>
-    <button class="navBtn" id="signOutBtn"><span>Sign out</span><span class="chip">↩</span></button>
-    <button class="navBtn" id="refreshBtn"><span>Refresh</span><span class="chip">R</span></button>
-  </aside>
+<div class="sideTitle">Actions</div>
+<button class="navBtn" id="signOutBtn"><span>Sign out</span><span class="chip">↩</span></button>
+<button class="navBtn" id="refreshBtn"><span>Refresh</span><span class="chip">R</span></button>
+</aside>
 
-  <main class="main">
-    <div class="topbar">
-      <div class="walletMid"><span class="dot" id="adminDot"></span><span id="adminText">User</span></div>
+<main class="main">
+<div class="topbar">
+<div class="walletMid"><span class="dot" id="adminDot"></span><span id="adminText">User</span></div>
 
-      <div class="centerBrand">
-        <div class="mark2"></div>
-        <div class="title">HANDZES.BET</div>
-        <div class="walletMid" title="Your balance">
-          <span class="mono" id="topPts">0.00</span><span id="gemTop"></span>
-        </div>
-      </div>
+<div class="centerBrand">
+<div class="mark2"></div>
+<div class="title">HANDZES.BET</div>
+<div class="walletMid" title="Your balance">
+<span class="mono" id="topPts">0.00</span><span id="gemTop"></span>
+</div>
+</div>
 
-      <div>
-        <button class="profileBtn" id="profileBtn">
-          <div class="avatar"></div>
-          <div style="display:flex;flex-direction:column;line-height:1.1;align-items:flex-start;">
-            <span style="font-weight:950;font-size:12.5px;" id="topUser">—</span>
-            <span class="muted" style="font-size:11px;" id="topLevel">Level 1</span>
-            <div class="levelWrap">
-              <div class="levelBar"><div class="levelFill" id="lvlFill"></div></div>
-              <div class="levelText"><span id="lvlProg">0.0/10.0 wager</span><span id="lvlPct">0%</span></div>
-            </div>
-          </div>
-        </button>
-      </div>
-    </div>
+<div>
+<button class="profileBtn" id="profileBtn">
+<div class="avatar"></div>
+<div style="display:flex;flex-direction:column;line-height:1.1;align-items:flex-start;">
+<span style="font-weight:950;font-size:12.5px;" id="topUser">—</span>
+<span class="muted" style="font-size:11px;" id="topLevel">Level 1</span>
+<div class="levelWrap">
+<div class="levelBar"><div class="levelFill" id="lvlFill"></div></div>
+<div class="levelText"><span id="lvlProg">0.0/10.0 wager</span><span id="lvlPct">0%</span></div>
+</div>
+</div>
+</button>
+</div>
+</div>
 
-    <section id="view-home">
-      <div class="section">
-        <div class="sectionHd">
-          <div><h3>HANDZES.BET GAMES</h3><div class="sub">Glowing demo tiles (no stock images).</div></div>
-          <div class="chip">Games</div>
-        </div>
-        <div class="sectionBd"><div class="grid" id="gamesGridHome"></div></div>
-      </div>
+<section id="view-home">
+<div class="section">
+<div class="sectionHd">
+<div><h3>HANDZES.BET GAMES</h3><div class="sub">Glowing demo tiles (no stock images).</div></div>
+<div class="chip">Games</div>
+</div>
+<div class="sectionBd"><div class="grid" id="gamesGridHome"></div></div>
+</div>
 
-      <div class="section">
-        <div class="sectionHd">
-          <div><h3>Sports (your events)</h3><div class="sub">Click an event to bet.</div></div>
-          <div class="chip"><span class="mono" id="sportsCountHome">0</span></div>
-        </div>
-        <div class="sectionBd"><div class="grid" id="sportsGridHome"></div></div>
-      </div>
-    </section>
+<div class="section">
+<div class="sectionHd">
+<div><h3>Sports (your events)</h3><div class="sub">Click an event to bet.</div></div>
+<div class="chip"><span class="mono" id="sportsCountHome">0</span></div>
+</div>
+<div class="sectionBd"><div class="grid" id="sportsGridHome"></div></div>
+</div>
+</section>
 
-    <section id="view-games" style="display:none;">
-      <div class="section">
-        <div class="sectionHd"><div><h3>Games</h3><div class="sub">Demo gallery.</div></div><div class="chip">8</div></div>
-        <div class="sectionBd"><div class="grid" id="gamesGrid"></div></div>
-      </div>
-    </section>
+<section id="view-games" style="display:none;">
+<div class="section">
+<div class="sectionHd"><div><h3>Games</h3><div class="sub">Demo gallery.</div></div><div class="chip">8</div></div>
+<div class="sectionBd"><div class="grid" id="gamesGrid"></div></div>
+</div>
+</section>
 
-    <section id="view-dice" style="display:none;">
-      <div class="section">
-        <div class="sectionHd"><div><h3>Dice</h3><div class="sub">50/50 roll. Win pays 1.95× (house edge).</div></div><div class="chip">LIVE</div></div>
-        <div class="sectionBd">
-          <div class="row" style="align-items:flex-end;">
-            <div style="width:220px;">
-              <label>Stake</label>
-              <input id="diceStake" type="number" min="0.01" step="0.01" value="0.10"/>
-            </div>
-            <div style="width:220px;">
-              <label>Pick</label>
-              <select id="dicePick">
-                <option value="low">LOW (1-49)</option>
-                <option value="high">HIGH (50-100)</option>
-              </select>
-            </div>
-            <button class="btn purple" id="diceRollBtn">Roll</button>
-            <div class="miniPill"><span class="muted">Roll</span><span class="mono" id="diceRollOut">—</span></div>
-            <div class="miniPill"><span class="muted">Result</span><span class="mono" id="diceResOut">—</span></div>
-          </div>
-        </div>
-      </div>
-    </section>
+<section id="view-dice" style="display:none;">
+<div class="section">
+<div class="sectionHd"><div><h3>Dice</h3><div class="sub">50/50 roll. Win pays 1.95× (house edge).</div></div><div class="chip">LIVE</div></div>
+<div class="sectionBd">
+<div class="row" style="align-items:flex-end;">
+<div style="width:220px;">
+<label>Stake</label>
+<input id="diceStake" type="number" min="0.01" step="0.01" value="0.10"/>
+</div>
+<div style="width:220px;">
+<label>Pick</label>
+<select id="dicePick">
+<option value="low">LOW (1-49)</option>
+<option value="high">HIGH (50-100)</option>
+</select>
+</div>
+<button class="btn purple" id="diceRollBtn">Roll</button>
+<div class="miniPill"><span class="muted">Roll</span><span class="mono" id="diceRollOut">—</span></div>
+<div class="miniPill"><span class="muted">Result</span><span class="mono" id="diceResOut">—</span></div>
+</div>
+</div>
+</div>
+</section>
 
-    <section id="view-roulette" style="display:none;">
-      <div class="section">
-        <div class="sectionHd"><div><h3>Roulette</h3><div class="sub">Red/Black pays 1.95×. Green pays 14×.</div></div><div class="chip">LIVE</div></div>
-        <div class="sectionBd">
-          <div class="row" style="align-items:flex-end;">
-            <div style="width:220px;">
-              <label>Stake</label>
-              <input id="rouStake" type="number" min="0.01" step="0.01" value="0.10"/>
-            </div>
-            <div style="width:220px;">
-              <label>Bet</label>
-              <select id="rouPick">
-                <option value="red">RED (1.95×)</option>
-                <option value="black">BLACK (1.95×)</option>
-                <option value="green">GREEN (14×)</option>
-              </select>
-            </div>
-            <button class="btn purple" id="rouSpinBtn">Spin</button>
-            <div class="miniPill"><span class="muted">Spin</span><span class="mono" id="rouOut">—</span></div>
-            <div class="miniPill"><span class="muted">Result</span><span class="mono" id="rouRes">—</span></div>
-          </div>
-          <div class="sub" style="margin-top:10px;">Wheel: 0 = green, 1-18 = red, 19-36 = black (simple).</div>
-        </div>
-      </div>
-    </section>
+<section id="view-roulette" style="display:none;">
+<div class="section">
+<div class="sectionHd"><div><h3>Roulette</h3><div class="sub">Red/Black pays 1.95×. Green pays 14×.</div></div><div class="chip">LIVE</div></div>
+<div class="sectionBd">
+<div class="row" style="align-items:flex-end;">
+<div style="width:220px;">
+<label>Stake</label>
+<input id="rouStake" type="number" min="0.01" step="0.01" value="0.10"/>
+</div>
+<div style="width:220px;">
+<label>Bet</label>
+<select id="rouPick">
+<option value="red">RED (1.95×)</option>
+<option value="black">BLACK (1.95×)</option>
+<option value="green">GREEN (14×)</option>
+</select>
+</div>
+<button class="btn purple" id="rouSpinBtn">Spin</button>
+<div class="miniPill"><span class="muted">Spin</span><span class="mono" id="rouOut">—</span></div>
+<div class="miniPill"><span class="muted">Result</span><span class="mono" id="rouRes">—</span></div>
+</div>
+<div class="sub" style="margin-top:10px;">Wheel: 0 = green, 1-18 = red, 19-36 = black (simple).</div>
+</div>
+</div>
+</section>
 
-    <section id="view-mines" style="display:none;">
-      <div class="section">
-        <div class="sectionHd"><div><h3>Mines</h3><div class="sub">Pick gems, avoid bombs. Cashout anytime.</div></div><div class="chip">LIVE</div></div>
-        <div class="sectionBd">
-          <div class="row" style="align-items:flex-end;">
-            <div style="width:220px;">
-              <label>Stake</label>
-              <input id="minesStake" type="number" min="0.01" step="0.01" value="0.10"/>
-            </div>
-            <div style="width:220px;">
-              <label>Bombs</label>
-              <select id="minesBombs">
-                <option value="1">1 bomb</option>
-                <option value="2">2 bombs</option>
-                <option value="3">3 bombs</option>
-              </select>
-            </div>
-            <button class="btn purple" id="minesStartBtn">Start</button>
-            <button class="btn" id="minesCashBtn" disabled>Cashout</button>
-            <div class="miniPill"><span class="muted">Multiplier</span><span class="mono" id="minesMult">—</span></div>
-            <div class="miniPill"><span class="muted">Status</span><span class="mono" id="minesStatus">—</span></div>
-          </div>
+<section id="view-mines" style="display:none;">
+<div class="section">
+<div class="sectionHd"><div><h3>Mines</h3><div class="sub">Pick gems, avoid bombs. Cashout anytime.</div></div><div class="chip">LIVE</div></div>
+<div class="sectionBd">
+<div class="row" style="align-items:flex-end;">
+<div style="width:220px;">
+<label>Stake</label>
+<input id="minesStake" type="number" min="0.01" step="0.01" value="0.10"/>
+</div>
+<div style="width:220px;">
+<label>Bombs</label>
+<select id="minesBombs">
+<option value="1">1 bomb</option>
+<option value="2">2 bombs</option>
+<option value="3">3 bombs</option>
+</select>
+</div>
+<button class="btn purple" id="minesStartBtn">Start</button>
+<button class="btn" id="minesCashBtn" disabled>Cashout</button>
+<div class="miniPill"><span class="muted">Multiplier</span><span class="mono" id="minesMult">—</span></div>
+<div class="miniPill"><span class="muted">Status</span><span class="mono" id="minesStatus">—</span></div>
+</div>
 
-          <div id="minesGrid" style="margin-top:14px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-width:520px;"></div>
-          <div class="sub" style="margin-top:10px;">Simple mode: 25 tiles. Each safe pick increases multiplier. Bomb ends round.</div>
-        </div>
-      </div>
-    </section>
+<div id="minesGrid" style="margin-top:14px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-width:520px;"></div>
+<div class="sub" style="margin-top:10px;">Simple mode: 25 tiles. Each safe pick increases multiplier. Bomb ends round.</div>
+</div>
+</div>
+</section>
 
-    <section id="view-sports" style="display:none;">
-      <div class="section">
-        <div class="sectionHd"><div><h3>Sports</h3><div class="sub">Your created events with coefficients.</div></div><div class="chip"><span class="mono" id="chipSports2">0</span></div></div>
-        <div class="sectionBd"><div class="grid" id="eventsGrid"></div></div>
-      </div>
-    </section>
+<section id="view-sports" style="display:none;">
+<div class="section">
+<div class="sectionHd"><div><h3>Sports</h3><div class="sub">Your created events with coefficients.</div></div><div class="chip"><span class="mono" id="chipSports2">0</span></div></div>
+<div class="sectionBd"><div class="grid" id="eventsGrid"></div></div>
+</div>
+</section>
 
-    <section id="view-leaderboard" style="display:none;">
-      <div class="section">
-        <div class="sectionHd"><div><h3>Leaderboard</h3><div class="sub">Monthly wager. Top #1 gets +3 when month changes.</div></div><div class="chip"><span class="mono" id="lbMonth">—</span></div></div>
-        <div class="sectionBd">
-          <table>
-            <thead><tr><th>#</th><th>User</th><th>Wager (this month)</th><th>Level</th></tr></thead>
-            <tbody id="lbBody"><tr><td colspan="4" class="muted">Loading…</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+<section id="view-leaderboard" style="display:none;">
+<div class="section">
+<div class="sectionHd"><div><h3>Leaderboard</h3><div class="sub">Monthly wager. Top #1 gets +3 when month changes.</div></div><div class="chip"><span class="mono" id="lbMonth">—</span></div></div>
+<div class="sectionBd">
+<table>
+<thead><tr><th>#</th><th>User</th><th>Wager (this month)</th><th>Level</th></tr></thead>
+<tbody id="lbBody"><tr><td colspan="4" class="muted">Loading…</td></tr></tbody>
+</table>
+</div>
+</div>
+</section>
 
-    <section id="view-bets" style="display:none;">
-      <div class="section">
-        <div class="sectionHd"><div><h3>My Bets</h3><div class="sub">Bets for your account.</div></div><div class="chip"><span class="mono" id="myBetsCount">0</span></div></div>
-        <div class="sectionBd">
-          <table>
-            <thead><tr><th>Time</th><th>Event</th><th>Pick</th><th>Stake</th><th>Coef</th><th>Status</th><th>Payout</th></tr></thead>
-            <tbody id="myBetsBody"><tr><td colspan="7" class="muted">No bets yet.</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+<section id="view-bets" style="display:none;">
+<div class="section">
+<div class="sectionHd"><div><h3>My Bets</h3><div class="sub">Bets for your account.</div></div><div class="chip"><span class="mono" id="myBetsCount">0</span></div></div>
+<div class="sectionBd">
+<table>
+<thead><tr><th>Time</th><th>Event</th><th>Pick</th><th>Stake</th><th>Coef</th><th>Status</th><th>Payout</th></tr></thead>
+<tbody id="myBetsBody"><tr><td colspan="7" class="muted">No bets yet.</td></tr></tbody>
+</table>
+</div>
+</div>
+</section>
 
-    <section id="view-case" style="display:none;">
-      <div class="section">
-        <div class="sectionHd">
-          <div><h3>Daily Case</h3><div class="sub">Open after you wager 10 (this month). Admin can test anytime.</div></div>
-          <div class="chip" id="caseStatus">—</div>
-        </div>
-        <div class="sectionBd">
-          <div class="caseBox">
-            <div class="row" style="justify-content:space-between;align-items:center;margin-top:0;">
-              <div class="miniPill"><span class="muted">Next case in</span><span class="mono" id="caseCountdown">—</span></div>
-              <div class="miniPill"><span class="muted">Requirement</span><span class="mono" id="caseReq">0.00 / 10.00</span><span id="gemReq"></span></div>
-            </div>
-            <div style="height:10px"></div>
-            <div class="caseStage">
-              <div class="caseLine"></div>
-              <div class="caseTrack" id="caseTrack"></div>
-            </div>
-            <div class="row" style="margin-top:12px;justify-content:space-between;">
-              <button class="btn purple" id="openCaseBtn">Open case</button>
-            </div>
+<section id="view-case" style="display:none;">
+<div class="section">
+<div class="sectionHd">
+<div><h3>Daily Case</h3><div class="sub">Open after you wager 10 (this month). Admin can test anytime.</div></div>
+<div class="chip" id="caseStatus">—</div>
+</div>
+<div class="sectionBd">
+<div class="caseBox">
+<div class="row" style="justify-content:space-between;align-items:center;margin-top:0;">
+<div class="miniPill"><span class="muted">Next case in</span><span class="mono" id="caseCountdown">—</span></div>
+<div class="miniPill"><span class="muted">Requirement</span><span class="mono" id="caseReq">0.00 / 10.00</span><span id="gemReq"></span></div>
+</div>
+<div style="height:10px"></div>
+<div class="caseStage">
+<div class="caseLine"></div>
+<div class="caseTrack" id="caseTrack"></div>
+</div>
+<div class="row" style="margin-top:12px;justify-content:space-between;">
+<button class="btn purple" id="openCaseBtn">Open case</button>
+</div>
 
-            <div class="probList">
-              <div class="prob"><span>70% → win 0.01</span><span class="mono">0.01</span></div>
-              <div class="prob"><span>10% → win 0.03</span><span class="mono">0.03</span></div>
-              <div class="prob"><span>7.5% → win 0.05</span><span class="mono">0.05</span></div>
-              <div class="prob"><span>2.5% → win 0.10</span><span class="mono">0.10</span></div>
-              <div class="prob"><span>9% → win nothing</span><span class="mono">0.00</span></div>
-              <div class="prob"><span>1% → win 1.00</span><span class="mono">1.00</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+<div class="probList">
+<div class="prob"><span>70% → win 0.01</span><span class="mono">0.01</span></div>
+<div class="prob"><span>10% → win 0.03</span><span class="mono">0.03</span></div>
+<div class="prob"><span>7.5% → win 0.05</span><span class="mono">0.05</span></div>
+<div class="prob"><span>2.5% → win 0.10</span><span class="mono">0.10</span></div>
+<div class="prob"><span>9% → win nothing</span><span class="mono">0.00</span></div>
+<div class="prob"><span>1% → win 1.00</span><span class="mono">1.00</span></div>
+</div>
+</div>
+</div>
+</div>
+</section>
 
-    <section id="view-admin" style="display:none;">
-      <div class="section">
-        <div class="sectionHd"><div><h3>Admin Panel</h3><div class="sub">Only the Handzes account can see this.</div></div><div class="chip ok">ADMIN</div></div>
-        <div class="sectionBd">
-          <div class="section" style="margin-top:0;">
-            <div class="sectionHd"><div><h3>Give points</h3><div class="sub">Select a user and set/add points (decimals supported).</div></div></div>
-            <div class="sectionBd">
-              <label>Registered users</label>
-              <select id="userSelect"></select>
-              <div class="row">
-                <div style="width:180px;">
-                  <label>Set points</label>
-                  <input id="ptsSet" type="number" step="0.01" value="10.00"/>
-                </div>
-                <button class="btn purple" id="setPtsBtn">Set</button>
-                <div style="width:180px;">
-                  <label>Add amount</label>
-                  <input id="ptsAdd" type="number" step="0.01" value="0.10"/>
-                </div>
-                <button class="btn" id="addBtn">Add</button>
-              </div>
-              <div class="small" id="adminUserHint"></div>
-            </div>
-          </div>
+<section id="view-admin" style="display:none;">
+<div class="section">
+<div class="sectionHd"><div><h3>Admin Panel</h3><div class="sub">Only the Handzes account can see this.</div></div><div class="chip ok">ADMIN</div></div>
+<div class="sectionBd">
+<div class="section" style="margin-top:0;">
+<div class="sectionHd"><div><h3>Give points</h3><div class="sub">Select a user and set/add points (decimals supported).</div></div></div>
+<div class="sectionBd">
+<label>Registered users</label>
+<select id="userSelect"></select>
+<div class="row">
+<div style="width:180px;">
+<label>Set points</label>
+<input id="ptsSet" type="number" step="0.01" value="10.00"/>
+</div>
+<button class="btn purple" id="setPtsBtn">Set</button>
+<div style="width:180px;">
+<label>Add amount</label>
+<input id="ptsAdd" type="number" step="0.01" value="0.10"/>
+</div>
+<button class="btn" id="addBtn">Add</button>
+</div>
+<div class="small" id="adminUserHint"></div>
+</div>
+</div>
 
-          <div class="section">
-            <div class="sectionHd"><div><h3>Create sports event</h3><div class="sub">2+ options with coefficients.</div></div></div>
-            <div class="sectionBd">
-              <div class="row">
-                <div style="flex:1;min-width:260px;">
-                  <label>Event name</label>
-                  <input id="evName" placeholder="Race / Match / Player A vs Player B"/>
-                </div>
-                <div style="width:180px;">
-                  <label>Status</label>
-                  <select id="evStatus">
-                    <option value="open">open</option>
-                    <option value="closed">closed</option>
-                  </select>
-                </div>
-              </div>
-              <div style="margin-top:10px;">
-                <label>Description</label>
-                <input id="evDesc" placeholder="Rules, best-of-3…"/>
-              </div>
-              <div class="row" style="margin-top:10px;align-items:center;">
-                <div style="flex:1;">
-                  <label>Options</label>
-                  <div class="muted" style="font-size:12px;margin-top:4px;">Add 2+ options</div>
-                </div>
-                <button class="btn" id="addOptBtn">Add option</button>
-              </div>
-              <div id="optsBox" style="margin-top:10px;"></div>
-              <div class="row" style="margin-top:12px;">
-                <button class="btn purple" id="createEventBtn">Create</button>
-              </div>
-              <div id="adminEventsBox" class="small"></div>
-            </div>
-          </div>
+<div class="section">
+<div class="sectionHd"><div><h3>Create sports event</h3><div class="sub">2+ options with coefficients.</div></div></div>
+<div class="sectionBd">
+<div class="row">
+<div style="flex:1;min-width:260px;">
+<label>Event name</label>
+<input id="evName" placeholder="Race / Match / Player A vs Player B"/>
+</div>
+<div style="width:180px;">
+<label>Status</label>
+<select id="evStatus">
+<option value="open">open</option>
+<option value="closed">closed</option>
+</select>
+</div>
+</div>
+<div style="margin-top:10px;">
+<label>Description</label>
+<input id="evDesc" placeholder="Rules, best-of-3…"/>
+</div>
+<div class="row" style="margin-top:10px;align-items:center;">
+<div style="flex:1;">
+<label>Options</label>
+<div class="muted" style="font-size:12px;margin-top:4px;">Add 2+ options</div>
+</div>
+<button class="btn" id="addOptBtn">Add option</button>
+</div>
+<div id="optsBox" style="margin-top:10px;"></div>
+<div class="row" style="margin-top:12px;">
+<button class="btn purple" id="createEventBtn">Create</button>
+</div>
+<div id="adminEventsBox" class="small"></div>
+</div>
+</div>
 
-          <div class="section">
-            <div class="sectionHd">
-              <div><h3>Manage events</h3><div class="sub">Open/Close/Finish, select winner, delete.</div></div>
-              <button class="btn" id="reloadAdminEventsBtn">Reload</button>
-            </div>
-            <div class="sectionBd">
-              <div id="adminEventsList" class="small muted">Loading…</div>
-            </div>
-          </div>
+<div class="section">
+<div class="sectionHd">
+<div><h3>Manage events</h3><div class="sub">Open/Close/Finish, select winner, delete.</div></div>
+<button class="btn" id="reloadAdminEventsBtn">Reload</button>
+</div>
+<div class="sectionBd">
+<div id="adminEventsList" class="small muted">Loading…</div>
+</div>
+</div>
 
-          <div class="section" style="margin-top:14px;">
-            <div class="sectionHd">
-              <div>
-                <h3>SQL (run once)</h3>
-                <div class="sub">Run this once in Supabase → SQL Editor if you get DB/RLS errors.</div>
-              </div>
-            </div>
-            <div class="sectionBd">
+<div class="section" style="margin-top:14px;">
+<div class="sectionHd">
+<div>
+<h3>SQL (run once)</h3>
+<div class="sub">Run this once in Supabase → SQL Editor if you get DB/RLS errors.</div>
+</div>
+</div>
+<div class="sectionBd">
 <pre style="margin:0;white-space:pre-wrap;font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.82);">
 create extension if not exists pgcrypto;
 
 create table if not exists public.profiles (
-  id uuid primary key references auth.users(id) on delete cascade,
-  email text unique,
-  display_name text,
-  avatar_seed text default 'p1',
-  pts numeric(14,2) default 10.00,
-  lifetime_wager numeric(14,2) default 0,
-  month_wager numeric(14,2) default 0,
-  month_key text default to_char(now(),'YYYY-MM'),
-  level int default 1,
-  last_case_open date,
-  created_at timestamptz default now()
+id uuid primary key references auth.users(id) on delete cascade,
+email text unique,
+display_name text,
+avatar_seed text default 'p1',
+pts numeric(14,2) default 10.00,
+lifetime_wager numeric(14,2) default 0,
+month_wager numeric(14,2) default 0,
+month_key text default to_char(now(),'YYYY-MM'),
+level int default 1,
+last_case_open date,
+created_at timestamptz default now()
 );
 
 create table if not exists public.events (
-  id bigint generated by default as identity primary key,
-  name text not null,
-  description text default ''::text,
-  status text default 'open'::text,
-  created_at timestamptz default now(),
-  created_by uuid references auth.users(id),
-  winner_option_id bigint null
+id bigint generated by default as identity primary key,
+name text not null,
+description text default ''::text,
+status text default 'open'::text,
+created_at timestamptz default now(),
+created_by uuid references auth.users(id),
+winner_option_id bigint null
 );
 
 create table if not exists public.event_options (
-  id bigint generated by default as identity primary key,
-  event_id bigint not null references public.events(id) on delete cascade,
-  label text not null,
-  coef numeric(10,2) not null default 2.00
+id bigint generated by default as identity primary key,
+event_id bigint not null references public.events(id) on delete cascade,
+label text not null,
+coef numeric(10,2) not null default 2.00
 );
 
 do $$
 begin
-  alter table public.events
-    add constraint events_winner_fk foreign key (winner_option_id)
-    references public.event_options(id) on delete set null;
+alter table public.events
+add constraint events_winner_fk foreign key (winner_option_id)
+references public.event_options(id) on delete set null;
 exception when duplicate_object then null;
 end $$;
 
 create table if not exists public.bets (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid references auth.users(id) on delete cascade,
-  event_id bigint references public.events(id) on delete cascade,
-  option_id bigint references public.event_options(id) on delete cascade,
-  event_name text,
-  opt_name text,
-  stake numeric(14,2),
-  coef numeric(10,2),
-  status text default 'pending',
-  payout numeric(14,2) default 0,
-  created_at timestamptz default now()
+id uuid primary key default gen_random_uuid(),
+user_id uuid references auth.users(id) on delete cascade,
+event_id bigint references public.events(id) on delete cascade,
+option_id bigint references public.event_options(id) on delete cascade,
+event_name text,
+opt_name text,
+stake numeric(14,2),
+coef numeric(10,2),
+status text default 'pending',
+payout numeric(14,2) default 0,
+created_at timestamptz default now()
 );
 
 create table if not exists public.app_state (
-  id int primary key,
-  current_month text,
-  last_awarded_month text,
-  updated_at timestamptz default now()
+id int primary key,
+current_month text,
+last_awarded_month text,
+updated_at timestamptz default now()
 );
 insert into public.app_state (id, current_month, last_awarded_month)
 values (1, to_char(now(),'YYYY-MM'), null)
@@ -656,96 +649,96 @@ alter table public.event_options disable row level security;
 alter table public.bets disable row level security;
 alter table public.app_state disable row level security;
 </pre>
-            </div>
-          </div>
+</div>
+</div>
 
-        </div>
-      </div>
-    </section>
+</div>
+</div>
+</section>
 
-  </main>
+</main>
 </div>
 
 <!-- Event modal -->
 <div class="overlay" id="overlay">
-  <div class="modal">
-    <div class="modalHd">
-      <div style="min-width:0;">
-        <h4 id="mTitle">Event</h4>
-        <p id="mDesc" class="muted"></p>
-      </div>
-      <button class="closeBtn" id="closeModal">✕</button>
-    </div>
-    <div class="modalBd">
-      <div class="row" style="justify-content:space-between;gap:10px;flex-wrap:wrap;">
-        <span class="tag" id="mStatus">OPEN</span>
-        <span class="miniPill"><span class="muted">Your balance</span><span class="mono" id="mBal">0.00</span><span id="gemBal"></span></span>
-      </div>
-      <div class="oddsGrid" id="mOdds"></div>
-      <div class="modalRow">
-        <div class="row" style="gap:10px;">
-          <div class="miniPill"><span class="muted">Stake</span><input id="mStake" type="number" min="0.01" step="0.01" value="0.10"/></div>
-          <div class="miniPill"><span class="muted">Potential payout</span><span class="mono" id="mPayout">—</span></div>
-        </div>
-        <div class="row" style="gap:10px;justify-content:flex-end;">
-          <button class="btn" id="mCancel">Cancel</button>
-          <button class="btn green" id="mConfirm" disabled>Confirm bet</button>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="modal">
+<div class="modalHd">
+<div style="min-width:0;">
+<h4 id="mTitle">Event</h4>
+<p id="mDesc" class="muted"></p>
+</div>
+<button class="closeBtn" id="closeModal">✕</button>
+</div>
+<div class="modalBd">
+<div class="row" style="justify-content:space-between;gap:10px;flex-wrap:wrap;">
+<span class="tag" id="mStatus">OPEN</span>
+<span class="miniPill"><span class="muted">Your balance</span><span class="mono" id="mBal">0.00</span><span id="gemBal"></span></span>
+</div>
+<div class="oddsGrid" id="mOdds"></div>
+<div class="modalRow">
+<div class="row" style="gap:10px;">
+<div class="miniPill"><span class="muted">Stake</span><input id="mStake" type="number" min="0.01" step="0.01" value="0.10"/></div>
+<div class="miniPill"><span class="muted">Potential payout</span><span class="mono" id="mPayout">—</span></div>
+</div>
+<div class="row" style="gap:10px;justify-content:flex-end;">
+<button class="btn" id="mCancel">Cancel</button>
+<button class="btn green" id="mConfirm" disabled>Confirm bet</button>
+</div>
+</div>
+</div>
+</div>
 </div>
 
 <!-- Profile modal -->
 <div class="overlay" id="profileOverlay">
-  <div class="modal" style="width:min(760px,100%);">
-    <div class="modalHd">
-      <div><h4>Profile</h4><p class="muted">Edit username + picture</p></div>
-      <button class="closeBtn" id="closeProfile">✕</button>
-    </div>
-    <div class="modalBd">
-      <div class="row" style="gap:10px;align-items:flex-end;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <div class="avatar" id="pAvatar" style="width:44px;height:44px;border-radius:16px;"></div>
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <label>Username</label>
-            <input id="pUserEdit" placeholder="Username" style="width:220px"/>
-          </div>
-        </div>
+<div class="modal" style="width:min(760px,100%);">
+<div class="modalHd">
+<div><h4>Profile</h4><p class="muted">Edit username + picture</p></div>
+<button class="closeBtn" id="closeProfile">✕</button>
+</div>
+<div class="modalBd">
+<div class="row" style="gap:10px;align-items:flex-end;">
+<div style="display:flex;align-items:center;gap:12px;">
+<div class="avatar" id="pAvatar" style="width:44px;height:44px;border-radius:16px;"></div>
+<div style="display:flex;flex-direction:column;gap:6px;">
+<label>Username</label>
+<input id="pUserEdit" placeholder="Username" style="width:220px"/>
+</div>
+</div>
 
-        <div class="miniPill"><span class="muted">Balance</span><span class="mono" id="pBal">0.00</span><span id="gemProf"></span></div>
-        <div class="miniPill"><span class="muted">Level</span><span class="mono" id="pLevel">1</span></div>
-      </div>
+<div class="miniPill"><span class="muted">Balance</span><span class="mono" id="pBal">0.00</span><span id="gemProf"></span></div>
+<div class="miniPill"><span class="muted">Level</span><span class="mono" id="pLevel">1</span></div>
+</div>
 
-      <div style="margin-top:12px;">
-        <label>Profile picture</label>
-        <div class="row" style="gap:10px;margin-top:6px;">
-          <button class="btn" data-ava="p1">Purple</button>
-          <button class="btn" data-ava="p2">Red</button>
-          <button class="btn" data-ava="p3">Blue</button>
-          <button class="btn" data-ava="p4">Green</button>
-          <button class="btn" data-ava="p5">Gold</button>
-        </div>
-        <div class="row" style="justify-content:flex-end;margin-top:10px;">
-          <button class="btn purple" id="pSaveBtn">Save profile</button>
-        </div>
-      </div>
+<div style="margin-top:12px;">
+<label>Profile picture</label>
+<div class="row" style="gap:10px;margin-top:6px;">
+<button class="btn" data-ava="p1">Purple</button>
+<button class="btn" data-ava="p2">Red</button>
+<button class="btn" data-ava="p3">Blue</button>
+<button class="btn" data-ava="p4">Green</button>
+<button class="btn" data-ava="p5">Gold</button>
+</div>
+<div class="row" style="justify-content:flex-end;margin-top:10px;">
+<button class="btn purple" id="pSaveBtn">Save profile</button>
+</div>
+</div>
 
-      <div class="section" style="margin-top:12px;">
-        <div class="sectionHd"><div><h3>Stats</h3><div class="sub">Calculated from your wagers.</div></div></div>
-        <div class="sectionBd">
-          <div class="row" style="gap:10px;">
-            <div class="miniPill"><span class="muted">Wager (this month)</span><span class="mono" id="pMonthW">0.00</span><span id="gemMW"></span></div>
-            <div class="miniPill"><span class="muted">Wager (lifetime)</span><span class="mono" id="pLifeW">0.00</span><span id="gemLW"></span></div>
-            <div class="miniPill"><span class="muted">Bets</span><span class="mono" id="pBets">0</span></div>
-          </div>
-        </div>
-      </div>
-      <div class="row" style="justify-content:flex-end;margin-top:12px;">
-        <button class="btn" id="pCloseBtn">Close</button>
-      </div>
-    </div>
-  </div>
+<div class="section" style="margin-top:12px;">
+<div class="sectionHd"><div><h3>Stats</h3><div class="sub">Calculated from your wagers.</div></div></div>
+<div class="sectionBd">
+<div class="row" style="gap:10px;">
+<div class="miniPill"><span class="muted">Wager (this month)</span><span class="mono" id="pMonthW">0.00</span><span id="gemMW"></span></div>
+<div class="miniPill"><span class="muted">Wager (lifetime)</span><span class="mono" id="pLifeW">0.00</span><span id="gemLW"></span></div>
+<div class="miniPill"><span class="muted">Bets</span><span class="mono" id="pBets">0</span></div>
+</div>
+</div>
+</div>
+<div class="row" style="justify-content:flex-end;margin-top:12px;">
+<button class="btn" id="pCloseBtn">Close</button>
+</div>
+</div>
+</div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -772,17 +765,17 @@ const gemBlue = () => `<svg class="iconSvg glow" viewBox="0 0 24 24" style="filt
 const poop = () => `<svg class="iconPoop" viewBox="0 0 24 24"><path fill="#8b5e34" d="M10 3c0 1-1 2-2 2 0 0 1 1 1 2 0 0-2 1-2 3 0 0 2 0 2 2H7c-2 0-3 2-3 4s2 5 8 5 8-2 8-5-1-4-3-4h-2c0-2 2-2 2-2 0-2-2-3-2-3 0-1 1-2 1-2-1 0-2-1-2-2-1 1-1 2-2 2s-1-1-2-2z"/></svg>`;
 
 const AVA = {
-  p1: "radial-gradient(16px 16px at 30% 30%, rgba(167,139,250,.98), rgba(124,58,237,.55))",
-  p2: "radial-gradient(16px 16px at 30% 30%, rgba(251,113,133,.95), rgba(239,68,68,.55))",
-  p3: "radial-gradient(16px 16px at 30% 30%, rgba(147,197,253,.95), rgba(37,99,235,.55))",
-  p4: "radial-gradient(16px 16px at 30% 30%, rgba(134,239,172,.95), rgba(34,197,94,.50))",
-  p5: "radial-gradient(16px 16px at 30% 30%, rgba(253,230,138,.95), rgba(245,158,11,.55))",
+p1: "radial-gradient(16px 16px at 30% 30%, rgba(167,139,250,.98), rgba(124,58,237,.55))",
+p2: "radial-gradient(16px 16px at 30% 30%, rgba(251,113,133,.95), rgba(239,68,68,.55))",
+p3: "radial-gradient(16px 16px at 30% 30%, rgba(147,197,253,.95), rgba(37,99,235,.55))",
+p4: "radial-gradient(16px 16px at 30% 30%, rgba(134,239,172,.95), rgba(34,197,94,.50))",
+p5: "radial-gradient(16px 16px at 30% 30%, rgba(253,230,138,.95), rgba(245,158,11,.55))",
 };
 function applyAvatar(el, seed){
-  const bg = AVA[seed] || AVA.p1;
-  el.style.background = bg;
-  el.style.boxShadow = "0 10px 28px rgba(0,0,0,.55)";
-  el.style.border = "1px solid rgba(255,255,255,.16)";
+const bg = AVA[seed] || AVA.p1;
+el.style.background = bg;
+el.style.boxShadow = "0 10px 28px rgba(0,0,0,.55)";
+el.style.border = "1px solid rgba(255,255,255,.16)";
 }
 
 $("gemSmall").innerHTML = gemBlue();
@@ -800,352 +793,374 @@ const supabase = keysOk ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 if(!keysOk){ $("authWrap").classList.add("show"); toast("Paste Supabase keys in index.html"); }
 
 function setAuthTab(which){
-  const isIn = which==="in";
-  $("tabSignIn").classList.toggle("active", isIn);
-  $("tabSignUp").classList.toggle("active", !isIn);
-  $("signInBox").style.display = isIn ? "" : "none";
-  $("signUpBox").style.display = isIn ? "none" : "";
+const isIn = which==="in";
+$("tabSignIn").classList.toggle("active", isIn);
+$("tabSignUp").classList.toggle("active", !isIn);
+$("signInBox").style.display = isIn ? "" : "none";
+$("signUpBox").style.display = isIn ? "none" : "";
 }
 $("tabSignIn").onclick=()=>setAuthTab("in");
 $("tabSignUp").onclick=()=>setAuthTab("up");
 
 let session=null, meProfile=null, isAdmin=false, events=[], myBets=[], usersList=[];
+// ✅ MP3 cashout sound
+const cashoutSound = new Audio("./sounds/cashout.mp3");
+cashoutSound.preload = "auto";
+cashoutSound.volume = 0.85;
 
-/* tiny sfx */
+// Browsers require "user gesture" before sound can play.
+// This unlocks audio on the first click/tap anywhere.
+let __audioUnlocked = false;
+function unlockAudioOnce(){
+if(__audioUnlocked) return;
+__audioUnlocked = true;
+try{
+// unlock WebAudio too (for your sfx beeps)
+const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
+if(ctx && ctx.state === "suspended") ctx.resume();
+
+// unlock HTMLAudio
+cashoutSound.muted = true;
+cashoutSound.play().then(()=>{
+cashoutSound.pause();
+cashoutSound.currentTime = 0;
+cashoutSound.muted = false;
+}).catch(()=>{
+cashoutSound.muted = false;
+});
+}catch(_){}
+}
+window.addEventListener("pointerdown", unlockAudioOnce, { once:true });
+window.addEventListener("keydown", unlockAudioOnce, { once:true });
+
+
 function sfx(freq=520, dur=0.06, type="sine", gain=0.04){
-  try{
-    const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
-    const o=ctx.createOscillator(); const g=ctx.createGain();
-    o.type=type; o.frequency.value=freq; g.gain.value=gain;
-    o.connect(g); g.connect(ctx.destination);
-    o.start(); o.stop(ctx.currentTime+dur);
-  }catch(_){}
+try{
+const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
+const o=ctx.createOscillator(); const g=ctx.createGain();
+o.type=type; o.frequency.value=freq; g.gain.value=gain;
+o.connect(g); g.connect(ctx.destination);
+o.start(); o.stop(ctx.currentTime+dur);
+}catch(_){}
 }
 function sfxBomb(){
-  try{
-    const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
-    const o=ctx.createOscillator(); const g=ctx.createGain();
-    o.type="sawtooth";
-    o.frequency.setValueAtTime(220, ctx.currentTime);
-    o.frequency.exponentialRampToValueAtTime(60, ctx.currentTime+0.18);
-    g.gain.setValueAtTime(0.08, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.22);
-    o.connect(g); g.connect(ctx.destination);
-    o.start(); o.stop(ctx.currentTime+0.23);
-  }catch(_){}
+try{
+const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
+const o=ctx.createOscillator(); const g=ctx.createGain();
+o.type="sawtooth";
+o.frequency.setValueAtTime(220, ctx.currentTime);
+o.frequency.exponentialRampToValueAtTime(60, ctx.currentTime+0.18);
+g.gain.setValueAtTime(0.08, ctx.currentTime);
+g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.22);
+o.connect(g); g.connect(ctx.destination);
+o.start(); o.stop(ctx.currentTime+0.23);
+}catch(_){}
 }
 function sfxGem(){
-  sfx(880,0.06,"triangle",0.03);
-  setTimeout(()=>sfx(1180,0.05,"triangle",0.025), 40);
+sfx(880,0.06,"triangle",0.03);
+setTimeout(()=>sfx(1180,0.05,"triangle",0.025), 40);
 }
 
-/* ✅ MONEY/CASHOUT SOUND (added) */
+/* ✅ MONEY/CASHOUT SOUND (MP3) */
 function sfxCashout(){
-  // "cha-ching" style: two bright pings + tiny coin sparkles
-  try{
-    const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
-    const now = ctx.currentTime;
+try{
+    unlockAudioOnce();           // make sure audio is unlocked
+    unlockAudioOnce();            // make sure audio is unlocked
+cashoutSound.currentTime = 0; // replay instantly
+cashoutSound.play();
+}catch(_){}
+}
 
-    const o1 = ctx.createOscillator();
-    const g1 = ctx.createGain();
-    o1.type = "triangle";
-    o1.frequency.setValueAtTime(880, now);
-    o1.frequency.exponentialRampToValueAtTime(1320, now + 0.08);
-    g1.gain.setValueAtTime(0.07, now);
-    g1.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-    o1.connect(g1); g1.connect(ctx.destination);
-    o1.start(now); o1.stop(now + 0.13);
+    glug.stop(now + 0.23);
 
-    const o2 = ctx.createOscillator();
-    const g2 = ctx.createGain();
-    o2.type = "sine";
-    o2.frequency.setValueAtTime(1560, now + 0.06);
-    o2.frequency.exponentialRampToValueAtTime(980, now + 0.16);
-    g2.gain.setValueAtTime(0.05, now + 0.06);
-    g2.gain.exponentialRampToValueAtTime(0.001, now + 0.20);
-    o2.connect(g2); g2.connect(ctx.destination);
-    o2.start(now + 0.06); o2.stop(now + 0.21);
+    /* ===== HAPPY "AH" SPARKLE ===== */
+    const ah = ctx.createOscillator();
+    const ahGain = ctx.createGain();
 
-    for(let i=0;i<6;i++){
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.type = "square";
-      o.frequency.value = 900 + Math.random()*900;
-      const t = now + 0.10 + i*0.03;
-      g.gain.setValueAtTime(0.02, t);
-      g.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
-      o.connect(g); g.connect(ctx.destination);
-      o.start(t); o.stop(t + 0.04);
-    }
+    ah.type = "triangle";
+    ah.frequency.setValueAtTime(1200, now + 0.2);
+
+    ahGain.gain.setValueAtTime(0.0001, now + 0.2);
+    ahGain.gain.exponentialRampToValueAtTime(0.025, now + 0.24);
+    ahGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
+
+    ah.connect(ahGain);
+    ahGain.connect(ctx.destination);
+
+    ah.start(now + 0.2);
+    ah.stop(now + 0.35);
+
   }catch(_){}
 }
 
+
+
 function monthKey(d=new Date()){
-  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"); return `${y}-${m}`;
+const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"); return `${y}-${m}`;
 }
 function todayISO(){
-  const d=new Date(); const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0"); return `${y}-${m}-${day}`;
+const d=new Date(); const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0"); return `${y}-${m}-${day}`;
 }
 function computeLevel(lifeW){ return 1 + Math.floor(Number(lifeW||0)/10); }
 
 function updateLevelUI(){
-  const life = Number(meProfile?.lifetime_wager||0);
-  const lvl = computeLevel(life);
-  const prog = life % 10;
-  const pct = Math.max(0, Math.min(100, (prog/10)*100));
-  $("topLevel").textContent = `Level ${lvl}`;
-  $("lvlFill").style.width = pct.toFixed(1)+"%";
-  $("lvlProg").textContent = `${prog.toFixed(1)}/10.0 wager`;
-  $("lvlPct").textContent = `${pct.toFixed(0)}%`;
+const life = Number(meProfile?.lifetime_wager||0);
+const lvl = computeLevel(life);
+const prog = life % 10;
+const pct = Math.max(0, Math.min(100, (prog/10)*100));
+$("topLevel").textContent = `Level ${lvl}`;
+$("lvlFill").style.width = pct.toFixed(1)+"%";
+$("lvlProg").textContent = `${prog.toFixed(1)}/10.0 wager`;
+$("lvlPct").textContent = `${pct.toFixed(0)}%`;
 }
 
 function updateMeUI(){
-  $("meName").textContent = meProfile?.display_name || "—";
-  $("topUser").textContent = meProfile?.display_name || "—";
-  $("mePts").textContent = to2(meProfile?.pts||0);
-  $("topPts").textContent = to2(meProfile?.pts||0);
-  updateLevelUI();
-  applyAvatar(document.querySelector(".avatar"), meProfile?.avatar_seed||"p1");
-  $("adminDot").style.background = isAdmin ? "var(--green)" : "var(--purple2)";
-  $("adminDot").style.boxShadow = isAdmin ? "0 0 0 4px rgba(34,197,94,.14)" : "0 0 0 4px rgba(167,139,250,.14)";
-  $("adminText").textContent = isAdmin ? "Admin" : "User";
-  $("adminNavWrap").style.display = isAdmin ? "" : "none";
+$("meName").textContent = meProfile?.display_name || "—";
+$("topUser").textContent = meProfile?.display_name || "—";
+$("mePts").textContent = to2(meProfile?.pts||0);
+$("topPts").textContent = to2(meProfile?.pts||0);
+updateLevelUI();
+applyAvatar(document.querySelector(".avatar"), meProfile?.avatar_seed||"p1");
+$("adminDot").style.background = isAdmin ? "var(--green)" : "var(--purple2)";
+$("adminDot").style.boxShadow = isAdmin ? "0 0 0 4px rgba(34,197,94,.14)" : "0 0 0 4px rgba(167,139,250,.14)";
+$("adminText").textContent = isAdmin ? "Admin" : "User";
+$("adminNavWrap").style.display = isAdmin ? "" : "none";
 }
 
 function setView(v){
-  document.querySelectorAll(".navBtn[data-view]").forEach(b=>b.classList.toggle("active", b.dataset.view===v));
-  ["home","games","dice","roulette","mines","sports","leaderboard","bets","case","admin"].forEach(id=>{
-    const el=$("view-"+id); if(el) el.style.display=(id===v)?"":"none";
-  });
-  if(v==="leaderboard") refreshLeaderboard();
-  if(v==="admin") { loadUsersList(); loadAdminEvents(); }
-  if(v==="case") refreshCaseUI();
+document.querySelectorAll(".navBtn[data-view]").forEach(b=>b.classList.toggle("active", b.dataset.view===v));
+["home","games","dice","roulette","mines","sports","leaderboard","bets","case","admin"].forEach(id=>{
+const el=$("view-"+id); if(el) el.style.display=(id===v)?"":"none";
+});
+if(v==="leaderboard") refreshLeaderboard();
+if(v==="admin") { loadUsersList(); loadAdminEvents(); }
+if(v==="case") refreshCaseUI();
 }
 document.querySelectorAll(".navBtn[data-view]").forEach(b=>b.onclick=()=>setView(b.dataset.view));
 
 async function ensureProfile(){
-  const user=session?.user; if(!user) return;
-  const email=(user.email||"").toLowerCase();
-  const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
-  if(error){ toast("Profile not loaded. Run SQL then Refresh."); console.error(error); return; }
-  if(data){ meProfile=data; return; }
-  const name = (email===ADMIN_EMAIL.toLowerCase()) ? ADMIN_DISPLAY_NAME : ((user.user_metadata?.display_name) || (email.split("@")[0]||"Player"));
-  const curM=monthKey();
-  const { data: ins, error: e2 } = await supabase.from("profiles").insert({
-    id:user.id, email:user.email, display_name:name, pts:10.00, lifetime_wager:0, month_wager:0, month_key:curM, level:1
-  }).select("*").single();
-  if(e2){ toast("Profile create failed (DB/RLS)."); console.error(e2); return; }
-  meProfile=ins;
+const user=session?.user; if(!user) return;
+const email=(user.email||"").toLowerCase();
+const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+if(error){ toast("Profile not loaded. Run SQL then Refresh."); console.error(error); return; }
+if(data){ meProfile=data; return; }
+const name = (email===ADMIN_EMAIL.toLowerCase()) ? ADMIN_DISPLAY_NAME : ((user.user_metadata?.display_name) || (email.split("@")[0]||"Player"));
+const curM=monthKey();
+const { data: ins, error: e2 } = await supabase.from("profiles").insert({
+id:user.id, email:user.email, display_name:name, pts:10.00, lifetime_wager:0, month_wager:0, month_key:curM, level:1
+}).select("*").single();
+if(e2){ toast("Profile create failed (DB/RLS)."); console.error(e2); return; }
+meProfile=ins;
 }
 
 async function normalizeMonthForMe(){
-  if(!meProfile) return;
-  const cur=monthKey();
-  if((meProfile.month_key||cur)!==cur){
-    await supabase.from("profiles").update({ month_key:cur, month_wager:0 }).eq("id", meProfile.id);
-    meProfile.month_key=cur; meProfile.month_wager=0;
-  }
+if(!meProfile) return;
+const cur=monthKey();
+if((meProfile.month_key||cur)!==cur){
+await supabase.from("profiles").update({ month_key:cur, month_wager:0 }).eq("id", meProfile.id);
+meProfile.month_key=cur; meProfile.month_wager=0;
+}
 }
 
 async function maybeRollMonth(){
-  const cur = monthKey();
-  const { data: st, error } = await supabase.from("app_state").select("*").eq("id", 1).maybeSingle();
-  if(error || !st) return;
+const cur = monthKey();
+const { data: st, error } = await supabase.from("app_state").select("*").eq("id", 1).maybeSingle();
+if(error || !st) return;
 
-  const stored = st.current_month || cur;
-  if(stored === cur) return;
+const stored = st.current_month || cur;
+if(stored === cur) return;
 
-  const prev = stored;
+const prev = stored;
 
-  const { data: leaders, error: e2 } = await supabase
-    .from("profiles")
-    .select("id,pts,month_wager")
-    .eq("month_key", prev)
-    .order("month_wager",{ascending:false})
-    .limit(1);
+const { data: leaders, error: e2 } = await supabase
+.from("profiles")
+.select("id,pts,month_wager")
+.eq("month_key", prev)
+.order("month_wager",{ascending:false})
+.limit(1);
 
-  if(!e2 && leaders && leaders.length){
-    const w = leaders[0];
-    await supabase.from("profiles").update({ pts: clamp2(Number(w.pts||0)+3) }).eq("id", w.id);
-  }
+if(!e2 && leaders && leaders.length){
+const w = leaders[0];
+await supabase.from("profiles").update({ pts: clamp2(Number(w.pts||0)+3) }).eq("id", w.id);
+}
 
-  await supabase.from("profiles").update({ month_wager: 0, month_key: cur });
+await supabase.from("profiles").update({ month_wager: 0, month_key: cur });
 
-  await supabase.from("app_state").update({
-    current_month: cur,
-    last_awarded_month: prev,
-    updated_at: new Date().toISOString()
-  }).eq("id", 1);
+await supabase.from("app_state").update({
+current_month: cur,
+last_awarded_month: prev,
+updated_at: new Date().toISOString()
+}).eq("id", 1);
 }
 
 async function loadMyBets(){
-  const uid=session?.user?.id; if(!uid) return;
-  const r = await supabase.from("bets")
-    .select("id,created_at,event_name,opt_name,stake,coef,status,payout,event_id,option_id")
-    .eq("user_id", uid)
-    .order("created_at",{ascending:false})
-    .limit(120);
+const uid=session?.user?.id; if(!uid) return;
+const r = await supabase.from("bets")
+.select("id,created_at,event_name,opt_name,stake,coef,status,payout,event_id,option_id")
+.eq("user_id", uid)
+.order("created_at",{ascending:false})
+.limit(120);
 
-  if(r.error){
-    console.error(r.error);
-    $("myBetsBody").innerHTML = `<tr><td colspan="7" class="muted">Cannot load bets (DB/RLS).</td></tr>`;
-    return;
-  }
+if(r.error){
+console.error(r.error);
+$("myBetsBody").innerHTML = `<tr><td colspan="7" class="muted">Cannot load bets (DB/RLS).</td></tr>`;
+return;
+}
 
-  myBets = r.data || [];
-  $("chipMyBets").textContent=String(myBets.length);
-  $("myBetsCount").textContent=String(myBets.length);
+myBets = r.data || [];
+$("chipMyBets").textContent=String(myBets.length);
+$("myBetsCount").textContent=String(myBets.length);
 
-  $("myBetsBody").innerHTML = myBets.length ? myBets.map(b=>`
-    <tr>
-      <td class="mono">${new Date(b.created_at).toLocaleString([], {month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit"})}</td>
-      <td>${esc(b.event_name||"")}</td>
-      <td>${esc(b.opt_name||"")}</td>
-      <td class="mono">${to2(b.stake||0)}</td>
-      <td class="mono">${to2(b.coef||0)}</td>
-      <td><span class="tag ${String(b.status||"pending")==="pending"?"pending":(String(b.status)==="won"?"open":"settled")}">${String(b.status||"pending").toUpperCase()}</span></td>
-      <td class="mono">${Number(b.payout||0)>0 ? to2(b.payout) : "—"}</td>
-    </tr>`).join("") : `<tr><td colspan="7" class="muted">No bets yet.</td></tr>`;
+$("myBetsBody").innerHTML = myBets.length ? myBets.map(b=>`
+   <tr>
+     <td class="mono">${new Date(b.created_at).toLocaleString([], {month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit"})}</td>
+     <td>${esc(b.event_name||"")}</td>
+     <td>${esc(b.opt_name||"")}</td>
+     <td class="mono">${to2(b.stake||0)}</td>
+     <td class="mono">${to2(b.coef||0)}</td>
+     <td><span class="tag ${String(b.status||"pending")==="pending"?"pending":(String(b.status)==="won"?"open":"settled")}">${String(b.status||"pending").toUpperCase()}</span></td>
+     <td class="mono">${Number(b.payout||0)>0 ? to2(b.payout) : "—"}</td>
+   </tr>`).join("") : `<tr><td colspan="7" class="muted">No bets yet.</td></tr>`;
 }
 
 async function loadEventOptionsFor(ids){
-  if(!ids.length) return new Map();
-  const { data, error } = await supabase
-    .from("event_options")
-    .select("id,event_id,label,coef")
-    .in("event_id", ids)
-    .order("id", { ascending: true });
+if(!ids.length) return new Map();
+const { data, error } = await supabase
+.from("event_options")
+.select("id,event_id,label,coef")
+.in("event_id", ids)
+.order("id", { ascending: true });
 
-  if(error) throw error;
-  const map = new Map();
-  for(const row of (data||[])){
-    if(!map.has(row.event_id)) map.set(row.event_id, []);
-    map.get(row.event_id).push({
-      id: row.id,
-      name: row.label,
-      coef: Number(row.coef)
-    });
-  }
-  return map;
+if(error) throw error;
+const map = new Map();
+for(const row of (data||[])){
+if(!map.has(row.event_id)) map.set(row.event_id, []);
+map.get(row.event_id).push({
+id: row.id,
+name: row.label,
+coef: Number(row.coef)
+});
+}
+return map;
 }
 
 async function loadEvents(){
-  const { data, error } = await supabase
-    .from("events")
-    .select("id,name,description,status,created_at,created_by,winner_option_id")
-    .order("created_at",{ascending:false});
+const { data, error } = await supabase
+.from("events")
+.select("id,name,description,status,created_at,created_by,winner_option_id")
+.order("created_at",{ascending:false});
 
-  if(error){ toast("Events load failed (DB/RLS)."); console.error(error); return; }
+if(error){ toast("Events load failed (DB/RLS)."); console.error(error); return; }
 
-  const base = data || [];
-  const ids = base.map(e=>e.id);
+const base = data || [];
+const ids = base.map(e=>e.id);
 
-  try{
-    const optMap = await loadEventOptionsFor(ids);
-    events = base.map(ev => ({ ...ev, options: optMap.get(ev.id) || [] }));
-  }catch(e){
-    console.error(e);
-    events = base.map(ev => ({ ...ev, options: [] }));
-  }
+try{
+const optMap = await loadEventOptionsFor(ids);
+events = base.map(ev => ({ ...ev, options: optMap.get(ev.id) || [] }));
+}catch(e){
+console.error(e);
+events = base.map(ev => ({ ...ev, options: [] }));
+}
 
-  $("chipEvents").textContent=String(events.length);
-  $("chipSports").textContent=String(events.length);
-  $("chipSports2").textContent=String(events.length);
-  $("sportsCountHome").textContent=String(Math.min(6, events.length));
-  renderSports();
+$("chipEvents").textContent=String(events.length);
+$("chipSports").textContent=String(events.length);
+$("chipSports2").textContent=String(events.length);
+$("sportsCountHome").textContent=String(Math.min(6, events.length));
+renderSports();
 }
 
 async function addWagerAndPayout(stake, payout){
-  if(!meProfile) throw new Error("profile");
-  await normalizeMonthForMe();
-  stake = Number(stake);
-  payout = Number(payout);
-  if(!(stake>0)) throw new Error("stake");
-  if(Number(meProfile.pts) < stake) throw new Error("balance");
-  const newPts = clamp2(Number(meProfile.pts) - stake + payout);
-  const newLife = clamp2(Number(meProfile.lifetime_wager||0) + stake);
-  const newMonth = clamp2(Number(meProfile.month_wager||0) + stake);
-  const newLvl = computeLevel(newLife);
-  const { error } = await supabase.from("profiles").update({
-    pts:newPts, lifetime_wager:newLife, month_wager:newMonth, month_key:monthKey(), level:newLvl
-  }).eq("id", session.user.id);
-  if(error) throw error;
-  meProfile.pts=newPts; meProfile.lifetime_wager=newLife; meProfile.month_wager=newMonth; meProfile.level=newLvl;
-  updateMeUI();
-  refreshCaseUI();
-  return { newPts, newLvl };
+if(!meProfile) throw new Error("profile");
+await normalizeMonthForMe();
+stake = Number(stake);
+payout = Number(payout);
+if(!(stake>0)) throw new Error("stake");
+if(Number(meProfile.pts) < stake) throw new Error("balance");
+const newPts = clamp2(Number(meProfile.pts) - stake + payout);
+const newLife = clamp2(Number(meProfile.lifetime_wager||0) + stake);
+const newMonth = clamp2(Number(meProfile.month_wager||0) + stake);
+const newLvl = computeLevel(newLife);
+const { error } = await supabase.from("profiles").update({
+pts:newPts, lifetime_wager:newLife, month_wager:newMonth, month_key:monthKey(), level:newLvl
+}).eq("id", session.user.id);
+if(error) throw error;
+meProfile.pts=newPts; meProfile.lifetime_wager=newLife; meProfile.month_wager=newMonth; meProfile.level=newLvl;
+updateMeUI();
+refreshCaseUI();
+return { newPts, newLvl };
 }
 
 function renderSports(){
-  const mkTile = (icon, title, desc, tagCls, tagTxt, meta)=>`
-    <div class="tileArt"><span>${icon}</span></div>
-    <div class="tileBody">
-      <p class="tileTitle">${esc(title)}</p>
-      <div class="tileDesc">${desc?esc(desc):'<span class="muted">No description</span>'}</div>
-      <div class="tileMeta"><span class="tag ${tagCls}">${tagTxt}</span><span class="oddsMini">${esc(meta||"")}</span></div>
-    </div>`;
+const mkTile = (icon, title, desc, tagCls, tagTxt, meta)=>`
+   <div class="tileArt"><span>${icon}</span></div>
+   <div class="tileBody">
+     <p class="tileTitle">${esc(title)}</p>
+     <div class="tileDesc">${desc?esc(desc):'<span class="muted">No description</span>'}</div>
+     <div class="tileMeta"><span class="tag ${tagCls}">${tagTxt}</span><span class="oddsMini">${esc(meta||"")}</span></div>
+   </div>`;
 
-  const grid=$("eventsGrid"); grid.innerHTML="";
-  const gridH=$("sportsGridHome"); gridH.innerHTML="";
+const grid=$("eventsGrid"); grid.innerHTML="";
+const gridH=$("sportsGridHome"); gridH.innerHTML="";
 
-  if(!events.length){
-    grid.innerHTML='<div class="muted">No events yet (Admin creates them).</div>';
-    gridH.innerHTML='<div class="muted">No events yet.</div>';
-    return;
-  }
+if(!events.length){
+grid.innerHTML='<div class="muted">No events yet (Admin creates them).</div>';
+gridH.innerHTML='<div class="muted">No events yet.</div>';
+return;
+}
 
-  events.forEach((ev, idx)=>{
-    const tagCls = ev.status==="open" ? "open" : (ev.status==="closed" ? "closed" : "settled");
-    const opts = Array.isArray(ev.options)?ev.options:[];
-    const mini = opts.length
-      ? (opts.slice(0,2).map(o=>`${o.name} ${to2(o.coef)}`).join(" • ") + (opts.length>2?" • …":""))
-      : "Tap to bet";
+events.forEach((ev, idx)=>{
+const tagCls = ev.status==="open" ? "open" : (ev.status==="closed" ? "closed" : "settled");
+const opts = Array.isArray(ev.options)?ev.options:[];
+const mini = opts.length
+? (opts.slice(0,2).map(o=>`${o.name} ${to2(o.coef)}`).join(" • ") + (opts.length>2?" • …":""))
+: "Tap to bet";
 
-    const el=document.createElement("div"); el.className="tile";
-    el.innerHTML = mkTile("🏟️", ev.name||"Event", ev.description||"", tagCls, String(ev.status||"open").toUpperCase(), mini);
-    el.onclick=()=>openEventModal(ev);
-    grid.appendChild(el);
+const el=document.createElement("div"); el.className="tile";
+el.innerHTML = mkTile("🏟️", ev.name||"Event", ev.description||"", tagCls, String(ev.status||"open").toUpperCase(), mini);
+el.onclick=()=>openEventModal(ev);
+grid.appendChild(el);
 
-    if(idx<6){
-      const el2=document.createElement("div"); el2.className="tile";
-      el2.innerHTML = mkTile("⚔️", ev.name||"Event", ev.description||"", tagCls, String(ev.status||"open").toUpperCase(), mini);
-      el2.onclick=()=>openEventModal(ev);
-      gridH.appendChild(el2);
-    }
-  });
+if(idx<6){
+const el2=document.createElement("div"); el2.className="tile";
+el2.innerHTML = mkTile("⚔️", ev.name||"Event", ev.description||"", tagCls, String(ev.status||"open").toUpperCase(), mini);
+el2.onclick=()=>openEventModal(ev);
+gridH.appendChild(el2);
+}
+});
 }
 
 function renderGames(){
-  const G=[
-    {icon:"🎲",name:"Dice",desc:"Quick roll"},
-    {icon:"💣",name:"Mines",desc:"Pick safe tiles"},
-    {icon:"🪙",name:"Plinko",desc:"Drop & win"},
-    {icon:"🚀",name:"Crash",desc:"Cash out"},
-    {icon:"🃏",name:"Blackjack",desc:"Classic 21"},
-    {icon:"🎰",name:"Slots",desc:"Spin reels"},
-    {icon:"🎯",name:"Keno",desc:"Pick numbers"},
-    {icon:"🎡",name:"Roulette",desc:"Red / black"},
-  ];
-  const mk=(g)=>{
-    const el=document.createElement("div"); el.className="tile";
-    el.innerHTML = `
-      <div class="tileArt"><span>${g.icon}</span></div>
-      <div class="tileBody">
-        <p class="tileTitle">${esc(g.name)}</p>
-        <div class="tileDesc">${esc(g.desc)}</div>
-        <div class="tileMeta"><span class="tag">GAME</span><span class="oddsMini">Live/soon</span></div>
-      </div>`;
-    el.onclick=()=>{
-      if(g.name==="Dice") setView("dice");
-      else if(g.name==="Roulette") setView("roulette");
-      else if(g.name==="Mines") setView("mines");
-      else toast("Coming soon");
-    };
-    return el;
-  };
-  $("gamesGrid").innerHTML=""; $("gamesGridHome").innerHTML="";
-  G.forEach(g=>{ $("gamesGrid").appendChild(mk(g)); $("gamesGridHome").appendChild(mk(g)); });
-  $("chipGames").textContent=String(G.length);
+const G=[
+{icon:"🎲",name:"Dice",desc:"Quick roll"},
+{icon:"💣",name:"Mines",desc:"Pick safe tiles"},
+{icon:"🪙",name:"Plinko",desc:"Drop & win"},
+{icon:"🚀",name:"Crash",desc:"Cash out"},
+{icon:"🃏",name:"Blackjack",desc:"Classic 21"},
+{icon:"🎰",name:"Slots",desc:"Spin reels"},
+{icon:"🎯",name:"Keno",desc:"Pick numbers"},
+{icon:"🎡",name:"Roulette",desc:"Red / black"},
+];
+const mk=(g)=>{
+const el=document.createElement("div"); el.className="tile";
+el.innerHTML = `
+     <div class="tileArt"><span>${g.icon}</span></div>
+     <div class="tileBody">
+       <p class="tileTitle">${esc(g.name)}</p>
+       <div class="tileDesc">${esc(g.desc)}</div>
+       <div class="tileMeta"><span class="tag">GAME</span><span class="oddsMini">Live/soon</span></div>
+     </div>`;
+el.onclick=()=>{
+if(g.name==="Dice") setView("dice");
+else if(g.name==="Roulette") setView("roulette");
+else if(g.name==="Mines") setView("mines");
+else toast("Coming soon");
+};
+return el;
+};
+$("gamesGrid").innerHTML=""; $("gamesGridHome").innerHTML="";
+G.forEach(g=>{ $("gamesGrid").appendChild(mk(g)); $("gamesGridHome").appendChild(mk(g)); });
+$("chipGames").textContent=String(G.length);
 }
 
 /* EVENT MODAL + CONFIRM */
@@ -1153,19 +1168,19 @@ let currentEvent=null;
 let selectedOpt=null;
 
 function openEventModal(ev){
-  if(!meProfile){ toast("Profile not loaded (Refresh)."); return; }
-  currentEvent=ev; selectedOpt=null;
-  $("mConfirm").disabled=true;
-  $("mTitle").textContent=ev.name||"Event";
-  $("mDesc").textContent=ev.description||"";
-  const st=String(ev.status||"open");
-  $("mStatus").textContent=st.toUpperCase();
-  $("mStatus").className="tag " + (st==="open"?"open":(st==="closed"?"closed":"settled"));
-  $("mBal").textContent=to2(meProfile.pts||0);
-  $("mStake").value = to2(Number($("defaultStake").value)||0.10);
-  renderOdds(ev);
-  updatePotential();
-  $("overlay").classList.add("show");
+if(!meProfile){ toast("Profile not loaded (Refresh)."); return; }
+currentEvent=ev; selectedOpt=null;
+$("mConfirm").disabled=true;
+$("mTitle").textContent=ev.name||"Event";
+$("mDesc").textContent=ev.description||"";
+const st=String(ev.status||"open");
+$("mStatus").textContent=st.toUpperCase();
+$("mStatus").className="tag " + (st==="open"?"open":(st==="closed"?"closed":"settled"));
+$("mBal").textContent=to2(meProfile.pts||0);
+$("mStake").value = to2(Number($("defaultStake").value)||0.10);
+renderOdds(ev);
+updatePotential();
+$("overlay").classList.add("show");
 }
 function closeEventModal(){ $("overlay").classList.remove("show"); currentEvent=null; selectedOpt=null; $("mConfirm").disabled=true; }
 $("closeModal").onclick=closeEventModal;
@@ -1173,106 +1188,106 @@ $("mCancel").onclick=closeEventModal;
 $("overlay").onclick=(e)=>{ if(e.target===$("overlay")) closeEventModal(); };
 
 function updatePotential(){
-  const stake=Number($("mStake").value);
-  if(!(stake>0) || !selectedOpt){ $("mPayout").textContent="—"; $("mConfirm").disabled=true; return; }
-  $("mPayout").textContent = to2(stake * Number(selectedOpt.coef));
-  $("mConfirm").disabled = false;
+const stake=Number($("mStake").value);
+if(!(stake>0) || !selectedOpt){ $("mPayout").textContent="—"; $("mConfirm").disabled=true; return; }
+$("mPayout").textContent = to2(stake * Number(selectedOpt.coef));
+$("mConfirm").disabled = false;
 }
 $("mStake").addEventListener("input", updatePotential);
 
 function renderOdds(ev){
-  const box=$("mOdds"); box.innerHTML="";
-  const opts=Array.isArray(ev.options)?ev.options:[];
-  if(!opts.length){
-    box.innerHTML = `<div class="muted">No options found for this event.</div>`;
-    return;
-  }
-  const coefs = opts.map(o=>Number(o.coef));
-  const minC = Math.min(...coefs);
-  const maxC = Math.max(...coefs);
+const box=$("mOdds"); box.innerHTML="";
+const opts=Array.isArray(ev.options)?ev.options:[];
+if(!opts.length){
+box.innerHTML = `<div class="muted">No options found for this event.</div>`;
+return;
+}
+const coefs = opts.map(o=>Number(o.coef));
+const minC = Math.min(...coefs);
+const maxC = Math.max(...coefs);
 
-  opts.forEach((o)=>{
-    let cls="";
-    if(minC !== maxC){
-      if(Number(o.coef) === maxC) cls="g";
-      else if(Number(o.coef) === minC) cls="r";
-    }
-    const btn=document.createElement("div");
-    btn.className="oddBtn "+cls;
-    btn.innerHTML=`<div class="oddName">${esc(o.name)}</div><div class="oddCoef">${to2(o.coef)}</div>`;
-    btn.onclick=()=>{
-      selectedOpt=o;
-      [...box.querySelectorAll(".oddBtn")].forEach(x=>x.classList.remove("selected"));
-      btn.classList.add("selected");
-      sfx(660,0.05,"triangle",0.03);
-      updatePotential();
-    };
-    box.appendChild(btn);
-  });
+opts.forEach((o)=>{
+let cls="";
+if(minC !== maxC){
+if(Number(o.coef) === maxC) cls="g";
+else if(Number(o.coef) === minC) cls="r";
+}
+const btn=document.createElement("div");
+btn.className="oddBtn "+cls;
+btn.innerHTML=`<div class="oddName">${esc(o.name)}</div><div class="oddCoef">${to2(o.coef)}</div>`;
+btn.onclick=()=>{
+selectedOpt=o;
+[...box.querySelectorAll(".oddBtn")].forEach(x=>x.classList.remove("selected"));
+btn.classList.add("selected");
+sfx(660,0.05,"triangle",0.03);
+updatePotential();
+};
+box.appendChild(btn);
+});
 }
 
 $("mConfirm").onclick = async ()=>{
-  if(!currentEvent || !selectedOpt) return;
-  const stake=Number($("mStake").value);
-  toast(`Confirming ${to2(stake)} on ${selectedOpt.name}…`);
-  await placeBet(currentEvent, selectedOpt);
+if(!currentEvent || !selectedOpt) return;
+const stake=Number($("mStake").value);
+toast(`Confirming ${to2(stake)} on ${selectedOpt.name}…`);
+await placeBet(currentEvent, selectedOpt);
 };
 
 async function placeBet(ev,opt){
-  if(String(ev.status)!=="open") return toast("Event not open");
-  if(!meProfile) return toast("Profile not loaded");
-  await normalizeMonthForMe();
+if(String(ev.status)!=="open") return toast("Event not open");
+if(!meProfile) return toast("Profile not loaded");
+await normalizeMonthForMe();
 
-  const stake=Number($("mStake").value);
-  if(!(stake>0)) return toast("Stake must be > 0");
-  if(stake<0.01) return toast("Min 0.01");
-  if(Number(meProfile.pts)<stake) return toast("Not enough points");
+const stake=Number($("mStake").value);
+if(!(stake>0)) return toast("Stake must be > 0");
+if(stake<0.01) return toast("Min 0.01");
+if(Number(meProfile.pts)<stake) return toast("Not enough points");
 
-  const chk = await supabase.from("bets").select("id").eq("user_id", session.user.id).eq("event_id", ev.id).limit(1);
-  if(!chk.error && chk.data && chk.data.length) return toast("Already bet this event");
+const chk = await supabase.from("bets").select("id").eq("user_id", session.user.id).eq("event_id", ev.id).limit(1);
+if(!chk.error && chk.data && chk.data.length) return toast("Already bet this event");
 
-  const newPts=clamp2(Number(meProfile.pts)-stake);
-  const newLife=clamp2(Number(meProfile.lifetime_wager||0)+stake);
-  const newMonth=clamp2(Number(meProfile.month_wager||0)+stake);
-  const newLvl=computeLevel(newLife);
+const newPts=clamp2(Number(meProfile.pts)-stake);
+const newLife=clamp2(Number(meProfile.lifetime_wager||0)+stake);
+const newMonth=clamp2(Number(meProfile.month_wager||0)+stake);
+const newLvl=computeLevel(newLife);
 
-  const u1 = await supabase.from("profiles").update({
-    pts:newPts, lifetime_wager:newLife, month_wager:newMonth, month_key:monthKey(), level:newLvl
-  }).eq("id", session.user.id);
-  if(u1.error){ toast("Bet failed (DB/RLS)."); console.error(u1.error); return; }
+const u1 = await supabase.from("profiles").update({
+pts:newPts, lifetime_wager:newLife, month_wager:newMonth, month_key:monthKey(), level:newLvl
+}).eq("id", session.user.id);
+if(u1.error){ toast("Bet failed (DB/RLS)."); console.error(u1.error); return; }
 
-  const ins = await supabase.from("bets").insert({
-    user_id: session.user.id,
-    event_id: ev.id,
-    option_id: opt.id,
-    event_name: ev.name,
-    opt_name: opt.name,
-    stake: Number(to2(stake)),
-    coef: Number(to2(opt.coef)),
-    status: "pending",
-    payout: 0
-  });
-  if(ins.error){ toast("Bet insert failed (DB/RLS)."); console.error(ins.error); return; }
+const ins = await supabase.from("bets").insert({
+user_id: session.user.id,
+event_id: ev.id,
+option_id: opt.id,
+event_name: ev.name,
+opt_name: opt.name,
+stake: Number(to2(stake)),
+coef: Number(to2(opt.coef)),
+status: "pending",
+payout: 0
+});
+if(ins.error){ toast("Bet insert failed (DB/RLS)."); console.error(ins.error); return; }
 
-  meProfile.pts=newPts; meProfile.lifetime_wager=newLife; meProfile.month_wager=newMonth; meProfile.level=newLvl;
-  updateMeUI();
-  await loadMyBets();
-  toast("Bet placed");
-  closeEventModal();
+meProfile.pts=newPts; meProfile.lifetime_wager=newLife; meProfile.month_wager=newMonth; meProfile.level=newLvl;
+updateMeUI();
+await loadMyBets();
+toast("Bet placed");
+closeEventModal();
 }
 
 /* PROFILE MODAL */
 function openProfile(){
-  if(!meProfile) return toast("Profile not loaded");
-  $("pUserEdit").value = meProfile.display_name||"";
-  applyAvatar($("pAvatar"), meProfile.avatar_seed||"p1");
-  window.__selectedAvatar = meProfile.avatar_seed||"p1";
-  $("pBal").textContent = to2(meProfile.pts||0);
-  $("pLevel").textContent = String(meProfile.level||1);
-  $("pMonthW").textContent = to2(meProfile.month_wager||0);
-  $("pLifeW").textContent = to2(meProfile.lifetime_wager||0);
-  $("pBets").textContent = String(myBets.length);
-  $("profileOverlay").classList.add("show");
+if(!meProfile) return toast("Profile not loaded");
+$("pUserEdit").value = meProfile.display_name||"";
+applyAvatar($("pAvatar"), meProfile.avatar_seed||"p1");
+window.__selectedAvatar = meProfile.avatar_seed||"p1";
+$("pBal").textContent = to2(meProfile.pts||0);
+$("pLevel").textContent = String(meProfile.level||1);
+$("pMonthW").textContent = to2(meProfile.month_wager||0);
+$("pLifeW").textContent = to2(meProfile.lifetime_wager||0);
+$("pBets").textContent = String(myBets.length);
+$("profileOverlay").classList.add("show");
 }
 function closeProfile(){ $("profileOverlay").classList.remove("show"); }
 $("profileBtn").onclick=openProfile;
@@ -1280,449 +1295,449 @@ $("closeProfile").onclick=closeProfile;
 $("pCloseBtn").onclick=closeProfile;
 
 document.querySelectorAll('[data-ava]').forEach(btn=>{
-  btn.onclick=()=>{
-    window.__selectedAvatar = btn.getAttribute("data-ava");
-    applyAvatar($("pAvatar"), window.__selectedAvatar);
-    toast("Avatar selected");
-  };
+btn.onclick=()=>{
+window.__selectedAvatar = btn.getAttribute("data-ava");
+applyAvatar($("pAvatar"), window.__selectedAvatar);
+toast("Avatar selected");
+};
 });
 $("pSaveBtn").onclick=async ()=>{
-  if(!meProfile) return toast("Profile not loaded");
-  const newName = $("pUserEdit").value.trim();
-  if(!newName) return toast("Username required");
-  const seed = window.__selectedAvatar || (meProfile.avatar_seed||"p1");
-  const { error } = await supabase.from("profiles").update({ display_name:newName, avatar_seed:seed }).eq("id", session.user.id);
-  if(error){ toast("Save failed (DB/RLS)."); console.error(error); return; }
-  meProfile.display_name=newName; meProfile.avatar_seed=seed;
-  updateMeUI();
-  toast("Profile updated");
+if(!meProfile) return toast("Profile not loaded");
+const newName = $("pUserEdit").value.trim();
+if(!newName) return toast("Username required");
+const seed = window.__selectedAvatar || (meProfile.avatar_seed||"p1");
+const { error } = await supabase.from("profiles").update({ display_name:newName, avatar_seed:seed }).eq("id", session.user.id);
+if(error){ toast("Save failed (DB/RLS)."); console.error(error); return; }
+meProfile.display_name=newName; meProfile.avatar_seed=seed;
+updateMeUI();
+toast("Profile updated");
 };
 $("profileOverlay").onclick=(e)=>{ if(e.target===$("profileOverlay")) closeProfile(); };
 
 /* LEADERBOARD */
 async function refreshLeaderboard(){
-  const cur=monthKey();
-  $("lbMonth").textContent=cur;
-  const { data, error } = await supabase.from("profiles").select("display_name,month_wager,level,month_key").eq("month_key", cur).order("month_wager",{ascending:false}).limit(50);
-  if(error){
-    $("lbBody").innerHTML = `<tr><td colspan="4" class="muted">Leaderboard failed (DB/RLS).</td></tr>`;
-    console.error(error);
-    return;
-  }
-  const rows=data||[];
-  $("chipLb").textContent=String(rows.length);
-  $("lbBody").innerHTML = rows.length ? rows.map((r,i)=>`
-    <tr>
-      <td class="mono">${i+1}</td>
-      <td>${esc(r.display_name||"Player")}</td>
-      <td class="mono">${to2(r.month_wager||0)}</td>
-      <td class="mono">Lv ${Number(r.level||1)}</td>
-    </tr>`).join("") : `<tr><td colspan="4" class="muted">No data yet. Place some bets first.</td></tr>`;
+const cur=monthKey();
+$("lbMonth").textContent=cur;
+const { data, error } = await supabase.from("profiles").select("display_name,month_wager,level,month_key").eq("month_key", cur).order("month_wager",{ascending:false}).limit(50);
+if(error){
+$("lbBody").innerHTML = `<tr><td colspan="4" class="muted">Leaderboard failed (DB/RLS).</td></tr>`;
+console.error(error);
+return;
+}
+const rows=data||[];
+$("chipLb").textContent=String(rows.length);
+$("lbBody").innerHTML = rows.length ? rows.map((r,i)=>`
+   <tr>
+     <td class="mono">${i+1}</td>
+     <td>${esc(r.display_name||"Player")}</td>
+     <td class="mono">${to2(r.month_wager||0)}</td>
+     <td class="mono">Lv ${Number(r.level||1)}</td>
+   </tr>`).join("") : `<tr><td colspan="4" class="muted">No data yet. Place some bets first.</td></tr>`;
 }
 
 /* DAILY CASE + COUNTDOWN */
 const CASE_ITEMS=[
-  {label:"0.01", amount:0.01, iconType:"yellow", p:70},
-  {label:"0.03", amount:0.03, iconType:"yellow", p:10},
-  {label:"0.05", amount:0.05, iconType:"yellow", p:7.5},
-  {label:"0.10", amount:0.10, iconType:"yellow", p:2.5},
-  {label:"0.00", amount:0.00, iconType:"poop", p:9},
-  {label:"1.00", amount:1.00, iconType:"blue", p:1},
+{label:"0.01", amount:0.01, iconType:"yellow", p:70},
+{label:"0.03", amount:0.03, iconType:"yellow", p:10},
+{label:"0.05", amount:0.05, iconType:"yellow", p:7.5},
+{label:"0.10", amount:0.10, iconType:"yellow", p:2.5},
+{label:"0.00", amount:0.00, iconType:"poop", p:9},
+{label:"1.00", amount:1.00, iconType:"blue", p:1},
 ];
 function iconFor(t){
-  if(t==="yellow") return `<span class="glow">${gemYellow()}</span>`;
-  if(t==="blue") return `<span class="glow">${gemBlue()}</span>`;
-  return poop();
+if(t==="yellow") return `<span class="glow">${gemYellow()}</span>`;
+if(t==="blue") return `<span class="glow">${gemBlue()}</span>`;
+return poop();
 }
 function weightedPick(){
-  const r=Math.random()*100; let a=0;
-  for(const it of CASE_ITEMS){ a+=it.p; if(r<=a) return it; }
-  return CASE_ITEMS[0];
+const r=Math.random()*100; let a=0;
+for(const it of CASE_ITEMS){ a+=it.p; if(r<=a) return it; }
+return CASE_ITEMS[0];
 }
 function caseEligible(){
-  if(!meProfile) return {ok:false, reason:"Profile not loaded"};
-  const cur=monthKey();
-  const myMonth = ((meProfile.month_key||cur)===cur) ? Number(meProfile.month_wager||0) : 0;
-  const hasReq = myMonth>=10;
-  const already = String(meProfile.last_case_open||"")===todayISO();
-  if(!hasReq && !isAdmin) return {ok:false, reason:"Need 10 wager", myMonth};
-  if(already && !isAdmin) return {ok:false, reason:"Already opened today", myMonth};
-  return {ok:true, myMonth};
+if(!meProfile) return {ok:false, reason:"Profile not loaded"};
+const cur=monthKey();
+const myMonth = ((meProfile.month_key||cur)===cur) ? Number(meProfile.month_wager||0) : 0;
+const hasReq = myMonth>=10;
+const already = String(meProfile.last_case_open||"")===todayISO();
+if(!hasReq && !isAdmin) return {ok:false, reason:"Need 10 wager", myMonth};
+if(already && !isAdmin) return {ok:false, reason:"Already opened today", myMonth};
+return {ok:true, myMonth};
 }
 function buildCaseStrip(target){
-  const arr=[]; const total=40;
-  for(let i=0;i<total-1;i++) arr.push(CASE_ITEMS[Math.floor(Math.random()*CASE_ITEMS.length)]);
-  arr.push(target); return arr;
+const arr=[]; const total=40;
+for(let i=0;i<total-1;i++) arr.push(CASE_ITEMS[Math.floor(Math.random()*CASE_ITEMS.length)]);
+arr.push(target); return arr;
 }
 function renderCaseTrack(items){
-  const track=$("caseTrack"); track.innerHTML="";
-  items.forEach(it=>{
-    const el=document.createElement("div"); el.className="caseItem";
-    el.innerHTML = `${iconFor(it.iconType)}<div class="amt">${it.label}</div><div class="lbl">reward</div>`;
-    track.appendChild(el);
-  });
+const track=$("caseTrack"); track.innerHTML="";
+items.forEach(it=>{
+const el=document.createElement("div"); el.className="caseItem";
+el.innerHTML = `${iconFor(it.iconType)}<div class="amt">${it.label}</div><div class="lbl">reward</div>`;
+track.appendChild(el);
+});
 }
 function refreshCaseUI(){
-  if(!meProfile){ $("caseStatus").textContent="PROFILE NOT LOADED"; $("openCaseBtn").disabled=true; return; }
-  const cur=monthKey();
-  const myMonth = ((meProfile.month_key||cur)===cur) ? Number(meProfile.month_wager||0) : 0;
-  $("caseReq").textContent = `${to2(myMonth)} / 10.00`;
-  const e=caseEligible();
-  $("caseStatus").textContent = e.ok ? "READY" : (isAdmin ? "ADMIN" : e.reason.toUpperCase());
-  $("openCaseBtn").disabled = !e.ok && !isAdmin;
-  $("openCaseBtn").style.opacity = (!e.ok && !isAdmin) ? "0.6" : "1";
+if(!meProfile){ $("caseStatus").textContent="PROFILE NOT LOADED"; $("openCaseBtn").disabled=true; return; }
+const cur=monthKey();
+const myMonth = ((meProfile.month_key||cur)===cur) ? Number(meProfile.month_wager||0) : 0;
+$("caseReq").textContent = `${to2(myMonth)} / 10.00`;
+const e=caseEligible();
+$("caseStatus").textContent = e.ok ? "READY" : (isAdmin ? "ADMIN" : e.reason.toUpperCase());
+$("openCaseBtn").disabled = !e.ok && !isAdmin;
+$("openCaseBtn").style.opacity = (!e.ok && !isAdmin) ? "0.6" : "1";
 }
 function updateCaseCountdown(){
-  const now = new Date();
-  const next = new Date(now);
-  next.setHours(24,0,0,0);
-  const ms = Math.max(0, next - now);
-  const h = Math.floor(ms/3600000);
-  const m = Math.floor((ms%3600000)/60000);
-  const s = Math.floor((ms%60000)/1000);
-  $("caseCountdown").textContent = `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+const now = new Date();
+const next = new Date(now);
+next.setHours(24,0,0,0);
+const ms = Math.max(0, next - now);
+const h = Math.floor(ms/3600000);
+const m = Math.floor((ms%3600000)/60000);
+const s = Math.floor((ms%60000)/1000);
+$("caseCountdown").textContent = `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
 }
 setInterval(updateCaseCountdown, 1000);
 updateCaseCountdown();
 
 let caseSpinning=false;
 $("openCaseBtn").onclick=async ()=>{
-  if(caseSpinning) return;
-  if(!meProfile) return toast("Profile not loaded");
-  const elig=caseEligible();
-  if(!elig.ok && !isAdmin) return toast("Daily case locked (wager 10)");
-  caseSpinning=true;
-  const reward=weightedPick();
-  const strip=buildCaseStrip(reward);
-  renderCaseTrack(strip);
+if(caseSpinning) return;
+if(!meProfile) return toast("Profile not loaded");
+const elig=caseEligible();
+if(!elig.ok && !isAdmin) return toast("Daily case locked (wager 10)");
+caseSpinning=true;
+const reward=weightedPick();
+const strip=buildCaseStrip(reward);
+renderCaseTrack(strip);
 
-  const track=$("caseTrack");
-  track.style.transition="none";
-  track.style.transform="translateX(0px)";
-  const stage=track.parentElement;
-  const itemW=120, gap=14;
-  const stageW=stage.clientWidth;
-  const lastCenter=20 + (strip.length-1)*(itemW+gap) + itemW/2;
-  const targetX=(stageW/2)-lastCenter;
+const track=$("caseTrack");
+track.style.transition="none";
+track.style.transform="translateX(0px)";
+const stage=track.parentElement;
+const itemW=120, gap=14;
+const stageW=stage.clientWidth;
+const lastCenter=20 + (strip.length-1)*(itemW+gap) + itemW/2;
+const targetX=(stageW/2)-lastCenter;
 
-  requestAnimationFrame(()=>{
-    track.style.transition="transform 3.4s cubic-bezier(.08,.75,.10,1)";
-    track.style.transform=`translateX(${targetX}px)`;
-  });
+requestAnimationFrame(()=>{
+track.style.transition="transform 3.4s cubic-bezier(.08,.75,.10,1)";
+track.style.transform=`translateX(${targetX}px)`;
+});
 
-  let t=0; const tm=setInterval(()=>{ t++; sfx(900,0.015,"square",0.05); if(t>70) clearInterval(tm); }, 48);
+let t=0; const tm=setInterval(()=>{ t++; sfx(900,0.015,"square",0.05); if(t>70) clearInterval(tm); }, 48);
 
-  setTimeout(async ()=>{
-    clearInterval(tm);
-    const prize=Number(reward.amount);
-    const today=todayISO();
-    const newPts=clamp2(Number(meProfile.pts)+prize);
-    const { error } = await supabase.from("profiles").update({ pts:newPts, last_case_open: today }).eq("id", session.user.id);
-    if(error){ toast("Case payout failed (DB/RLS)."); console.error(error); caseSpinning=false; return; }
-    meProfile.pts=newPts; meProfile.last_case_open=today;
-    updateMeUI(); refreshCaseUI();
-    toast(prize>0 ? `You won ${to2(prize)}` : "You won 0.00");
-    caseSpinning=false;
-  }, 3600);
+setTimeout(async ()=>{
+clearInterval(tm);
+const prize=Number(reward.amount);
+const today=todayISO();
+const newPts=clamp2(Number(meProfile.pts)+prize);
+const { error } = await supabase.from("profiles").update({ pts:newPts, last_case_open: today }).eq("id", session.user.id);
+if(error){ toast("Case payout failed (DB/RLS)."); console.error(error); caseSpinning=false; return; }
+meProfile.pts=newPts; meProfile.last_case_open=today;
+updateMeUI(); refreshCaseUI();
+toast(prize>0 ? `You won ${to2(prize)}` : "You won 0.00");
+caseSpinning=false;
+}, 3600);
 };
 renderCaseTrack(buildCaseStrip(CASE_ITEMS[0]));
 
 /* ADMIN: USERS */
 async function loadUsersList(){
-  if(!isAdmin) return;
-  const { data, error } = await supabase.from("profiles").select("id,display_name,email,pts").order("created_at",{ascending:true}).limit(200);
-  if(error){
-    $("adminUserHint").textContent="Cannot load users. Run SQL then Refresh. Users must sign in once to create a profile.";
-    console.error(error);
-    return;
-  }
-  usersList=data||[];
-  const sel=$("userSelect");
-  sel.innerHTML = usersList.length ? usersList.map(u=>`<option value="${u.id}">${esc(u.display_name||"User")} — ${esc(u.email||"")}</option>`).join("") : `<option value="">No users</option>`;
-  $("adminUserHint").textContent = usersList.length ? `${usersList.length} users loaded` : "No users yet.";
+if(!isAdmin) return;
+const { data, error } = await supabase.from("profiles").select("id,display_name,email,pts").order("created_at",{ascending:true}).limit(200);
+if(error){
+$("adminUserHint").textContent="Cannot load users. Run SQL then Refresh. Users must sign in once to create a profile.";
+console.error(error);
+return;
+}
+usersList=data||[];
+const sel=$("userSelect");
+sel.innerHTML = usersList.length ? usersList.map(u=>`<option value="${u.id}">${esc(u.display_name||"User")} — ${esc(u.email||"")}</option>`).join("") : `<option value="">No users</option>`;
+$("adminUserHint").textContent = usersList.length ? `${usersList.length} users loaded` : "No users yet.";
 }
 function getSelectedUser(){
-  const id=$("userSelect").value;
-  return usersList.find(u=>u.id===id) || null;
+const id=$("userSelect").value;
+return usersList.find(u=>u.id===id) || null;
 }
 $("setPtsBtn").onclick=async ()=>{
-  if(!isAdmin) return toast("Admin only");
-  const u=getSelectedUser(); if(!u) return toast("Select user");
-  const pts=Number($("ptsSet").value); if(!(pts>=0)) return toast("Invalid pts");
-  const { error } = await supabase.from("profiles").update({ pts: clamp2(pts) }).eq("id", u.id);
-  if(error){ toast("Set failed (DB/RLS)."); console.error(error); return; }
-  toast("Points set");
-  await loadUsersList();
+if(!isAdmin) return toast("Admin only");
+const u=getSelectedUser(); if(!u) return toast("Select user");
+const pts=Number($("ptsSet").value); if(!(pts>=0)) return toast("Invalid pts");
+const { error } = await supabase.from("profiles").update({ pts: clamp2(pts) }).eq("id", u.id);
+if(error){ toast("Set failed (DB/RLS)."); console.error(error); return; }
+toast("Points set");
+await loadUsersList();
 };
 $("addBtn").onclick=async ()=>{
-  if(!isAdmin) return toast("Admin only");
-  const u=getSelectedUser(); if(!u) return toast("Select user");
-  const add=Number($("ptsAdd").value); if(!(add>0)) return toast("Invalid add");
-  const newPts=clamp2(Number(u.pts||0)+add);
-  const { error } = await supabase.from("profiles").update({ pts:newPts }).eq("id", u.id);
-  if(error){ toast("Add failed (DB/RLS)."); console.error(error); return; }
-  toast("Added");
-  await loadUsersList();
+if(!isAdmin) return toast("Admin only");
+const u=getSelectedUser(); if(!u) return toast("Select user");
+const add=Number($("ptsAdd").value); if(!(add>0)) return toast("Invalid add");
+const newPts=clamp2(Number(u.pts||0)+add);
+const { error } = await supabase.from("profiles").update({ pts:newPts }).eq("id", u.id);
+if(error){ toast("Add failed (DB/RLS)."); console.error(error); return; }
+toast("Added");
+await loadUsersList();
 };
 
 /* ADMIN: CREATE EVENT */
 let opts=[
-  { tmpId: crypto.randomUUID(), name:"Player A", coef:1.80 },
-  { tmpId: crypto.randomUUID(), name:"Player B", coef:2.10 }
+{ tmpId: crypto.randomUUID(), name:"Player A", coef:1.80 },
+{ tmpId: crypto.randomUUID(), name:"Player B", coef:2.10 }
 ];
 function renderOptRows(){
-  const box=$("optsBox"); box.innerHTML="";
-  opts.forEach(o=>{
-    const row=document.createElement("div"); row.className="row"; row.style.marginBottom="10px";
-    row.innerHTML=`
-      <div style="flex:1;min-width:220px;"><label>Option name</label><input data-on="${o.tmpId}" value="${esc(o.name)}"/></div>
-      <div style="width:200px;"><label>Coef</label><input data-oc="${o.tmpId}" type="number" min="1.01" step="0.01" value="${to2(o.coef)}"/></div>
-      <div style="width:160px;"><label>&nbsp;</label><button class="btn red" data-od="${o.tmpId}" style="width:100%;">Remove</button></div>
-    `;
-    box.appendChild(row);
-  });
-  box.querySelectorAll("input[data-on]").forEach(inp=>inp.oninput=(e)=>{ const id=e.target.dataset.on; opts=opts.map(o=>o.tmpId===id?({...o,name:e.target.value}):o); });
-  box.querySelectorAll("input[data-oc]").forEach(inp=>inp.oninput=(e)=>{ const id=e.target.dataset.oc; const v=Number(e.target.value); if(!(v>=1.01)) return; opts=opts.map(o=>o.tmpId===id?({...o,coef:Number(to2(v))}):o); });
-  box.querySelectorAll("button[data-od]").forEach(btn=>btn.onclick=(e)=>{ const id=e.target.dataset.od; opts=opts.filter(o=>o.tmpId!==id); renderOptRows(); });
+const box=$("optsBox"); box.innerHTML="";
+opts.forEach(o=>{
+const row=document.createElement("div"); row.className="row"; row.style.marginBottom="10px";
+row.innerHTML=`
+     <div style="flex:1;min-width:220px;"><label>Option name</label><input data-on="${o.tmpId}" value="${esc(o.name)}"/></div>
+     <div style="width:200px;"><label>Coef</label><input data-oc="${o.tmpId}" type="number" min="1.01" step="0.01" value="${to2(o.coef)}"/></div>
+     <div style="width:160px;"><label>&nbsp;</label><button class="btn red" data-od="${o.tmpId}" style="width:100%;">Remove</button></div>
+   `;
+box.appendChild(row);
+});
+box.querySelectorAll("input[data-on]").forEach(inp=>inp.oninput=(e)=>{ const id=e.target.dataset.on; opts=opts.map(o=>o.tmpId===id?({...o,name:e.target.value}):o); });
+box.querySelectorAll("input[data-oc]").forEach(inp=>inp.oninput=(e)=>{ const id=e.target.dataset.oc; const v=Number(e.target.value); if(!(v>=1.01)) return; opts=opts.map(o=>o.tmpId===id?({...o,coef:Number(to2(v))}):o); });
+box.querySelectorAll("button[data-od]").forEach(btn=>btn.onclick=(e)=>{ const id=e.target.dataset.od; opts=opts.filter(o=>o.tmpId!==id); renderOptRows(); });
 }
 $("addOptBtn").onclick=()=>{ if(!isAdmin) return toast("Admin only"); opts.push({ tmpId:crypto.randomUUID(), name:"", coef:2.00 }); renderOptRows(); };
 renderOptRows();
 
 $("createEventBtn").onclick = async () => {
-  if (!isAdmin) return toast("Admin only");
+if (!isAdmin) return toast("Admin only");
 
-  const name = $("evName").value.trim();
-  const desc = $("evDesc").value.trim();
-  const status = ($("evStatus").value.trim() || "open");
+const name = $("evName").value.trim();
+const desc = $("evDesc").value.trim();
+const status = ($("evStatus").value.trim() || "open");
 
-  if (!name) return toast("Event name required");
-  if (opts.length < 2) return toast("Need 2+ options");
-  for (const o of opts) {
-    if (!String(o.name || "").trim()) return toast("Option needs name");
-    if (!(Number(o.coef) >= 1.01)) return toast("Coef ≥ 1.01");
-  }
+if (!name) return toast("Event name required");
+if (opts.length < 2) return toast("Need 2+ options");
+for (const o of opts) {
+if (!String(o.name || "").trim()) return toast("Option needs name");
+if (!(Number(o.coef) >= 1.01)) return toast("Coef ≥ 1.01");
+}
 
-  const normalized = opts.map(o => ({ label: String(o.name).trim(), coef: Number(to2(o.coef)) }));
+const normalized = opts.map(o => ({ label: String(o.name).trim(), coef: Number(to2(o.coef)) }));
 
-  try {
-    const { data: ev, error: evErr } = await supabase
-      .from("events")
-      .insert({ name, description: desc, status, created_by: session.user.id })
-      .select("id")
-      .single();
-    if (evErr) throw evErr;
+try {
+const { data: ev, error: evErr } = await supabase
+.from("events")
+.insert({ name, description: desc, status, created_by: session.user.id })
+.select("id")
+.single();
+if (evErr) throw evErr;
 
-    const rows = normalized.map(o => ({ event_id: ev.id, label: o.label, coef: o.coef }));
-    const { error: optErr } = await supabase.from("event_options").insert(rows);
-    if (optErr) throw optErr;
+const rows = normalized.map(o => ({ event_id: ev.id, label: o.label, coef: o.coef }));
+const { error: optErr } = await supabase.from("event_options").insert(rows);
+if (optErr) throw optErr;
 
-    $("evName").value = "";
-    $("evDesc").value = "";
-    $("evStatus").value = "open";
-    opts = [
-      { tmpId: crypto.randomUUID(), name: "Player A", coef: 1.80 },
-      { tmpId: crypto.randomUUID(), name: "Player B", coef: 2.10 }
-    ];
-    renderOptRows();
+$("evName").value = "";
+$("evDesc").value = "";
+$("evStatus").value = "open";
+opts = [
+{ tmpId: crypto.randomUUID(), name: "Player A", coef: 1.80 },
+{ tmpId: crypto.randomUUID(), name: "Player B", coef: 2.10 }
+];
+renderOptRows();
 
-    toast("Event created");
-    await loadEvents();
-    await loadAdminEvents();
-    setView("sports");
-  } catch (e) {
-    toast("Create failed (DB/RLS).");
-    console.error(e);
-  }
+toast("Event created");
+await loadEvents();
+await loadAdminEvents();
+setView("sports");
+} catch (e) {
+toast("Create failed (DB/RLS).");
+console.error(e);
+}
 };
 
 /* ADMIN: MANAGE EVENTS (open/close/finish winner/delete + payout) */
 $("reloadAdminEventsBtn").onclick = ()=>loadAdminEvents();
 
 async function loadAdminEvents(){
-  if(!isAdmin){ $("adminEventsList").textContent="Admin only."; return; }
+if(!isAdmin){ $("adminEventsList").textContent="Admin only."; return; }
 
-  await loadEvents();
+await loadEvents();
 
-  const { data: allBets, error: eB } = await supabase
-    .from("bets")
-    .select("event_id,status")
-    .limit(5000);
-  const counts = new Map();
-  if(!eB && allBets){
-    for(const b of allBets){
-      const k=b.event_id;
-      if(!counts.has(k)) counts.set(k,{total:0,pending:0,won:0,lost:0});
-      const c=counts.get(k);
-      c.total++;
-      const st=String(b.status||"pending");
-      if(st==="pending") c.pending++;
-      else if(st==="won") c.won++;
-      else if(st==="lost") c.lost++;
-    }
-  }
+const { data: allBets, error: eB } = await supabase
+.from("bets")
+.select("event_id,status")
+.limit(5000);
+const counts = new Map();
+if(!eB && allBets){
+for(const b of allBets){
+const k=b.event_id;
+if(!counts.has(k)) counts.set(k,{total:0,pending:0,won:0,lost:0});
+const c=counts.get(k);
+c.total++;
+const st=String(b.status||"pending");
+if(st==="pending") c.pending++;
+else if(st==="won") c.won++;
+else if(st==="lost") c.lost++;
+}
+}
 
-  const list = $("adminEventsList");
-  if(!events.length){
-    list.innerHTML = `<div class="muted">No events.</div>`;
-    return;
-  }
+const list = $("adminEventsList");
+if(!events.length){
+list.innerHTML = `<div class="muted">No events.</div>`;
+return;
+}
 
-  list.innerHTML = events.map(ev=>{
-    const c = counts.get(ev.id) || {total:0,pending:0,won:0,lost:0};
-    const opts = ev.options || [];
-    const winnerSel = `
-      <select data-win="${ev.id}" style="margin-top:6px;">
-        <option value="">— select winner —</option>
-        ${opts.map(o=>`<option value="${o.id}" ${Number(ev.winner_option_id||0)===Number(o.id)?"selected":""}>${esc(o.name)} (${to2(o.coef)})</option>`).join("")}
-      </select>
-    `;
-    return `
-      <div style="border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.22);border-radius:16px;padding:12px;margin-bottom:10px;">
-        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start;">
-          <div style="min-width:0;">
-            <div style="font-weight:950;">${esc(ev.name)} <span class="chip">${esc(ev.status||"open")}</span></div>
-            <div class="muted" style="font-size:12px;margin-top:4px;">${esc(ev.description||"")}</div>
-            <div class="muted" style="font-size:12px;margin-top:6px;">
-              Bets: <span class="mono">${c.total}</span> (pending <span class="mono">${c.pending}</span>, won <span class="mono">${c.won}</span>, lost <span class="mono">${c.lost}</span>)
-            </div>
-            <div style="margin-top:8px;">
-              <label>Winner</label>
-              ${winnerSel}
-            </div>
-          </div>
+list.innerHTML = events.map(ev=>{
+const c = counts.get(ev.id) || {total:0,pending:0,won:0,lost:0};
+const opts = ev.options || [];
+const winnerSel = `
+     <select data-win="${ev.id}" style="margin-top:6px;">
+       <option value="">— select winner —</option>
+       ${opts.map(o=>`<option value="${o.id}" ${Number(ev.winner_option_id||0)===Number(o.id)?"selected":""}>${esc(o.name)} (${to2(o.coef)})</option>`).join("")}
+     </select>
+   `;
+return `
+     <div style="border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.22);border-radius:16px;padding:12px;margin-bottom:10px;">
+       <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start;">
+         <div style="min-width:0;">
+           <div style="font-weight:950;">${esc(ev.name)} <span class="chip">${esc(ev.status||"open")}</span></div>
+           <div class="muted" style="font-size:12px;margin-top:4px;">${esc(ev.description||"")}</div>
+           <div class="muted" style="font-size:12px;margin-top:6px;">
+             Bets: <span class="mono">${c.total}</span> (pending <span class="mono">${c.pending}</span>, won <span class="mono">${c.won}</span>, lost <span class="mono">${c.lost}</span>)
+           </div>
+           <div style="margin-top:8px;">
+             <label>Winner</label>
+             ${winnerSel}
+           </div>
+         </div>
 
-          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
-            <button class="btn" data-open="${ev.id}">Set OPEN</button>
-            <button class="btn" data-close="${ev.id}">Set CLOSED</button>
-            <button class="btn purple" data-finish="${ev.id}">Finish + Payout</button>
-            <button class="btn red" data-del="${ev.id}">Delete</button>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join("");
+         <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+           <button class="btn" data-open="${ev.id}">Set OPEN</button>
+           <button class="btn" data-close="${ev.id}">Set CLOSED</button>
+           <button class="btn purple" data-finish="${ev.id}">Finish + Payout</button>
+           <button class="btn red" data-del="${ev.id}">Delete</button>
+         </div>
+       </div>
+     </div>
+   `;
+}).join("");
 
-  list.querySelectorAll("button[data-open]").forEach(b=>b.onclick=async ()=>{
-    const id=Number(b.dataset.open);
-    const r=await supabase.from("events").update({ status:"open" }).eq("id", id);
-    if(r.error){ toast("Failed"); console.error(r.error); return; }
-    toast("Event OPEN");
-    await loadEvents(); await loadAdminEvents();
-  });
+list.querySelectorAll("button[data-open]").forEach(b=>b.onclick=async ()=>{
+const id=Number(b.dataset.open);
+const r=await supabase.from("events").update({ status:"open" }).eq("id", id);
+if(r.error){ toast("Failed"); console.error(r.error); return; }
+toast("Event OPEN");
+await loadEvents(); await loadAdminEvents();
+});
 
-  list.querySelectorAll("button[data-close]").forEach(b=>b.onclick=async ()=>{
-    const id=Number(b.dataset.close);
-    const r=await supabase.from("events").update({ status:"closed" }).eq("id", id);
-    if(r.error){ toast("Failed"); console.error(r.error); return; }
-    toast("Event CLOSED");
-    await loadEvents(); await loadAdminEvents();
-  });
+list.querySelectorAll("button[data-close]").forEach(b=>b.onclick=async ()=>{
+const id=Number(b.dataset.close);
+const r=await supabase.from("events").update({ status:"closed" }).eq("id", id);
+if(r.error){ toast("Failed"); console.error(r.error); return; }
+toast("Event CLOSED");
+await loadEvents(); await loadAdminEvents();
+});
 
-  list.querySelectorAll("button[data-del]").forEach(b=>b.onclick=async ()=>{
-    const id=Number(b.dataset.del);
-    if(!confirm("Delete event? This will also delete its options and bets (because of FK).")) return;
-    const r=await supabase.from("events").delete().eq("id", id);
-    if(r.error){ toast("Delete failed"); console.error(r.error); return; }
-    toast("Deleted");
-    await loadEvents(); await loadAdminEvents();
-  });
+list.querySelectorAll("button[data-del]").forEach(b=>b.onclick=async ()=>{
+const id=Number(b.dataset.del);
+if(!confirm("Delete event? This will also delete its options and bets (because of FK).")) return;
+const r=await supabase.from("events").delete().eq("id", id);
+if(r.error){ toast("Delete failed"); console.error(r.error); return; }
+toast("Deleted");
+await loadEvents(); await loadAdminEvents();
+});
 
-  list.querySelectorAll("button[data-finish]").forEach(b=>b.onclick=async ()=>{
-    const evId=Number(b.dataset.finish);
-    const winSel = list.querySelector(`select[data-win="${evId}"]`);
-    const winnerId = Number(winSel?.value || 0);
-    if(!winnerId) return toast("Select a winner first");
+list.querySelectorAll("button[data-finish]").forEach(b=>b.onclick=async ()=>{
+const evId=Number(b.dataset.finish);
+const winSel = list.querySelector(`select[data-win="${evId}"]`);
+const winnerId = Number(winSel?.value || 0);
+if(!winnerId) return toast("Select a winner first");
 
-    const u = await supabase.from("events").update({ status:"settled", winner_option_id:winnerId }).eq("id", evId);
-    if(u.error){ toast("Finish failed"); console.error(u.error); return; }
+const u = await supabase.from("events").update({ status:"settled", winner_option_id:winnerId }).eq("id", evId);
+if(u.error){ toast("Finish failed"); console.error(u.error); return; }
 
-    const betsR = await supabase.from("bets")
-      .select("id,user_id,stake,coef,option_id,status")
-      .eq("event_id", evId)
-      .eq("status", "pending")
-      .limit(5000);
-    if(betsR.error){ toast("Cannot load bets"); console.error(betsR.error); return; }
-    const bets = betsR.data || [];
+const betsR = await supabase.from("bets")
+.select("id,user_id,stake,coef,option_id,status")
+.eq("event_id", evId)
+.eq("status", "pending")
+.limit(5000);
+if(betsR.error){ toast("Cannot load bets"); console.error(betsR.error); return; }
+const bets = betsR.data || [];
 
-    const winners = bets.filter(x=>Number(x.option_id)===winnerId);
-    const losers  = bets.filter(x=>Number(x.option_id)!==winnerId);
+const winners = bets.filter(x=>Number(x.option_id)===winnerId);
+const losers  = bets.filter(x=>Number(x.option_id)!==winnerId);
 
-    if(winners.length){
-      for(const w of winners){
-        const payout = Number(to2(Number(w.stake)*Number(w.coef)));
-        const ub = await supabase.from("bets").update({ status:"won", payout }).eq("id", w.id);
-        if(ub.error){ console.error(ub.error); }
-        const pr = await supabase.from("profiles").select("pts").eq("id", w.user_id).maybeSingle();
-        if(!pr.error && pr.data){
-          const newPts = clamp2(Number(pr.data.pts||0) + payout);
-          const up = await supabase.from("profiles").update({ pts:newPts }).eq("id", w.user_id);
-          if(up.error) console.error(up.error);
-        }
-      }
-    }
-    if(losers.length){
-      for(const l of losers){
-        const ub = await supabase.from("bets").update({ status:"lost", payout:0 }).eq("id", l.id);
-        if(ub.error){ console.error(ub.error); }
-      }
-    }
+if(winners.length){
+for(const w of winners){
+const payout = Number(to2(Number(w.stake)*Number(w.coef)));
+const ub = await supabase.from("bets").update({ status:"won", payout }).eq("id", w.id);
+if(ub.error){ console.error(ub.error); }
+const pr = await supabase.from("profiles").select("pts").eq("id", w.user_id).maybeSingle();
+if(!pr.error && pr.data){
+const newPts = clamp2(Number(pr.data.pts||0) + payout);
+const up = await supabase.from("profiles").update({ pts:newPts }).eq("id", w.user_id);
+if(up.error) console.error(up.error);
+}
+}
+}
+if(losers.length){
+for(const l of losers){
+const ub = await supabase.from("bets").update({ status:"lost", payout:0 }).eq("id", l.id);
+if(ub.error){ console.error(ub.error); }
+}
+}
 
-    toast(`Finished. Paid ${winners.length} winners.`);
-    await loadEvents();
-    await loadAdminEvents();
-    await ensureProfile();
-    await loadMyBets();
-    updateMeUI();
-  });
+toast(`Finished. Paid ${winners.length} winners.`);
+await loadEvents();
+await loadAdminEvents();
+await ensureProfile();
+await loadMyBets();
+updateMeUI();
+});
 }
 
 /* GAMES: Dice / Roulette / Mines */
-["diceRollBtn","rouSpinBtn","minesStartBtn","openCaseBtn","mConfirm"].forEach(id=>{
-  const el=$(id); if(el) el.addEventListener("click", ()=>sfx(520,0.05,"sine",0.03));
+["diceRollBtn","rouSpinBtn","minesStartBtn","minesCashBtn","openCaseBtn","mConfirm"].forEach(id=>{
+const el=$(id); if(el) el.addEventListener("click", ()=>sfx(520,0.05,"sine",0.03));
 });
 
 // Dice
 $("diceRollBtn").onclick = async ()=>{
-  if(!meProfile) return toast("Profile not loaded");
-  const stake=Number($("diceStake").value);
-  const pick=$("dicePick").value;
-  const roll = Math.floor(Math.random()*100)+1;
-  $("diceRollOut").textContent=String(roll);
-  const win = (pick==="low") ? (roll<=49) : (roll>=50);
-  const mult = 1.95;
-  try{
-    await addWagerAndPayout(stake, win ? stake*mult : 0);
-    $("diceResOut").textContent = win ? `WIN +${to2(stake*mult - stake)}` : "LOSE";
-    toast(win ? "Dice win" : "Dice lose");
-  }catch(e){
-    if(String(e).includes("balance")) toast("Not enough points");
-    else toast("Dice error (DB/RLS/SQL)");
-    console.error(e);
-  }
+if(!meProfile) return toast("Profile not loaded");
+const stake=Number($("diceStake").value);
+const pick=$("dicePick").value;
+const roll = Math.floor(Math.random()*100)+1;
+$("diceRollOut").textContent=String(roll);
+const win = (pick==="low") ? (roll<=49) : (roll>=50);
+const mult = 1.95;
+try{
+await addWagerAndPayout(stake, win ? stake*mult : 0);
+$("diceResOut").textContent = win ? `WIN +${to2(stake*mult - stake)}` : "LOSE";
+toast(win ? "Dice win" : "Dice lose");
+}catch(e){
+if(String(e).includes("balance")) toast("Not enough points");
+else toast("Dice error (DB/RLS/SQL)");
+console.error(e);
+}
 };
 
 // Roulette
 $("rouSpinBtn").onclick = async ()=>{
-  if(!meProfile) return toast("Profile not loaded");
-  const stake=Number($("rouStake").value);
-  const pick=$("rouPick").value;
-  const n = Math.floor(Math.random()*37);
-  let color = "green";
-  if(n===0) color="green";
-  else if(n>=1 && n<=18) color="red";
-  else color="black";
-  $("rouOut").textContent = `${n} (${color})`;
-  const mult = (pick==="green") ? 14 : 1.95;
-  const win = (pick===color);
-  try{
-    await addWagerAndPayout(stake, win ? stake*mult : 0);
-    $("rouRes").textContent = win ? `WIN +${to2(stake*mult - stake)}` : "LOSE";
-    toast(win ? "Roulette win" : "Roulette lose");
-  }catch(e){
-    if(String(e).includes("balance")) toast("Not enough points");
-    else toast("Roulette error (DB/RLS/SQL)");
-    console.error(e);
-  }
+if(!meProfile) return toast("Profile not loaded");
+const stake=Number($("rouStake").value);
+const pick=$("rouPick").value;
+const n = Math.floor(Math.random()*37);
+let color = "green";
+if(n===0) color="green";
+else if(n>=1 && n<=18) color="red";
+else color="black";
+$("rouOut").textContent = `${n} (${color})`;
+const mult = (pick==="green") ? 14 : 1.95;
+const win = (pick===color);
+try{
+await addWagerAndPayout(stake, win ? stake*mult : 0);
+$("rouRes").textContent = win ? `WIN +${to2(stake*mult - stake)}` : "LOSE";
+toast(win ? "Roulette win" : "Roulette lose");
+}catch(e){
+if(String(e).includes("balance")) toast("Not enough points");
+else toast("Roulette error (DB/RLS/SQL)");
+console.error(e);
+}
 };
 
 // =======================
@@ -1733,305 +1748,282 @@ $("rouSpinBtn").onclick = async ()=>{
 // =======================
 
 let mines = {
-  active: false,
-  bombs: 1,
-  stake: 0,
-  mult: 1.0,
-  bombSet: new Set(),
-  bombArr: [],           // keeps order: [idxOfBomb1, idxOfBomb2, idxOfBomb3]
-  revealed: new Set(),   // safe picks only
-  ended: false
+active: false,
+bombs: 1,
+stake: 0,
+mult: 1.0,
+bombSet: new Set(),
+revealed: new Set(),   // safe picks only
+ended: false
 };
 
-
 function setMinesUiState(active){
-  const startBtn = $("minesStartBtn");
-  const cashBtn  = $("minesCashBtn");
-  if(!startBtn || !cashBtn) return;
+const startBtn = $("minesStartBtn");
+const cashBtn  = $("minesCashBtn");
+if(!startBtn || !cashBtn) return;
 
-  if(active){
-    startBtn.disabled = true;
-    startBtn.classList.add("betPlaced");
-    startBtn.textContent = "Bet placed";
-    cashBtn.disabled = false;
-  } else {
-    startBtn.disabled = false;
-    startBtn.classList.remove("betPlaced");
-    startBtn.textContent = "Start";
-    cashBtn.disabled = true;
-  }
+if(active){
+startBtn.disabled = true;
+startBtn.textContent = "Bet placed ✓";
+startBtn.style.opacity = "0.55";
+startBtn.style.cursor = "not-allowed";
+cashBtn.disabled = false;
+} else {
+startBtn.disabled = false;
+startBtn.textContent = "Start";
+startBtn.style.opacity = "1";
+startBtn.style.cursor = "pointer";
+cashBtn.disabled = true;
+}
 }
 
-
 function minesResetUI(){
-  const grid = $("minesGrid");
-  if(!grid) return;
-  grid.innerHTML = "";
+const grid = $("minesGrid");
+if(!grid) return;
+grid.innerHTML = "";
 
-  for(let i=0;i<25;i++){
-    const b=document.createElement("button");
-    b.className="btn";
-    b.style.height="70px";
-    b.style.borderRadius="16px";
-    b.style.background="rgba(0,0,0,.35)";
-    b.textContent=" ";
-    b.onclick=()=>minesPick(i,b);
-    grid.appendChild(b);
-  }
+for(let i=0;i<25;i++){
+const b=document.createElement("button");
+b.className="btn";
+b.style.height="70px";
+b.style.borderRadius="16px";
+b.style.background="rgba(0,0,0,.35)";
+b.textContent=" ";
+b.onclick=()=>minesPick(i,b);
+grid.appendChild(b);
+}
 }
 
 function minesMultFor(picks,bombs){
-  const base = 1 + picks*(0.18 + bombs*0.06);
-  return Math.max(1.0, base);
+const base = 1 + picks*(0.18 + bombs*0.06);
+return Math.max(1.0, base);
 }
 
 function revealAllMines(){
-  const grid = $("minesGrid");
-  if(!grid) return;
+const grid = $("minesGrid");
+if(!grid) return;
+const tiles = [...grid.children];
 
-  const tiles = [...grid.children];
-
-  // order map: index -> bomb number (1..3)
-  const bombNum = new Map();
-  (mines.bombArr || []).forEach((idx, n)=> bombNum.set(idx, n+1));
-
-  tiles.forEach((t, idx)=>{
-    if(mines.bombSet.has(idx)){
-      const n = bombNum.get(idx) || "";
-      t.textContent = `💣${n}`;
-      t.style.background = "rgba(239,68,68,.18)";
-      t.style.borderColor = "rgba(239,68,68,.35)";
-      t.style.boxShadow = "0 0 0 4px rgba(239,68,68,.10), 0 12px 30px rgba(0,0,0,.35)";
-      t.classList.add("bombHit");
-    }
-  });
+tiles.forEach((t, idx)=>{
+if(mines.bombSet.has(idx)){
+t.textContent = "💣";
+t.style.background = "rgba(239,68,68,.12)";
+t.classList.add("bombHit");
+}
+});
 }
 
-
 function endMinesRound(statusLabel){
-  mines.active = false;
-  mines.ended = true;
-  setMinesUiState(false);
-  $("minesStatus").textContent = statusLabel;
+mines.active = false;
+mines.ended = true;
+setMinesUiState(false);
+$("minesStatus").textContent = statusLabel;
 }
 
 async function doMinesCashout({ auto=false } = {}){
-  if(!mines.active) return;
-  if(mines.ended) return;
+if(!mines.active || mines.ended) return;
 
-  const safePicks = mines.revealed.size;
-  if(safePicks === 0) return toast("Pick at least 1 tile");
+const safePicks = mines.revealed.size;
+if(safePicks === 0) return toast("Pick at least 1 tile");
 
-  const payout = mines.stake * mines.mult;
+const payout = mines.stake * mines.mult;
 
-  try{
-    const newPts = clamp2(Number(meProfile.pts) + payout);
-    const { error } = await supabase.from("profiles").update({ pts:newPts }).eq("id", session.user.id);
-    if(error) throw error;
+try{
+const newPts = clamp2(Number(meProfile.pts) + payout);
+const { error } = await supabase
+.from("profiles")
+.update({ pts:newPts })
+.eq("id", session.user.id);
+if(error) throw error;
 
-    meProfile.pts = newPts;
-    updateMeUI();
+meProfile.pts = newPts;
+updateMeUI();
 
-    // ✅ show mine locations after cashout
-    revealAllMines();
+// ✅ play money sound ONCE
+sfxCashout();
 
-    sfx(740,0.08,"triangle",0.035);
-    toast(auto ? `Auto cashout +${to2(payout)}` : `Cashout +${to2(payout)}`);
+// ✅ reveal bombs after cashout
+revealAllMines();
 
-endMinesRound(auto ? "AUTO CASHOUT" : "CASHED");
-
-  }catch(e){
-    toast("Cashout failed (DB/RLS)");
-    console.error(e);
-  }
+toast(auto ? `Auto cashout +${to2(payout)}` : `Cashout +${to2(payout)}`);
+endMinesRound("CASHED");
+}catch(e){
+toast("Cashout failed (DB/RLS)");
+console.error(e);
+}
 }
 
+
 async function minesPick(i, btn){
-  if(!mines.active) return toast("Start mines first");
-  if(mines.ended) return;
-  if(btn.dataset.locked === "1") return;
+if(!mines.active) return toast("Start mines first");
+if(mines.ended) return;
+if(btn.dataset.locked === "1") return;
 
-  btn.dataset.locked = "1";
+btn.dataset.locked = "1";
 
-  // BOMB clicked
-  if(mines.bombSet.has(i)){
-    btn.textContent="💣";
-    btn.style.background="rgba(239,68,68,.20)";
-    btn.classList.add("bombHit");
-    sfxBomb();
+// BOMB clicked
+if(mines.bombSet.has(i)){
+btn.textContent="💣";
+btn.style.background="rgba(239,68,68,.20)";
+btn.classList.add("bombHit");
+sfxBomb();
 
-    // show all mines
-    revealAllMines();
+// show all mines
+revealAllMines();
 
-    endMinesRound("BOMB");
-    toast("Boom 💣");
-    return;
-  }
+endMinesRound("BOMB");
+toast("Boom 💣");
+return;
+}
 
-  // SAFE clicked
-  mines.revealed.add(i);
-  btn.innerHTML = gemYellow();
-  btn.style.background="rgba(34,197,94,.10)";
-  btn.classList.add("gemHit");
-  sfxGem();
+// SAFE clicked
+mines.revealed.add(i);
+btn.innerHTML = gemYellow();
+btn.style.background="rgba(34,197,94,.10)";
+btn.classList.add("gemHit");
+sfxGem();
 
-  const safePicks = mines.revealed.size;
-  mines.mult = minesMultFor(safePicks, mines.bombs);
+const safePicks = mines.revealed.size;
+mines.mult = minesMultFor(safePicks, mines.bombs);
 
-  $("minesMult").textContent = to2(mines.mult)+"x";
-  $("minesStatus").textContent = "LIVE";
+$("minesMult").textContent = to2(mines.mult)+"x";
+$("minesStatus").textContent = "LIVE";
 
-  // ✅ AUTO CASHOUT when only mines remain
-  const totalSafe = 25 - mines.bombs;
-  if(safePicks >= totalSafe){
-    await doMinesCashout({ auto:true });
-  }
+// ✅ AUTO CASHOUT when only mines remain
+const totalSafe = 25 - mines.bombs;
+if(safePicks >= totalSafe){
+await doMinesCashout({ auto:true });
+}
 }
 
 $("minesStartBtn").onclick = async ()=> {
-  if(!meProfile) return toast("Profile not loaded");
-  if(mines.active) return; // already playing
+if(!meProfile) return toast("Profile not loaded");
+if(mines.active) return; // already playing
 
-  const stake = Number($("minesStake").value);
-  const bombs = Number($("minesBombs").value);
+const stake = Number($("minesStake").value);
+const bombs = Number($("minesBombs").value);
 
-  if(!(stake>0)) return toast("Stake > 0");
-  if(stake < 0.01) return toast("Min 0.01");
-  if(![1,2,3].includes(bombs)) return toast("Bombs must be 1-3");
+if(!(stake>0)) return toast("Stake > 0");
+if(stake < 0.01) return toast("Min 0.01");
+if(![1,2,3].includes(bombs)) return toast("Bombs must be 1-3");
 
-  // remove stake now + count wager (your existing logic)
-  try{
-    await addWagerAndPayout(stake, 0);
-  }catch(e){
-    if(String(e).includes("balance")) return toast("Not enough points");
-    toast("Mines start error (DB/RLS/SQL)");
-    console.error(e);
-    return;
-  }
-
-  // start round
-  mines.active = true;
-  mines.ended = false;
-  mines.bombs = bombs;
-  mines.stake = stake;
-  mines.revealed = new Set();
-  mines.mult = 1.0;
-
-mines.bombSet = new Set();
-mines.bombArr = [];
-while(mines.bombArr.length < bombs){
-  const idx = Math.floor(Math.random()*25);
-  if(!mines.bombSet.has(idx)){
-    mines.bombSet.add(idx);
-    mines.bombArr.push(idx); // keep order => bomb #1/#2/#3
-  }
+// remove stake now + count wager (your existing logic)
+try{
+await addWagerAndPayout(stake, 0);
+}catch(e){
+if(String(e).includes("balance")) return toast("Not enough points");
+toast("Mines start error (DB/RLS/SQL)");
+console.error(e);
+return;
 }
 
-  minesResetUI();
-  $("minesMult").textContent="1.00x";
-  $("minesStatus").textContent="LIVE";
+// start round
+mines.active = true;
+mines.ended = false;
+mines.bombs = bombs;
+mines.stake = stake;
+mines.revealed = new Set();
+mines.mult = 1.0;
 
-  // ✅ bet placed indicator (button grey/disabled)
-  setMinesUiState(true);
+mines.bombSet = new Set();
+while(mines.bombSet.size < bombs){
+mines.bombSet.add(Math.floor(Math.random()*25));
+}
 
-  toast("Mines started");
+minesResetUI();
+$("minesMult").textContent="1.00x";
+$("minesStatus").textContent="LIVE";
+
+// ✅ bet placed indicator (button grey/disabled)
+setMinesUiState(true);
+
+toast("Mines started");
 };
 
 $("minesCashBtn").onclick = async ()=> {
-  if(!mines.active) return toast("No active round");
-  await doMinesCashout({ auto:false });
+if(!mines.active) return toast("No active round");
+await doMinesCashout({ auto:false });
 };
 
 // init
 setMinesUiState(false);
 minesResetUI();
 
-
-// =======================
-// MINES (IMPROVED)
-// - Start button disables/greys while round is active (bet placed)
-// - Auto cashout when all safe tiles are revealed (only mines left)
-// - Reveal mine locations after cashout (manual or auto)
-// =======================
-
-
-
-
 /* AUTH */
 $("btnSignIn").onclick=async ()=>{
-  if(!supabase) return;
-  const email=$("inEmail").value.trim(); const password=$("inPass").value;
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if(error) toast(error.message);
+if(!supabase) return;
+const email=$("inEmail").value.trim(); const password=$("inPass").value;
+const { error } = await supabase.auth.signInWithPassword({ email, password });
+if(error) toast(error.message);
 };
 $("btnForgot").onclick=async ()=>{
-  if(!supabase) return;
-  const email=$("inEmail").value.trim(); if(!email) return toast("Enter email");
-  const { error } = await supabase.auth.resetPasswordForEmail(email);
-  if(error) toast(error.message); else toast("Reset email sent");
+if(!supabase) return;
+const email=$("inEmail").value.trim(); if(!email) return toast("Enter email");
+const { error } = await supabase.auth.resetPasswordForEmail(email);
+if(error) toast(error.message); else toast("Reset email sent");
 };
 $("btnSignUp").onclick=async ()=>{
-  if(!supabase) return;
-  const display_name=$("upName").value.trim();
-  const email=$("upEmail").value.trim();
-  const password=$("upPass").value;
-  if(!display_name) return toast("Enter username");
-  const { error } = await supabase.auth.signUp({ email, password, options:{ data:{ display_name } } });
-  if(error) return toast(error.message);
-  toast("Account created. If email confirm is ON, confirm then sign in.");
+if(!supabase) return;
+const display_name=$("upName").value.trim();
+const email=$("upEmail").value.trim();
+const password=$("upPass").value;
+if(!display_name) return toast("Enter username");
+const { error } = await supabase.auth.signUp({ email, password, options:{ data:{ display_name } } });
+if(error) return toast(error.message);
+toast("Account created. If email confirm is ON, confirm then sign in.");
 };
 
 /* buttons */
 $("refreshBtn").onclick=async ()=>{
-  if(!supabase) return;
-  await maybeRollMonth();
-  await ensureProfile();
-  await normalizeMonthForMe();
-  updateMeUI();
-  await loadEvents();
-  await loadMyBets();
-  refreshCaseUI();
-  if(isAdmin) await loadAdminEvents();
-  toast("Refreshed");
+if(!supabase) return;
+await maybeRollMonth();
+await ensureProfile();
+await normalizeMonthForMe();
+updateMeUI();
+await loadEvents();
+await loadMyBets();
+refreshCaseUI();
+if(isAdmin) await loadAdminEvents();
+toast("Refreshed");
 };
 $("signOutBtn").onclick=async ()=>{ if(!supabase) return; await supabase.auth.signOut(); };
 
 async function showApp(){
-  $("authWrap").classList.remove("show");
-  $("app").classList.add("show");
-  isAdmin = (session?.user?.email||"").toLowerCase() === ADMIN_EMAIL.toLowerCase();
-  await maybeRollMonth();
-  await ensureProfile();
+$("authWrap").classList.remove("show");
+$("app").classList.add("show");
+isAdmin = (session?.user?.email||"").toLowerCase() === ADMIN_EMAIL.toLowerCase();
+await maybeRollMonth();
+await ensureProfile();
 
-  if(meProfile && isAdmin && meProfile.display_name !== ADMIN_DISPLAY_NAME){
-    await supabase.from("profiles").update({ display_name: ADMIN_DISPLAY_NAME }).eq("id", session.user.id);
-    meProfile.display_name = ADMIN_DISPLAY_NAME;
-  }
+if(meProfile && isAdmin && meProfile.display_name !== ADMIN_DISPLAY_NAME){
+await supabase.from("profiles").update({ display_name: ADMIN_DISPLAY_NAME }).eq("id", session.user.id);
+meProfile.display_name = ADMIN_DISPLAY_NAME;
+}
 
-  await normalizeMonthForMe();
-  renderGames();
-  updateMeUI();
-  await loadEvents();
-  await loadMyBets();
-  refreshCaseUI();
-  if(isAdmin) await loadAdminEvents();
-  setView("home");
+await normalizeMonthForMe();
+renderGames();
+updateMeUI();
+await loadEvents();
+await loadMyBets();
+refreshCaseUI();
+if(isAdmin) await loadAdminEvents();
+setView("home");
 }
 function showAuth(){
-  $("app").classList.remove("show");
-  $("authWrap").classList.add("show");
+$("app").classList.remove("show");
+$("authWrap").classList.add("show");
 }
 
 if(supabase){
-  const { data } = await supabase.auth.getSession();
-  session=data.session;
-  if(session) await showApp(); else showAuth();
-  supabase.auth.onAuthStateChange(async (_ev, newSession)=>{
-    session=newSession;
-    if(session) await showApp(); else showAuth();
-  });
+const { data } = await supabase.auth.getSession();
+session=data.session;
+if(session) await showApp(); else showAuth();
+supabase.auth.onAuthStateChange(async (_ev, newSession)=>{
+session=newSession;
+if(session) await showApp(); else showAuth();
+});
 } else {
-  showAuth();
+showAuth();
 }
 </script>
 </body>
