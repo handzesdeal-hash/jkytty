@@ -835,6 +835,7 @@ tr:last-child td{border-bottom:none;}
 .bjActionMobile .bjBetRow .bjBtn{padding:11px 12px;min-width:92px;}
 @media(max-width:700px){
   #bjHomeBtnM{display:inline-flex;align-items:center;gap:6px;padding:9px 12px;border-radius:12px;font-size:12px;}
+  body.bjMobileFocus #bjHomeBtnM{position:absolute; left:50%; transform:translateX(-50%); top:8px;}
 }
 @media(max-width:700px){
   .bjActionMobile{display:grid;grid-template-columns:repeat(2,1fr);}
@@ -843,7 +844,9 @@ tr:last-child td{border-bottom:none;}
   .bjLeft .bjBlock:nth-child(2){display:none;}
   body.bjMobileFocus .topbar{display:none;}
   body.bjMobileFocus .mobileNav{display:none;}
-  body.bjMobileFocus .main{padding:8px;}
+  body.bjMobileFocus .main{padding:8px; overflow:hidden; height:100vh;}
+  body.bjMobileFocus{overflow:hidden;}
+  body.bjMobileFocus .sectionBd{max-height:calc(100vh - 72px); overflow:hidden;}
   body.bjMobileFocus #view-blackjack{margin-top:0;}
 }
 
@@ -993,15 +996,15 @@ tr:last-child td{border-bottom:none;}
 
 @media(max-width:640px){
   .bjArea{ padding:12px; }
-  .bjStage{ min-height: 500px; }
-  .bjLane{ gap:10px; min-height: 170px; }
-  .bjLaneInner{ margin-top:36px; gap:8px; min-height:120px; }
-  #bjPlayerCards{ gap:10px; }
-  .bjHandRow{ min-width:210px; flex: 1 1 100%; max-width:100%; padding:6px 6px 10px; }
+  .bjStage{ min-height: 480px; }
+  .bjLane{ gap:8px; min-height: 160px; }
+  .bjLaneInner{ margin-top:32px; gap:6px; min-height:112px; }
+  #bjPlayerCards{ gap:8px; }
+  .bjHandRow{ min-width:190px; flex: 1 1 100%; max-width:100%; padding:6px 6px 8px; }
   .bjHandRow::before{ left:-16px; font-size:10px; }
   .bjHandMeta{ font-size:11px; padding:6px 9px; text-align:center; }
-  .bjHandCards{ gap:8px; flex-wrap:wrap; }
-  .bjDeck{ width:68px; height:96px; top:6px; right:6px; }
+  .bjHandCards{ gap:6px; flex-wrap:wrap; }
+  .bjDeck{ width:64px; height:90px; top:6px; right:6px; }
   .bjLaneTitle{ left:10px; top:10px; font-size:10px; }
   .bjScorePill{ top:10px; padding:6px 10px; font-size:13px; }
   .bjBtnGrid{ grid-template-columns:1fr; gap:8px; }
@@ -1011,9 +1014,9 @@ tr:last-child td{border-bottom:none;}
 
 @media(max-width:700px){
   /* extra shrink when multiple hands on mobile to avoid scrolling */
-  #bjPlayerCards[data-hands="2"] .bjHandCards .bjCard{ transform: scale(.86); transform-origin: top center; }
-  #bjPlayerCards[data-hands="3"] .bjHandCards .bjCard{ transform: scale(.78); transform-origin: top center; }
-  #bjPlayerCards[data-hands="4"] .bjHandCards .bjCard{ transform: scale(.72); transform-origin: top center; }
+  #bjPlayerCards[data-hands="2"] .bjHandCards .bjCard{ transform: scale(.80); transform-origin: top center; }
+  #bjPlayerCards[data-hands="3"] .bjHandCards .bjCard{ transform: scale(.72); transform-origin: top center; }
+  #bjPlayerCards[data-hands="4"] .bjHandCards .bjCard{ transform: scale(.64); transform-origin: top center; }
 }
 
 .bjHandMeta{
