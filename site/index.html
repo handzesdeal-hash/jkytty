@@ -803,37 +803,8 @@ $("tabSignIn").onclick=()=>setAuthTab("in");
 $("tabSignUp").onclick=()=>setAuthTab("up");
 
 let session=null, meProfile=null, isAdmin=false, events=[], myBets=[], usersList=[];
-// ✅ MP3 cashout sound
-const cashoutSound = new Audio("./sounds/cashout.mp3");
-cashoutSound.preload = "auto";
-cashoutSound.volume = 0.85;
 
-// Browsers require "user gesture" before sound can play.
-// This unlocks audio on the first click/tap anywhere.
-let __audioUnlocked = false;
-function unlockAudioOnce(){
-  if(__audioUnlocked) return;
-  __audioUnlocked = true;
-  try{
-    // unlock WebAudio too (for your sfx beeps)
-    const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
-    if(ctx && ctx.state === "suspended") ctx.resume();
-
-    // unlock HTMLAudio
-    cashoutSound.muted = true;
-    cashoutSound.play().then(()=>{
-      cashoutSound.pause();
-      cashoutSound.currentTime = 0;
-      cashoutSound.muted = false;
-    }).catch(()=>{
-      cashoutSound.muted = false;
-    });
-  }catch(_){}
-}
-window.addEventListener("pointerdown", unlockAudioOnce, { once:true });
-window.addEventListener("keydown", unlockAudioOnce, { once:true });
-
-
+/* tiny sfx */
 function sfx(freq=520, dur=0.06, type="sine", gain=0.04){
   try{
     const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
@@ -861,15 +832,46 @@ function sfxGem(){
   setTimeout(()=>sfx(1180,0.05,"triangle",0.025), 40);
 }
 
-/* ✅ MONEY/CASHOUT SOUND (MP3) */
+/* ✅ MONEY/CASHOUT SOUND (added) */
 function sfxCashout(){
+  // "cha-ching" style: two bright pings + tiny coin sparkles
   try{
-    unlockAudioOnce();            // make sure audio is unlocked
-    cashoutSound.currentTime = 0; // replay instantly
-    cashoutSound.play();
+    const ctx = window.__sfxCtx || (window.__sfxCtx = new (window.AudioContext||window.webkitAudioContext)());
+    const now = ctx.currentTime;
+
+    const o1 = ctx.createOscillator();
+    const g1 = ctx.createGain();
+    o1.type = "triangle";
+    o1.frequency.setValueAtTime(880, now);
+    o1.frequency.exponentialRampToValueAtTime(1320, now + 0.08);
+    g1.gain.setValueAtTime(0.07, now);
+    g1.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    o1.connect(g1); g1.connect(ctx.destination);
+    o1.start(now); o1.stop(now + 0.13);
+
+    const o2 = ctx.createOscillator();
+    const g2 = ctx.createGain();
+    o2.type = "sine";
+    o2.frequency.setValueAtTime(1560, now + 0.06);
+    o2.frequency.exponentialRampToValueAtTime(980, now + 0.16);
+    g2.gain.setValueAtTime(0.05, now + 0.06);
+    g2.gain.exponentialRampToValueAtTime(0.001, now + 0.20);
+    o2.connect(g2); g2.connect(ctx.destination);
+    o2.start(now + 0.06); o2.stop(now + 0.21);
+
+    for(let i=0;i<6;i++){
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = "square";
+      o.frequency.value = 900 + Math.random()*900;
+      const t = now + 0.10 + i*0.03;
+      g.gain.setValueAtTime(0.02, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t); o.stop(t + 0.04);
+    }
   }catch(_){}
 }
-
 
 function monthKey(d=new Date()){
   const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"); return `${y}-${m}`;
@@ -1797,7 +1799,8 @@ function endMinesRound(statusLabel){
 }
 
 async function doMinesCashout({ auto=false } = {}){
-  if(!mines.active || mines.ended) return;
+  if(!mines.active) return;
+  if(mines.ended) return;
 
   const safePicks = mines.revealed.size;
   if(safePicks === 0) return toast("Pick at least 1 tile");
@@ -1806,29 +1809,27 @@ async function doMinesCashout({ auto=false } = {}){
 
   try{
     const newPts = clamp2(Number(meProfile.pts) + payout);
-    const { error } = await supabase
-      .from("profiles")
-      .update({ pts:newPts })
-      .eq("id", session.user.id);
+    const { error } = await supabase.from("profiles").update({ pts:newPts }).eq("id", session.user.id);
     if(error) throw error;
 
     meProfile.pts = newPts;
     updateMeUI();
 
-    // ✅ play money sound ONCE
+    // ✅ MONEY SOUND on cashout (added)
     sfxCashout();
 
-    // ✅ reveal bombs after cashout
+    // ✅ show mine locations after cashout
     revealAllMines();
 
+    sfx(740,0.08,"triangle",0.035);
     toast(auto ? `Auto cashout +${to2(payout)}` : `Cashout +${to2(payout)}`);
+
     endMinesRound("CASHED");
   }catch(e){
     toast("Cashout failed (DB/RLS)");
     console.error(e);
   }
 }
-
 
 async function minesPick(i, btn){
   if(!mines.active) return toast("Start mines first");
