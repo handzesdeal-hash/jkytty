@@ -1269,7 +1269,7 @@ tr:last-child td{border-bottom:none;}
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   display:none;
-  z-index:60;
+  z-index:200; /* keep win banner above stacked cards */
   text-align:center;
   pointer-events:none;
 }
@@ -3440,12 +3440,52 @@ async function bjDealAnim(cardEl, toContainer){
   // start at deck rect
   const dr = deck.getBoundingClientRect();
   
-  // Pre-calc target slot by temporarily mounting the card hidden to let flex gap place it
-  cardEl.style.visibility = "hidden";
-  toContainer.appendChild(cardEl);
-  const tr = cardEl.getBoundingClientRect();
-  toContainer.removeChild(cardEl);
-  cardEl.style.visibility = "";
+  const alreadyStacked = toContainer.classList.contains("stacked");
+  const childIndex = toContainer.children.length; // zero-based index for new card
+  const willStack = alreadyStacked || childIndex >= 2;
+  const stackOverlap = 36;
+  const stackTopDefault = toContainer.id === "bjDealerCards" ? 64 : 0;
+  const cardWidth = 104;
+
+  // If stacking starts with this card (3rd card), pre-stack existing cards before anim so the third flies to stacked spot.
+  if(willStack && !alreadyStacked){
+    const count = childIndex;
+    const stackWidth = cardWidth + Math.max(0, count-1)*stackOverlap;
+    toContainer.classList.add("stacked");
+    toContainer.style.position = "relative";
+    toContainer.style.width = `${stackWidth}px`;
+    toContainer.style.margin = "0 auto";
+    toContainer.style.left = "";
+    toContainer.style.transform = "";
+    const topOffset = stackTopDefault;
+    Array.from(toContainer.children).forEach((ch,i)=>{
+      ch.style.position = "absolute";
+      ch.style.left = `${i*stackOverlap}px`;
+      ch.style.top = `${topOffset}px`;
+      ch.style.zIndex = String(100 + i);
+    });
+  }
+
+  const cr = toContainer.getBoundingClientRect();
+  const stackTop = willStack ? stackTopDefault : 0;
+  const baseOffset = 0;
+
+  // Pre-calc target slot: stacked uses explicit coords; otherwise measure flex slot
+  let tr;
+  if(willStack){
+    tr = {
+      left: cr.left + baseOffset + childIndex * stackOverlap,
+      top: cr.top + stackTop,
+      width: cardEl.getBoundingClientRect().width,
+      height: cardEl.getBoundingClientRect().height
+    };
+  }else{
+    cardEl.style.visibility = "hidden";
+    toContainer.appendChild(cardEl);
+    tr = cardEl.getBoundingClientRect();
+    toContainer.removeChild(cardEl);
+    cardEl.style.visibility = "";
+  }
 
   // create floating clone
   const float = cardEl.cloneNode(true);
@@ -3453,7 +3493,7 @@ async function bjDealAnim(cardEl, toContainer){
   float.style.position="fixed";
   float.style.left = "0px";
   float.style.top = "0px";
-  float.style.zIndex="80";
+  float.style.zIndex="500"; // ensure incoming card flies above existing stack
   float.style.pointerEvents="none";
   document.body.appendChild(float);
 
@@ -3480,8 +3520,18 @@ async function bjDealAnim(cardEl, toContainer){
   float.remove();
   toContainer.appendChild(cardEl);
 
+  // If stacking, immediately place the real card at its stacked coordinates so it doesn't jump post-anim
+  if(willStack){
+    cardEl.style.position = "absolute";
+    cardEl.style.left = `${baseOffset + childIndex * stackOverlap}px`;
+    cardEl.style.top = `${stackTop}px`;
+    cardEl.style.zIndex = String(200 + childIndex);
+  }
+
   // Animate existing cards to their new slots (smooth spread)
-  bjAnimateLaneShift(toContainer, prevRects);
+  if(!willStack){
+    bjAnimateLaneShift(toContainer, prevRects);
+  }
 }
 
 function bjAnimateLaneShift(container, prevRects){
