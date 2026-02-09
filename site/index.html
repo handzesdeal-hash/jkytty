@@ -1007,6 +1007,21 @@ tr:last-child td{border-bottom:none;}
   .bjBtn{ padding:14px 14px; font-size:15px; }
   .bjRow{ gap:8px; }
 
+  /* Mines mobile layout */
+  .sidebar, .mobileNav, .topbar{ display:none; }
+  .main{ padding:12px; }
+  section:not(#view-mines):not(#view-home){ display:none !important; }
+  #view-mines .sectionBd{ display:flex; flex-direction:column; gap:10px; }
+  #view-mines .minesWrap{ order:1; display:flex; flex-direction:column; gap:10px; }
+  #view-mines .minesRight{ display:none; }
+  #view-mines .minesControls{ order:2; display:grid !important; grid-template-columns:repeat(2,1fr); gap:10px; align-items:end; }
+  #view-mines .minesControls input, #view-mines .minesControls select{ width:100% !important; }
+  #view-mines .minesControls button{ width:100%; justify-content:center; }
+  #view-mines .minesControls .miniPill{ width:100%; justify-content:space-between; }
+  #minesHomeBtn{ display:flex !important; }
+  #minesGrid{ width:100%; }
+  #minesXFloat{ position:absolute; left:10px; top:10px; z-index:5; }
+
 }
 
 .bjHandMeta{
@@ -1608,6 +1623,8 @@ tr:last-child td{border-bottom:none;}
             </div>
 
             <div class="miniPill"><span class="muted">Status</span><span class="mono" id="minesStatus">—</span></div>
+
+            <button class="btn" id="minesHomeBtn" style="grid-column: span 2; justify-content:center; display:none;">Home</button>
           </div>
 
           <div class="minesWrap">
@@ -3987,6 +4004,9 @@ $("bjHitBtnM") && ($("bjHitBtnM").onclick = bjHit);
 $("bjStandBtnM") && ($("bjStandBtnM").onclick = ()=>bjStand(false));
 $("bjDoubleBtnM") && ($("bjDoubleBtnM").onclick = bjDouble);
 $("bjSplitBtnM") && ($("bjSplitBtnM").onclick = bjSplit);
+
+// Mobile-only mines Home button
+$("minesHomeBtn") && ($("minesHomeBtn").onclick = ()=>setView("home"));
 
 // Keep mobile stake input in sync with desktop stake
 const _stk=$("bjStake"), _stkM=$("bjStakeM");
