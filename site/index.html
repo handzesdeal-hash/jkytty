@@ -3415,7 +3415,10 @@ function bjRender(){
   dBox.innerHTML="";
   pBox.innerHTML="";
 
+  const isMobile = window.innerWidth <= 700;
+
   // Dealer cards (2+)
+  dBox.classList.toggle("stacked", isMobile && bj.dealer.length > 3);
   bj.dealer.forEach((c, idx)=>{
     const faceDown = (idx===1 && bj.holeCardHidden);
     const el = bjCardEl(c, faceDown);
@@ -3437,6 +3440,8 @@ function bjRender(){
     const cards = bjGetHandCards(handIdx);
     if(cards){
       cards.innerHTML="";
+      const shouldStack = isMobile && hand.length > 3;
+      cards.classList.toggle("stacked", shouldStack);
       hand.forEach(c=>{
         const el = bjCardEl(c, false);
         cards.appendChild(el);
@@ -3719,6 +3724,10 @@ async function bjHit(){
   const card=bjDraw();
   bj.hands[bj.activeHand].push(card);
 
+   // pre-stack before animation to avoid vertical jump on mobile
+  const shouldStack = (window.innerWidth <= 700) && bj.hands[bj.activeHand].length > 3;
+  if(pBox) pBox.classList.toggle("stacked", shouldStack);
+
   const el=bjCardEl(card,false);
   await bjDealAnim(el, pBox);
 
@@ -3826,6 +3835,10 @@ async function bjDealerPlay(){
     if(t>=17) break;
     const dBox=$("bjDealerCards");
     const c=bjDraw(); bj.dealer.push(c);
+    if(dBox){
+      const willStack = (window.innerWidth <= 700) && bj.dealer.length > 3;
+      dBox.classList.toggle("stacked", willStack);
+    }
     const el=bjCardEl(c,false);
     await bjDealAnim(el, dBox);
     bjUpdateScoresUI();
