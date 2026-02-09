@@ -595,18 +595,6 @@ input:focus,select:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4p
   input, select, button.btn{font-size:14px;}
   .miniPill{font-size:12.5px;}
   .row > [style*="width:220px"], .row > [style*="width:180px"]{width:100%!important;}
-
-  /* Mines mobile layout: keep nav available, hide big ladder, move controls down, center grid */
-  #view-mines .sectionBd{display:flex;flex-direction:column;gap:10px;}
-  #view-mines .minesWrap{order:1;display:flex;flex-direction:column;gap:10px;}
-  #view-mines .minesRight{display:none;}
-  #view-mines .minesControls{order:2;display:grid !important;grid-template-columns:repeat(2,1fr);gap:10px;align-items:end;}
-  #view-mines .minesControls input, #view-mines .minesControls select{width:100%!important;}
-  #view-mines .minesControls button{width:100%;justify-content:center;}
-  #view-mines .minesControls .miniPill{width:100%;justify-content:space-between;}
-  #minesGrid{width:100%;max-width:520px;margin:0 auto;}
-  #minesXFloat{position:absolute;left:10px;top:10px;z-index:5;}
-  #minesHomeBtn{display:flex !important;}
 }
 .tile{border:1px solid rgba(255,255,255,.10);background: rgba(0,0,0,.35);border-radius:18px;overflow:hidden;cursor:pointer;user-select:none;
   transition: transform .08s ease, border-color .15s ease, background .15s ease;box-shadow:0 18px 55px rgba(0,0,0,.50);}
@@ -1018,22 +1006,6 @@ tr:last-child td{border-bottom:none;}
   .bjBtnGrid{ grid-template-columns:1fr; gap:8px; }
   .bjBtn{ padding:14px 14px; font-size:15px; }
   .bjRow{ gap:8px; }
-
-  /* Mines mobile layout */
-  .sidebar, .mobileNav, .topbar{ display:none; }
-  .main{ padding:12px; }
-  section:not(#view-mines):not(#view-home){ display:none !important; }
-  #view-mines .sectionBd{ display:flex; flex-direction:column; gap:10px; }
-  #view-mines .minesWrap{ order:1; display:flex; flex-direction:column; gap:10px; }
-  #view-mines .minesRight{ display:none; }
-  #view-mines .minesControls{ order:2; display:grid !important; grid-template-columns:repeat(2,1fr); gap:10px; align-items:end; }
-  #view-mines .minesControls input, #view-mines .minesControls select{ width:100% !important; }
-  #view-mines .minesControls button{ width:100%; justify-content:center; }
-  #view-mines .minesControls .miniPill{ width:100%; justify-content:space-between; }
-  #minesHomeBtn{ display:flex !important; }
-  #minesGrid{ width:100%; }
-  #minesXFloat{ position:absolute; left:10px; top:10px; z-index:5; }
-
 }
 
 .bjHandMeta{
@@ -1614,7 +1586,7 @@ tr:last-child td{border-bottom:none;}
         </div>
 
         <div class="sectionBd">
-          <div class="row minesControls" style="align-items:flex-end;">
+          <div class="row" style="align-items:flex-end;">
             <div style="width:220px;">
               <label>Stake</label>
               <input id="minesStake" type="number" min="0.01" step="0.01" value="0.10"/>
@@ -1635,8 +1607,6 @@ tr:last-child td{border-bottom:none;}
             </div>
 
             <div class="miniPill"><span class="muted">Status</span><span class="mono" id="minesStatus">—</span></div>
-
-            <button class="btn" id="minesHomeBtn" style="grid-column: span 2; justify-content:center; display:none;">Home</button>
           </div>
 
           <div class="minesWrap">
@@ -1660,8 +1630,6 @@ tr:last-child td{border-bottom:none;}
                   <div class="sub"><span class="dot"></span><span id="minesPopSub">added to balance</span></div>
                 </div>
               </div>
-
-              <div class="minesXFloat" id="minesXFloat">x1.00</div>
             </div>
 
             <div class="minesRight">
@@ -1671,6 +1639,8 @@ tr:last-child td{border-bottom:none;}
               </div>
 
               <div class="minesLadder" id="minesLadder"></div>
+
+              <div class="minesXFloat" id="minesXFloat">x1.00</div>
             </div>
           </div>
 
@@ -4016,9 +3986,6 @@ $("bjHitBtnM") && ($("bjHitBtnM").onclick = bjHit);
 $("bjStandBtnM") && ($("bjStandBtnM").onclick = ()=>bjStand(false));
 $("bjDoubleBtnM") && ($("bjDoubleBtnM").onclick = bjDouble);
 $("bjSplitBtnM") && ($("bjSplitBtnM").onclick = bjSplit);
-
-// Mobile-only mines Home button
-$("minesHomeBtn") && ($("minesHomeBtn").onclick = ()=>setView("home"));
 
 // Keep mobile stake input in sync with desktop stake
 const _stk=$("bjStake"), _stkM=$("bjStakeM");
