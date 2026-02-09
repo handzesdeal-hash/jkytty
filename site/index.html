@@ -1007,19 +1007,6 @@ tr:last-child td{border-bottom:none;}
   .bjBtn{ padding:14px 14px; font-size:15px; }
   .bjRow{ gap:8px; }
 
-  /* Mines: mobile-only layout */
-  .sidebar, .mobileNav, .topbar{ display:none; }
-  .main{ padding:12px; }
-  section:not(#view-mines){ display:none !important; }
-  #view-mines .sectionBd{ display:flex; flex-direction:column; gap:10px; }
-  #view-mines .minesWrap{ order:1; display:flex; flex-direction:column; gap:10px; }
-  #view-mines .minesRight{ display:none; }
-  #view-mines .minesControls{ order:2; display:grid !important; grid-template-columns:repeat(2,1fr); gap:10px; align-items:end; }
-  #view-mines .minesControls input, #view-mines .minesControls select{ width:100% !important; }
-  #view-mines .minesControls button{ width:100%; justify-content:center; }
-  #view-mines .minesControls .miniPill{ width:100%; justify-content:space-between; }
-  #minesGrid{ width:100%; }
-  #minesXFloat{ position:absolute; left:10px; top:10px; z-index:5; }
 }
 
 .bjHandMeta{
@@ -2296,7 +2283,6 @@ function updateMeUI(){
 }
 
 function setView(v){
-  if(window.innerWidth <= 640 && v !== "mines") v = "mines";
   document.querySelectorAll(".navBtn[data-view]").forEach(b=>b.classList.toggle("active", b.dataset.view===v));
   ["home","games","dice","roulette","mines","blackjack","sports","leaderboard","bets","case","admin"].forEach(id=>{
     const el=$("view-"+id); if(el) el.style.display=(id===v)?"":"none";
