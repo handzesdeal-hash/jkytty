@@ -838,12 +838,12 @@ tr:last-child td{border-bottom:none;}
   .bjActionMobile .bjBtn{border-radius:14px;}
   .bjLeft .bjBlock:nth-child(1),
   .bjLeft .bjBlock:nth-child(2){display:none;}
-  /* Overlap long card runs so they don't push down */
-  .bjHandCards.stacked{gap:0;flex-wrap:nowrap;}
-  .bjHandCards.stacked .bjCard{width:84px;}
-  .bjHandCards.stacked .bjCard:not(:first-child){margin-left:-46px;}
-  .bjHandCards.stacked .bjSuit,
-  .bjHandCards.stacked .bjPip{opacity:0;}
+  /* Overlap long card runs so they don't push down (player + dealer) */
+  .bjHandCards.stacked, #bjDealerCards.stacked{gap:0;flex-wrap:nowrap;}
+  .bjHandCards.stacked .bjCard, #bjDealerCards.stacked .bjCard{width:84px;}
+  .bjHandCards.stacked .bjCard:not(:first-child), #bjDealerCards.stacked .bjCard:not(:first-child){margin-left:-46px;}
+  .bjHandCards.stacked .bjSuit, .bjHandCards.stacked .bjPip,
+  #bjDealerCards.stacked .bjSuit, #bjDealerCards.stacked .bjPip{opacity:1;}
 }
 
 .bjStage{
@@ -3421,6 +3421,9 @@ function bjRender(){
     const el = bjCardEl(c, faceDown);
     dBox.appendChild(el);
   });
+
+  const dealerStack = (window.innerWidth <= 700) && bj.dealer.length > 3;
+  dBox.classList.toggle("stacked", dealerStack);
 
   // Player: show all hands stacked with meta and cards
   bj.hands.forEach((hand, handIdx)=>{
