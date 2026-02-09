@@ -2286,6 +2286,7 @@ function setView(v){
   ["home","games","dice","roulette","mines","blackjack","sports","leaderboard","bets","case","admin"].forEach(id=>{
     const el=$("view-"+id); if(el) el.style.display=(id===v)?"":"none";
   });
+  if(!meProfile && session?.user){ ensureProfileReady(); }
   if(window.innerWidth<=900){
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -2309,6 +2310,16 @@ async function ensureProfile(){
   }).select("*").single();
   if(e2){ toast("Profile create failed (DB/RLS)."); console.error(e2); return; }
   meProfile=ins;
+}
+
+// Helps phones recover when the first fetch races session/init
+async function ensureProfileReady(){
+  if(meProfile || !session?.user) return;
+  await ensureProfile();
+  if(meProfile) return;
+  // small backoff retry
+  await new Promise(r=>setTimeout(r, 250));
+  await ensureProfile();
 }
 
 async function normalizeMonthForMe(){
@@ -4520,7 +4531,7 @@ $("btnSignUp").onclick=async ()=>{
 $("refreshBtn").onclick=async ()=>{
   if(!supabase) return;
   await maybeRollMonth();
-  await ensureProfile();
+  await ensureProfileReady();
   await normalizeMonthForMe();
   updateMeUI();
   await loadEvents();
@@ -4536,7 +4547,7 @@ async function showApp(){
   $("app").classList.add("show");
   isAdmin = (session?.user?.email||"").toLowerCase() === ADMIN_EMAIL.toLowerCase();
   await maybeRollMonth();
-  await ensureProfile();
+  await ensureProfileReady();
 
   if(meProfile && isAdmin && meProfile.display_name !== ADMIN_DISPLAY_NAME){
     await supabase.from("profiles").update({ display_name: ADMIN_DISPLAY_NAME }).eq("id", session.user.id);
