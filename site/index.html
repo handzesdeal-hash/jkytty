@@ -623,13 +623,22 @@ table{width:100%;border-collapse:collapse;border-radius:16px;border:1px solid rg
 th,td{padding:9px;border-bottom:1px solid rgba(255,255,255,.08);font-size:12.5px;}
 th{color:var(--muted);font-weight:950;letter-spacing:.2px;}
 tr:last-child td{border-bottom:none;}
-#view-leaderboard .sectionBd{display:flex;justify-content:center;}
-#view-leaderboard table{max-width:860px;margin:0 auto;}
-#view-leaderboard th:nth-child(1), #view-leaderboard td:nth-child(1){width:56px;text-align:right;}
-#view-leaderboard th:nth-child(2), #view-leaderboard td:nth-child(2){text-align:left;}
-#view-leaderboard th:nth-child(3), #view-leaderboard td:nth-child(3){text-align:right;}
-#view-leaderboard th:nth-child(4), #view-leaderboard td:nth-child(4){text-align:right;}
-#view-leaderboard th:nth-child(1), #view-leaderboard td:nth-child(1){width:56px;text-align:right;}
+#view-leaderboard .sectionBd{padding:16px 18px;display:block;}
+#view-leaderboard .lbWrap{width:100%;max-width:940px;}
+#view-leaderboard .lbCard{border:1px solid rgba(255,255,255,.10);background: rgba(0,0,0,.22);border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.42);overflow:hidden;}
+#view-leaderboard .lbCardHd{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px 10px;border-bottom:1px solid rgba(255,255,255,.08);}
+#view-leaderboard .lbLabel{font-weight:950;letter-spacing:.14em;font-size:11px;text-transform:uppercase;color:rgba(255,255,255,.78);}
+#view-leaderboard .lbSub{color:var(--muted);font-size:11.5px;margin-top:2px;}
+#view-leaderboard .lbTable{max-width:100%;margin:0;border:1px solid rgba(255,255,255,.06);}
+#view-leaderboard .lbTable th,#view-leaderboard .lbTable td{border-bottom:1px solid rgba(255,255,255,.05);}
+#view-leaderboard .lbTable tr:last-child td{border-bottom:none;}
+#view-leaderboard .lbRank{display:flex;align-items:center;justify-content:center;gap:6px;font-weight:900;width:100%;}
+#view-leaderboard .lbRank .medal{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:999px;font-weight:1000;font-size:11px;line-height:1;color:#0f0f12;text-shadow:0 1px 0 rgba(0,0,0,.35);box-shadow:0 0 14px rgba(255,255,255,.14),0 0 8px rgba(0,0,0,.35);}
+#view-leaderboard .lbRank .m1{background:linear-gradient(135deg,#ffe58f,#f7c948);box-shadow:0 0 16px rgba(255,215,97,.30),0 0 8px rgba(0,0,0,.35);}
+#view-leaderboard .lbRank .m2{background:linear-gradient(135deg,#dfe7ff,#9fb6ff);box-shadow:0 0 14px rgba(160,185,255,.30),0 0 8px rgba(0,0,0,.35);}
+#view-leaderboard .lbRank .m3{background:linear-gradient(135deg,#ffd5b0,#ff9f6f);box-shadow:0 0 14px rgba(255,175,120,.28),0 0 8px rgba(0,0,0,.35);}
+#view-leaderboard th,#view-leaderboard td{padding:11px 12px;}
+#view-leaderboard th:nth-child(1), #view-leaderboard td:nth-child(1){width:56px;text-align:center;}
 #view-leaderboard th:nth-child(2), #view-leaderboard td:nth-child(2){text-align:left;}
 #view-leaderboard th:nth-child(3), #view-leaderboard td:nth-child(3){text-align:right;}
 #view-leaderboard th:nth-child(4), #view-leaderboard td:nth-child(4){text-align:right;}
@@ -1668,12 +1677,21 @@ tr:last-child td{border-bottom:none;}
 
     <section id="view-leaderboard" style="display:none;">
       <div class="section">
-        <div class="sectionHd"><div><h3>Leaderboard</h3><div class="sub">Monthly wager. Top #1 gets +3 when month changes.</div></div><div class="chip"><span class="mono" id="lbMonth">—</span></div></div>
-        <div class="sectionBd">
-          <table>
-            <thead><tr><th>#</th><th>User</th><th>Wager (this month)</th><th>Level</th></tr></thead>
-            <tbody id="lbBody"><tr><td colspan="4" class="muted">Loading…</td></tr></tbody>
-          </table>
+        <div class="sectionHd"><div><h3>Leaderboard</h3><div class="sub">Monthly wager (resets by calendar month) and last 24h wager.</div></div><div class="chip"><span class="mono" id="lbMonth">—</span></div></div>
+        <div class="sectionBd lbWrap">
+          <div class="lbCard">
+            <div class="lbCardHd">
+              <div>
+                <div class="lbLabel">Monthly</div>
+                <div class="lbSub">Current month total</div>
+              </div>
+              <div class="chip"><span class="mono" id="lbCountMonth">0</span></div>
+            </div>
+            <table class="lbTable">
+              <thead><tr><th>#</th><th>User</th><th>Wager (this month)</th><th>Level</th></tr></thead>
+              <tbody id="lbBody"><tr><td colspan="4" class="muted">Loading…</td></tr></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>
@@ -2698,21 +2716,74 @@ $("profileOverlay").onclick=(e)=>{ if(e.target===$("profileOverlay")) closeProfi
 async function refreshLeaderboard(){
   const cur=monthKey();
   $("lbMonth").textContent=cur;
-  const { data, error } = await supabase.from("profiles").select("display_name,month_wager,level,month_key").eq("month_key", cur).order("month_wager",{ascending:false}).limit(50);
-  if(error){
+  const { data: monthRows, error: monthErr } = await supabase.from("profiles").select("id,display_name,month_wager,level,month_key").eq("month_key", cur).order("month_wager",{ascending:false}).limit(50);
+  if(monthErr){
     $("lbBody").innerHTML = `<tr><td colspan="4" class="muted">Leaderboard failed (DB/RLS).</td></tr>`;
-    console.error(error);
+    console.error(monthErr);
+  }else{
+    const rows=monthRows||[];
+    $("chipLb").textContent=String(rows.length);
+    $("lbCountMonth").textContent=String(rows.length);
+    $("lbBody").innerHTML = rows.length ? rows.map((r,i)=>{
+      const rank=i+1;
+      const topClass = rank<=3 ? `top${rank}` : "";
+      const medal = rank<=3 ? `<span class="medal m${rank}">${rank}</span>` : `<span class="mono">${rank}</span>`;
+      return `
+      <tr class="${topClass}">
+        <td><div class="lbRank">${medal}</div></td>
+        <td>${esc(r.display_name||"Player")}</td>
+        <td class="mono">${to2(r.month_wager||0)}</td>
+        <td class="mono">Lv ${Number(r.level||1)}</td>
+      </tr>`;
+    }).join("") : `<tr><td colspan="4" class="muted">No data yet. Place some bets first.</td></tr>`;
+  }
+
+  // Last 24h leaderboard (approx): sum stakes of bets in past 24h
+  const since = new Date(Date.now() - 24*60*60*1000).toISOString();
+  const { data: bets24, error: betsErr } = await supabase
+    .from("bets")
+    .select("user_id, stake, created_at")
+    .gte("created_at", since)
+    .limit(5000);
+
+  if(betsErr){
+    $("lbBodyDay").innerHTML = `<tr><td colspan="4" class="muted">24h board failed.</td></tr>`;
+    console.error(betsErr);
     return;
   }
-  const rows=data||[];
-  $("chipLb").textContent=String(rows.length);
-  $("lbBody").innerHTML = rows.length ? rows.map((r,i)=>`
-    <tr>
-      <td class="mono">${i+1}</td>
-      <td>${esc(r.display_name||"Player")}</td>
-      <td class="mono">${to2(r.month_wager||0)}</td>
-      <td class="mono">Lv ${Number(r.level||1)}</td>
-    </tr>`).join("") : `<tr><td colspan="4" class="muted">No data yet. Place some bets first.</td></tr>`;
+
+  const totals=new Map();
+  (bets24||[]).forEach(b=>{
+    const uid=b.user_id; if(!uid) return;
+    const prev=totals.get(uid)||0;
+    totals.set(uid, prev + Number(b.stake||0));
+  });
+
+  // Map user info
+  const { data: profs, error: profErr } = await supabase.from("profiles").select("id, display_name, level");
+  if(profErr){
+    $("lbBodyDay").innerHTML = `<tr><td colspan="4" class="muted">24h profiles failed.</td></tr>`;
+    console.error(profErr);
+    return;
+  }
+  const profMap=new Map((profs||[]).map(p=>[p.id, p]));
+
+  const dayRows = Array.from(totals.entries())
+    .map(([uid, amt])=>({ uid, amt }))
+    .sort((a,b)=>b.amt - a.amt)
+    .slice(0,50);
+
+  $("lbCountDay").textContent = String(dayRows.length);
+  $("lbBodyDay").innerHTML = dayRows.length ? dayRows.map((r,i)=>{
+    const prof=profMap.get(r.uid)||{};
+    return `
+      <tr>
+        <td class="mono">${i+1}</td>
+        <td>${esc(prof.display_name||"Player")}</td>
+        <td class="mono">${to2(r.amt||0)}</td>
+        <td class="mono">Lv ${Number(prof.level||1)}</td>
+      </tr>`;
+  }).join("") : `<tr><td colspan="4" class="muted">No 24h wagers yet.</td></tr>`;
 }
 
 /* DAILY CASE + COUNTDOWN */
