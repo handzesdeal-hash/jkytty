@@ -989,20 +989,33 @@ tr:last-child td{border-bottom:none;}
   box-shadow: 0 0 0 2px rgba(124,58,237,.28), 0 10px 28px rgba(0,0,0,.35);
 }
 .bjHandRow:not(.active){
-  opacity:.75;
+  opacity:1;
 }
 
 .bjHandRow.active .bjCard{ opacity:1; filter:none; }
-.bjHandRow:not(.active) .bjCard{ opacity:.6; filter:saturate(.65); }
+.bjHandRow:not(.active) .bjCard{ opacity:1; filter:none; }
 .bjHandRow.active .bjHandMeta{ border-color: rgba(124,58,237,.35); background: rgba(124,58,237,.08); }
-.bjHandRow:not(.active) .bjHandMeta{ opacity:.8; }
+.bjHandRow:not(.active) .bjHandMeta{ opacity:1; }
 
 .bjHandCards{
   display:flex;
   justify-content:center;
   gap:14px;
   flex-wrap:nowrap;
+  min-height:165px; /* reserve space so bed doesn't jump when cards arrive */
+  align-items:flex-start;
 }
+.bjHandCards .bjCard{transition:none;}
+.bjHandCards.stacked .bjCard{transform: translateX(0);transition:none !important;}
+.bjHandCards.stacked .bjCard:not(:first-child){transform-origin:left center;}
+.bjHandCards.stacked .stackArrive{animation: stackArrive .18s ease-out;}
+@keyframes stackArrive{from{transform: translateX(32px) scale(1.02);}to{transform: translateX(0) scale(1);} }
+.bjHandCards.stacked, #bjDealerCards.stacked{gap:0;flex-wrap:nowrap;position:relative;}
+.bjHandCards.stacked .bjCard, #bjDealerCards.stacked .bjCard{width:104px;}
+.bjHandCards.stacked .bjCard:not(:first-child), #bjDealerCards.stacked .bjCard:not(:first-child){margin-left:0;}
+.bjHandCards.stacked .bjSuit, .bjHandCards.stacked .bjPip,
+#bjDealerCards.stacked .bjSuit, #bjDealerCards.stacked .bjPip{opacity:1;}
+#bjDealerCards{min-height:205px;height:205px;display:flex;justify-content:center;align-items:flex-start;padding-top:14px;position:relative;}
 
 @media(max-width:1100px){
   #bjPlayerCards{ justify-content:center; }
@@ -1065,8 +1078,8 @@ tr:last-child td{border-bottom:none;}
   position:absolute;
   top:14px;
   right:14px;
-  width:90px;
-  height:125px;
+  width:104px;
+  height:145px;
   border-radius:16px;
   border:1px solid rgba(255,255,255,.14);
   background:
@@ -1078,16 +1091,16 @@ tr:last-child td{border-bottom:none;}
   /* stacked cards illusion */
   box-shadow:
     0 18px 55px rgba(0,0,0,.55),
-    6px 6px 0 rgba(255,255,255,.06),
-    12px 12px 0 rgba(255,255,255,.035),
-    18px 18px 0 rgba(255,255,255,.02),
-    0 0 22px rgba(124,58,237,.16);
+    7px 7px 0 rgba(255,255,255,.06),
+    14px 14px 0 rgba(255,255,255,.035),
+    21px 21px 0 rgba(255,255,255,.02),
+    0 0 24px rgba(124,58,237,.16);
 }
 
 .bjDeck::before{
   content:"";
   position:absolute;
-  inset:14px 12px 14px 12px;
+  inset:16px 14px 16px 14px;
   border-radius:12px;
   border:1px solid rgba(255,255,255,.16);
   box-shadow: inset 0 0 0 1px rgba(0,0,0,.45);
@@ -1105,10 +1118,10 @@ tr:last-child td{border-bottom:none;}
   display:flex;
   align-items:center;
   justify-content:center;
-  font-weight:1000;
-  font-size:50px;
-  color:rgba(245,240,255,.95);
-  text-shadow:0 2px 16px rgba(0,0,0,.35);
+  font-weight:900;
+  font-size:42px;
+  color:rgba(245,240,255,.90);
+  text-shadow:0 1px 10px rgba(0,0,0,.28);
   opacity:1;
   font-family: "Cambria Math", "Noto Sans Math", "DejaVu Sans", "Arial Black", sans-serif;
 }
@@ -1121,7 +1134,7 @@ tr:last-child td{border-bottom:none;}
 
 /* CARD 3D flip */
 .bjCard{
-  width:92px; height:132px;
+  width:104px; height:148px;
   perspective: 1000px;
   position:relative;
 }
@@ -1181,7 +1194,7 @@ tr:last-child td{border-bottom:none;}
 }
 .bjBack::before{
   content:"";
-  position:absolute; inset:14px 12px 14px 12px;
+  position:absolute; inset:16px 14px 16px 14px;
   border-radius:12px;
   border:1px solid rgba(255,255,255,.16);
   box-shadow: inset 0 0 0 1px rgba(0,0,0,.45);
@@ -1197,10 +1210,10 @@ tr:last-child td{border-bottom:none;}
   display:flex;
   align-items:center;
   justify-content:center;
-  font-weight:1000;
+  font-weight:920;
   font-size:42px;
-  color:rgba(245,240,255,.95);
-  text-shadow:0 2px 16px rgba(0,0,0,.35);
+  color:rgba(245,240,255,.93);
+  text-shadow:0 1px 10px rgba(0,0,0,.30);
   font-family: "Cambria Math", "Noto Sans Math", "DejaVu Sans", "Arial Black", sans-serif;
 }
 
@@ -3510,10 +3523,34 @@ function bjRender(){
   const isMobile = window.innerWidth <= 700;
 
   // Dealer cards (2+)
-  dBox.classList.toggle("stacked", isMobile && bj.dealer.length > 3);
+  const dealerShouldStack = bj.dealer.length > 2;
+  const dealerOverlap = 36; // larger offset so more of each card stays visible
+  const dealerTopOffset = 64; // drop stacked pile further to align with 2-card height
+  const dealerBaseOffset = 0; // anchor at left of stack container; container itself is centered
+  const dealerCardWidth = 104;
+  const dealerStackWidth = dealerShouldStack ? (dealerCardWidth + Math.max(0, bj.dealer.length-1)*dealerOverlap) : 0;
+  dBox.classList.toggle("stacked", dealerShouldStack);
+  dBox.style.position = dealerShouldStack ? "relative" : "";
+  dBox.style.width = dealerShouldStack ? `${dealerStackWidth}px` : "";
+  dBox.style.margin = dealerShouldStack ? "0 auto" : "";
+  dBox.style.minHeight = "";
+  dBox.style.height = "";
+  dBox.style.paddingTop = "";
+  dBox.style.left = "";
+  dBox.style.transform = "";
   bj.dealer.forEach((c, idx)=>{
     const faceDown = (idx===1 && bj.holeCardHidden);
     const el = bjCardEl(c, faceDown);
+    if(dealerShouldStack){
+      el.style.position = "absolute";
+      el.style.left = `${dealerBaseOffset + idx*dealerOverlap}px`;
+      el.style.top = `${dealerTopOffset}px`;
+      el.style.zIndex = String(100 + idx);
+      if(idx === bj.dealer.length - 1){
+        el.classList.add("stackArrive");
+        el.addEventListener("animationend", ()=> el.classList.remove("stackArrive"), { once:true });
+      }
+    }
     dBox.appendChild(el);
   });
 
@@ -3531,11 +3568,36 @@ function bjRender(){
 
     const cards = bjGetHandCards(handIdx);
     if(cards){
+      // rebuild cards fresh
       cards.innerHTML="";
-      const shouldStack = isMobile && hand.length > 3;
+      const shouldStack = hand.length > 2; // stack when 3+ cards to avoid overflow
+      const overlap = 36; // larger offset so more of each card stays visible
+      const baseOffset = 0;
+      const cardWidth = 104;
+      const stackWidth = shouldStack ? (cardWidth + Math.max(0, hand.length-1)*overlap) : 0;
       cards.classList.toggle("stacked", shouldStack);
-      hand.forEach(c=>{
+      cards.style.position = shouldStack ? "relative" : "";
+      cards.style.width = shouldStack ? `${stackWidth}px` : "";
+      cards.style.margin = shouldStack ? "0 auto" : "";
+      cards.style.left = "";
+      cards.style.transform = "";
+      hand.forEach((c, idx)=>{
         const el = bjCardEl(c, false);
+        if(shouldStack){
+          el.style.position = "absolute";
+          el.style.left = `${baseOffset + idx*overlap}px`;
+          el.style.top = "0";
+          el.style.zIndex = String(100 + idx); // later cards sit on top
+          if(idx === hand.length - 1){
+            el.classList.add("stackArrive");
+            el.addEventListener("animationend", ()=> el.classList.remove("stackArrive"), { once:true });
+          }
+        }else{
+          el.style.position = "";
+          el.style.left = "";
+          el.style.top = "";
+          el.style.zIndex = "";
+        }
         cards.appendChild(el);
       });
     }
@@ -3579,14 +3641,50 @@ function bjUpdateStackedLayouts(){
   const isMobile = window.innerWidth <= 700;
   const dBox=$("bjDealerCards");
   if(dBox){
-    const dealerStack = isMobile && bj.dealer.length > 3;
+    const dealerStack = bj.dealer.length > 2;
+    const overlap = 36; // match render overlap for more visibility
+    const topOffset = 64; // mirror render() so stacked state sits at same height as 2-card layout
+    const baseOffset = 0; // anchor at left; container is centered under pill
+    const cardWidth = 104;
+    const stackWidth = dealerStack ? (cardWidth + Math.max(0, bj.dealer.length-1)*overlap) : 0;
     dBox.classList.toggle("stacked", dealerStack);
+    dBox.style.position = dealerStack ? "relative" : "";
+    dBox.style.width = dealerStack ? `${stackWidth}px` : "";
+    dBox.style.margin = dealerStack ? "0 auto" : "";
+    dBox.style.minHeight = "";
+    dBox.style.height = "";
+    dBox.style.paddingTop = "";
+    dBox.style.left = "";
+    dBox.style.transform = "";
+    if(dealerStack){
+      Array.from(dBox.children).forEach((child, idx)=>{
+        child.style.position = "absolute";
+        child.style.left = `${baseOffset + idx*overlap}px`;
+        child.style.top = `${topOffset}px`;
+        child.style.zIndex = String(100 + idx);
+      });
+    }
   }
   bj.hands.forEach((hand, idx)=>{
     const cards=bjGetHandCards(idx);
     if(!cards) return;
-    const shouldStack = isMobile && hand.length > 3;
+    const shouldStack = hand.length > 2;
+    const overlap = 36; // match render overlap for more visibility
+    const baseOffset = 0;
+    const cardWidth = 104;
+    const stackWidth = shouldStack ? (cardWidth + Math.max(0, hand.length-1)*overlap) : 0;
     cards.classList.toggle("stacked", shouldStack);
+    cards.style.position = shouldStack ? "relative" : "";
+    cards.style.width = shouldStack ? `${stackWidth}px` : "";
+    cards.style.margin = shouldStack ? "0 auto" : "";
+    cards.style.left = "";
+    cards.style.transform = "";
+    // adjust existing stacked children if any
+    if(shouldStack){
+      Array.from(cards.children).forEach((child, idx)=>{
+        child.style.left = `${baseOffset + idx*overlap}px`;
+      });
+    }
   });
 }
 
