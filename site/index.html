@@ -3422,9 +3422,6 @@ function bjRender(){
     dBox.appendChild(el);
   });
 
-  const dealerStack = (window.innerWidth <= 700) && bj.dealer.length > 3;
-  dBox.classList.toggle("stacked", dealerStack);
-
   // Player: show all hands stacked with meta and cards
   bj.hands.forEach((hand, handIdx)=>{
     const row = bjGetHandRow(handIdx, true);
@@ -3444,10 +3441,10 @@ function bjRender(){
         const el = bjCardEl(c, false);
         cards.appendChild(el);
       });
-      const shouldStack = (window.innerWidth <= 700) && hand.length > 3;
-      cards.classList.toggle("stacked", shouldStack);
     }
   });
+
+  bjUpdateStackedLayouts();
 
   // set hand count for responsive scaling
   pBox.dataset.hands = String(bj.hands.length||1);
@@ -3479,6 +3476,21 @@ function bjUpdateScoresUI(){
   if(pP) pP.textContent = String(pSum);
   if(dS) dS.textContent = bjDealerScoreVisible();
   if(pS) pS.textContent = String(pSum);
+}
+
+function bjUpdateStackedLayouts(){
+  const isMobile = window.innerWidth <= 700;
+  const dBox=$("bjDealerCards");
+  if(dBox){
+    const dealerStack = isMobile && bj.dealer.length > 3;
+    dBox.classList.toggle("stacked", dealerStack);
+  }
+  bj.hands.forEach((hand, idx)=>{
+    const cards=bjGetHandCards(idx);
+    if(!cards) return;
+    const shouldStack = isMobile && hand.length > 3;
+    cards.classList.toggle("stacked", shouldStack);
+  });
 }
 
 function bjShowPop({ win=true, amount=0, text="", status=null }){
@@ -3817,6 +3829,7 @@ async function bjDealerPlay(){
     const el=bjCardEl(c,false);
     await bjDealAnim(el, dBox);
     bjUpdateScoresUI();
+    bjUpdateStackedLayouts();
   }
 }
 
