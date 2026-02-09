@@ -1938,8 +1938,19 @@ alter table public.app_state disable row level security;
 
                 <div style="height:10px"></div>
 
+
                 <label>Standard bet</label>
-                <input id="bjStake" type="number" min="0.01" step="0.01" value="0.10"/>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  <input id="bjStake" type="number" min="0.01" step="0.01" value="0.10" style="width:100%; font-size:15px; padding:12px 12px;"/>
+                  <div style="display:flex; gap:8px;">
+                    <button class="bjBtn" type="button" id="bjStakeMin" style="flex:1; min-width:90px;">Min</button>
+                    <button class="bjBtn" type="button" id="bjStakeMax" style="flex:1; min-width:90px;">Max</button>
+                  </div>
+                  <div style="display:flex; gap:8px;">
+                    <button class="bjBtn" type="button" id="bjStakeHalf" style="flex:1; min-width:90px;">1/2</button>
+                    <button class="bjBtn" type="button" id="bjStakeDouble" style="flex:1; min-width:90px;">2x</button>
+                  </div>
+                </div>
 
                 <div style="height:10px"></div>
 
@@ -2043,7 +2054,17 @@ alter table public.app_state disable row level security;
                 <div class="bjBetRow">
                   <div>
                     <label for="bjStakeM">Bet</label>
-                    <input id="bjStakeM" type="number" min="0.01" step="0.01" value="0.10" />
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                      <input id="bjStakeM" type="number" min="0.01" step="0.01" value="0.10" style="width:100%; font-size:15px; padding:12px 12px;" />
+                      <div style="display:flex; gap:6px;">
+                        <button class="bjBtn" type="button" id="bjStakeMinM" style="flex:1; min-width:80px;">Min</button>
+                        <button class="bjBtn" type="button" id="bjStakeMaxM" style="flex:1; min-width:80px;">Max</button>
+                      </div>
+                      <div style="display:flex; gap:6px;">
+                        <button class="bjBtn" type="button" id="bjStakeHalfM" style="flex:1; min-width:80px;">1/2</button>
+                        <button class="bjBtn" type="button" id="bjStakeDoubleM" style="flex:1; min-width:80px;">2x</button>
+                      </div>
+                    </div>
                   </div>
                   <div>
                     <label for="bjSidePairsM">Pairs</label>
@@ -4233,6 +4254,30 @@ if(_stk && _stkM){
   _stkM.value = _stk.value;
   _stkM.addEventListener("input", ()=>{ _stk.value = _stkM.value; });
   _stk.addEventListener("input", ()=>{ _stkM.value = _stk.value; });
+
+  // Helper for min/max/half/double logic
+  function getBalance() {
+    const bal = $("bjBal");
+    return bal ? Number(bal.textContent) : 0;
+  }
+  function setStake(val) {
+    val = Math.max(0.01, Math.floor(val * 100) / 100);
+    _stk.value = val.toFixed(2);
+    _stkM.value = val.toFixed(2);
+    _stk.dispatchEvent(new Event("input"));
+    _stkM.dispatchEvent(new Event("input"));
+  }
+
+  // Desktop
+  $("bjStakeMin") && ($("bjStakeMin").onclick = ()=> setStake(0.01));
+  $("bjStakeMax") && ($("bjStakeMax").onclick = ()=> setStake(getBalance()));
+  $("bjStakeHalf") && ($("bjStakeHalf").onclick = ()=> setStake(Number(_stk.value)/2));
+  $("bjStakeDouble") && ($("bjStakeDouble").onclick = ()=> setStake(Number(_stk.value)*2));
+  // Mobile
+  $("bjStakeMinM") && ($("bjStakeMinM").onclick = ()=> setStake(0.01));
+  $("bjStakeMaxM") && ($("bjStakeMaxM").onclick = ()=> setStake(getBalance()));
+  $("bjStakeHalfM") && ($("bjStakeHalfM").onclick = ()=> setStake(Number(_stkM.value)/2));
+  $("bjStakeDoubleM") && ($("bjStakeDoubleM").onclick = ()=> setStake(Number(_stkM.value)*2));
 }
 
 // Sync side bets between desktop and mobile inputs
