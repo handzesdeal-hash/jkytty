@@ -1971,7 +1971,7 @@ alter table public.app_state disable row level security;
                 </div>
 
                 <div class="sub" style="margin-top:10px;">
-                  Perfect Pairs pays <b>10×</b> if first 2 player cards match rank. Bust Out pays <b>2×</b> if dealer busts.
+                  Perfect Pair pays <b>25×</b> (same rank & suit), Colored Pair pays <b>12×</b> (same rank & color), Mixed Pair pays <b>6×</b> (same rank). Bust Out pays <b>2×</b> (3-4 cards), <b>4×</b> (5 cards), <b>15×</b> (6 cards), <b>50×</b> (7 cards), <b>250×</b> (8+ cards) if dealer busts.
                 </div>
 
                 <div class="bjRow" style="margin-top:10px; justify-content:space-between;">
@@ -3188,7 +3188,7 @@ async function loadAdminEvents(){
 // - Flip animation for hole card
 // - Sounds (WebAudio)
 // - Split / Double / Hit / Stand
-// - Side bets: Perfect Pairs (10x), Bust Out (2x if dealer busts)
+// - Side bets: Perfect Pair 25x / Colored Pair 12x / Mixed Pair 6x, Bust Out tiered by dealer bust card count (3-4:2x, 5:4x, 6:15x, 7:50x, 8+:250x)
 // - Win/Lose popup like mines (shows won or lost amount)
 // - Outline winner green, loser red
 // =======================
@@ -3902,11 +3902,20 @@ async function bjStart(){
   bjSetButtons();
   bjUpdateScoresUI();
 
-  // Side bet settle: Perfect Pairs (10x) checks first 2 player cards
+  // Side bet settle: Perfect Pair 25x / Colored Pair 12x / Mixed Pair 6x checks first 2 player cards
   let sideWin = 0;
   if(bj.sidePairs>0 && bj.hands[0].length>=2){
-    if(bj.hands[0][0].r === bj.hands[0][1].r){
-      sideWin += bj.sidePairs * 10;
+    const c1=bj.hands[0][0], c2=bj.hands[0][1];
+    if(c1.r === c2.r){
+      const bothRed = bjIsRed(c1.s) && bjIsRed(c2.s);
+      const bothBlack = !bjIsRed(c1.s) && !bjIsRed(c2.s);
+      if(c1.s === c2.s){
+        sideWin += bj.sidePairs * 25; // Perfect Pair
+      }else if(bothRed || bothBlack){
+        sideWin += bj.sidePairs * 12; // Colored Pair
+      }else{
+        sideWin += bj.sidePairs * 6;  // Mixed Pair
+      }
     }
   }
 
@@ -4136,11 +4145,18 @@ async function bjStand(fromBust=false){
   // If split and active hand 2 -> proceed, or single hand -> proceed
   await bjDealerPlay();
 
-  // side bet Bust Out: pays 2x if dealer busts
+  // side bet Bust Out: pays tiered if dealer busts (by dealer card count)
   let sideWin = 0;
   const dealerTotal=bjHandTotals(bj.dealer).sum;
   if(bj.sideBust>0 && dealerTotal>21){
-    sideWin += bj.sideBust * 2;
+    const dc = bj.dealer.length;
+    let mult = 0;
+    if(dc >= 8) mult = 250;
+    else if(dc === 7) mult = 50;
+    else if(dc === 6) mult = 15;
+    else if(dc === 5) mult = 4;
+    else if(dc === 3 || dc === 4) mult = 2;
+    sideWin += bj.sideBust * mult;
   }
 
   // settle hands
