@@ -15,7 +15,7 @@
 
   const gravity = 1600; // px/s^2 (slower descent)
   const pegRadius = 6;
-  const ballRadius = 8;
+  const ballRadius = 5;
   const maxStep = 1/240;
   const boardPaddingX = 40;
   const boardTop = 40;
