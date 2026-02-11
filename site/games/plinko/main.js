@@ -32,9 +32,9 @@
   const baseVXMax = 180;
   const vYMin = 170;
   const xDamp = 0.5;      // strong sideways damping per collision
-  const yDamp = 0.94;     // keep most of downward energy
-  const baseYRestitution = 0.8;
-  const maxYRestitution = 0.995;
+  const yDamp = 0.80;     // more energy loss per bounce (gentler)
+  const baseYRestitution = 0.6; // less bouncy
+  const maxYRestitution = 0.85; // less bouncy
   const restitutionK = 6; // controls how fast damping eases off with more hits
   const epsilonMax = Math.PI / 90; // ~2 degrees
   const sigmaXBase = 12;  // small lateral randomness per hit
