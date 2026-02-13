@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -1498,7 +1497,8 @@ tr:last-child td{border-bottom:none;}
       <div class="pill"><span class="muted">Default stake</span>
         <span>
           <input id="defaultStake" type="number" min="0.01" step="0.01" value="0.10"
-            style="width:110px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.26);color:rgba(255,255,255,.92);" />
+            style="width:110px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.26);color:rgba(255,255,255,.92);outline:none;font-size:12px;margin:0;"
+            />
         </span>
       </div>
     </div>
@@ -1698,218 +1698,164 @@ tr:last-child td{border-bottom:none;}
     </section>
 
     <section id="view-plinko" style="display:none;">
-      <div class="section">
-        <div class="sectionHd">
-          <div><h3>Plinko</h3><div class="sub">Drop from the apex and watch the triangle board.</div></div>
-          <div class="chip">LIVE</div>
-        </div>
+      <iframe src="/site/games/plinko-github/index.html" style="width:100vw;height:100vh;border:none;"></iframe>
+    </section>
 
-        <div class="sectionBd">
-          <div class="plinkoWrap">
-            <div class="plinkoCard">
-              <div class="muted" style="margin-bottom:12px;">Stake-style physics with custom HANDZES look.</div>
-              <div class="plinkoControls">
-                <div>
-                  <label>Bet</label>
-                  <div class="plinkoBtns" style="gap:8px;">
-                    <input id="bet" type="number" min="0.01" step="0.01" value="0.10" style="flex:1;min-width:140px;" />
-                    <button class="plinkoBtn" id="min">Min</button>
-                    <button class="plinkoBtn" id="half">1/2</button>
-                    <button class="plinkoBtn" id="double">2x</button>
-                    <button class="plinkoBtn" id="max">Max</button>
-                  </div>
-                </div>
-                <div class="plinkoRow">
-                  <div style="flex:1;">
-                    <label>Rows</label>
-                    <select id="rows">
-                      <option value="12">12 rows (classic)</option>
-                      <option value="14">14 rows</option>
-                      <option value="16" selected>16 rows</option>
-                    </select>
-                  </div>
-                  <div style="flex:1;">
-                    <label>Risk</label>
-                    <select id="risk">
-                      <option value="low">Low</option>
-                      <option value="medium" selected>Medium</option>
-                      <option value="high">High</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="plinkoBtns" style="gap:10px;">
-                  <button class="plinkoBtn primary" id="drop">Drop</button>
-                  <button class="plinkoBtn" id="auto">Auto (10)</button>
-                </div>
-                <div class="plinkoStats">
-                  <div class="plinkoStat"><span>Balance</span><span id="bal">100.00</span></div>
-                  <div class="plinkoStat"><span>Last</span><span id="last">—</span></div>
-                  <div class="plinkoStat"><span>Total Profit</span><span id="profit">0.00</span></div>
-                </div>
-                <div class="plinkoPayouts" id="payouts"></div>
-              </div>
-            </div>
-
-            <div class="plinkoGridCard">
-              <canvas id="plinko" class="plinkoCanvas"></canvas>
-            </div>
-          </div>
-        </div>
-      </div>
+    <section id="view-plinko-old" style="display:none;">
+      <!-- Old Plinko HTML here (kept hidden) -->
     </section>
 
     <section id="view-sports" style="display:none;">
       <div class="section">
         <div class="sectionHd"><div><h3>Sports</h3><div class="sub">Your created events with coefficients.</div></div><div class="chip"><span class="mono" id="chipSports2">0</span></div></div>
         <div class="sectionBd"><div class="grid" id="eventsGrid"></div></div>
-      </div>
-    </section>
+      </section>
 
-    <section id="view-leaderboard" style="display:none;">
-      <div class="section">
-        <div class="sectionHd"><div><h3>Leaderboard</h3><div class="sub">Monthly wager (resets by calendar month) and last 24h wager.</div></div><div class="chip"><span class="mono" id="lbMonth">—</span></div></div>
-        <div class="sectionBd lbWrap">
-          <div class="lbCard">
-            <div class="lbCardHd">
-              <div>
-                <div class="lbLabel">Monthly</div>
-                <div class="lbSub">Current month total</div>
+      <section id="view-leaderboard" style="display:none;">
+        <div class="section">
+          <div class="sectionHd"><div><h3>Leaderboard</h3><div class="sub">Monthly wager (resets by calendar month) and last 24h wager.</div></div><div class="chip"><span class="mono" id="lbMonth">—</span></div></div>
+          <div class="sectionBd lbWrap">
+            <div class="lbCard">
+              <div class="lbCardHd">
+                <div>
+                  <div class="lbLabel">Monthly</div>
+                  <div class="lbSub">Current month total</div>
+                </div>
+                <div class="chip"><span class="mono" id="lbCountMonth">0</span></div>
               </div>
-              <div class="chip"><span class="mono" id="lbCountMonth">0</span></div>
+              <table class="lbTable">
+                <thead><tr><th>#</th><th>User</th><th>Wager (this month)</th><th>Level</th></tr></thead>
+                <tbody id="lbBody"><tr><td colspan="4" class="muted">Loading…</td></tr></tbody>
+              </table>
             </div>
-            <table class="lbTable">
-              <thead><tr><th>#</th><th>User</th><th>Wager (this month)</th><th>Level</th></tr></thead>
-              <tbody id="lbBody"><tr><td colspan="4" class="muted">Loading…</td></tr></tbody>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-bets" style="display:none;">
+        <div class="section">
+          <div class="sectionHd"><div><h3>My Bets</h3><div class="sub">Bets for your account.</div></div><div class="chip"><span class="mono" id="myBetsCount">0</span></div></div>
+          <div class="sectionBd">
+            <table>
+              <thead><tr><th>Time</th><th>Event</th><th>Pick</th><th>Stake</th><th>Coef</th><th>Status</th><th>Payout</th></tr></thead>
+              <tbody id="myBetsBody"><tr><td colspan="7" class="muted">No bets yet.</td></tr></tbody>
             </table>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section id="view-bets" style="display:none;">
-      <div class="section">
-        <div class="sectionHd"><div><h3>My Bets</h3><div class="sub">Bets for your account.</div></div><div class="chip"><span class="mono" id="myBetsCount">0</span></div></div>
-        <div class="sectionBd">
-          <table>
-            <thead><tr><th>Time</th><th>Event</th><th>Pick</th><th>Stake</th><th>Coef</th><th>Status</th><th>Payout</th></tr></thead>
-            <tbody id="myBetsBody"><tr><td colspan="7" class="muted">No bets yet.</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+      <section id="view-case" style="display:none;">
+        <div class="section">
+          <div class="sectionHd">
+            <div><h3>Daily Case</h3><div class="sub">Open after you wager 10 (this month). Admin can test anytime.</div></div>
+            <div class="chip" id="caseStatus">—</div>
+          </div>
+          <div class="sectionBd">
+            <div class="caseBox">
+              <div class="row" style="justify-content:space-between;align-items:center;margin-top:0;">
+                <div class="miniPill"><span class="muted">Next case in</span><span class="mono" id="caseCountdown">—</span></div>
+                <div class="miniPill"><span class="muted">Requirement</span><span class="mono" id="caseReq">0.00 / 10.00</span><span id="gemReq"></span></div>
+              </div>
+              <div style="height:10px"></div>
+              <div class="caseStage">
+                <div class="caseLine"></div>
+                <div class="caseTrack" id="caseTrack"></div>
+              </div>
+              <div class="row" style="margin-top:12px;justify-content:space-between;">
+                <button class="btn purple" id="openCaseBtn">Open case</button>
+              </div>
 
-    <section id="view-case" style="display:none;">
-      <div class="section">
-        <div class="sectionHd">
-          <div><h3>Daily Case</h3><div class="sub">Open after you wager 10 (this month). Admin can test anytime.</div></div>
-          <div class="chip" id="caseStatus">—</div>
-        </div>
-        <div class="sectionBd">
-          <div class="caseBox">
-            <div class="row" style="justify-content:space-between;align-items:center;margin-top:0;">
-              <div class="miniPill"><span class="muted">Next case in</span><span class="mono" id="caseCountdown">—</span></div>
-              <div class="miniPill"><span class="muted">Requirement</span><span class="mono" id="caseReq">0.00 / 10.00</span><span id="gemReq"></span></div>
-            </div>
-            <div style="height:10px"></div>
-            <div class="caseStage">
-              <div class="caseLine"></div>
-              <div class="caseTrack" id="caseTrack"></div>
-            </div>
-            <div class="row" style="margin-top:12px;justify-content:space-between;">
-              <button class="btn purple" id="openCaseBtn">Open case</button>
-            </div>
-
-            <div class="probList">
-              <div class="prob"><span>70% → win 0.01</span><span class="mono">0.01</span></div>
-              <div class="prob"><span>10% → win 0.03</span><span class="mono">0.03</span></div>
-              <div class="prob"><span>7.5% → win 0.05</span><span class="mono">0.05</span></div>
-              <div class="prob"><span>2.5% → win 0.10</span><span class="mono">0.10</span></div>
-              <div class="prob"><span>9% → win nothing</span><span class="mono">0.00</span></div>
-              <div class="prob"><span>1% → win 1.00</span><span class="mono">1.00</span></div>
+              <div class="probList">
+                <div class="prob"><span>70% → win 0.01</span><span class="mono">0.01</span></div>
+                <div class="prob"><span>10% → win 0.03</span><span class="mono">0.03</span></div>
+                <div class="prob"><span>7.5% → win 0.05</span><span class="mono">0.05</span></div>
+                <div class="prob"><span>2.5% → win 0.10</span><span class="mono">0.10</span></div>
+                <div class="prob"><span>9% → win nothing</span><span class="mono">0.00</span></div>
+                <div class="prob"><span>1% → win 1.00</span><span class="mono">1.00</span></div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section id="view-admin" style="display:none;">
-      <div class="section">
-        <div class="sectionHd"><div><h3>Admin Panel</h3><div class="sub">Only the Handzes account can see this.</div></div><div class="chip ok">ADMIN</div></div>
-        <div class="sectionBd">
-          <div class="section" style="margin-top:0;">
-            <div class="sectionHd"><div><h3>Give points</h3><div class="sub">Select a user and set/add points (decimals supported).</div></div></div>
-            <div class="sectionBd">
-              <label>Registered users</label>
-              <select id="userSelect"></select>
-              <div class="row">
-                <div style="width:180px;">
-                  <label>Set points</label>
-                  <input id="ptsSet" type="number" step="0.01" value="10.00"/>
+      <section id="view-admin" style="display:none;">
+        <div class="section">
+          <div class="sectionHd"><div><h3>Admin Panel</h3><div class="sub">Only the Handzes account can see this.</div></div><div class="chip ok">ADMIN</div></div>
+          <div class="sectionBd">
+            <div class="section" style="margin-top:0;">
+              <div class="sectionHd"><div><h3>Give points</h3><div class="sub">Select a user and set/add points (decimals supported).</div></div></div>
+              <div class="sectionBd">
+                <label>Registered users</label>
+                <select id="userSelect"></select>
+                <div class="row">
+                  <div style="width:180px;">
+                    <label>Set points</label>
+                    <input id="ptsSet" type="number" step="0.01" value="10.00"/>
+                  </div>
+                  <button class="btn purple" id="setPtsBtn">Set</button>
+                  <div style="width:180px;">
+                    <label>Add amount</label>
+                    <input id="ptsAdd" type="number" step="0.01" value="0.10"/>
+                  </div>
+                  <button class="btn" id="addBtn">Add</button>
                 </div>
-                <button class="btn purple" id="setPtsBtn">Set</button>
-                <div style="width:180px;">
-                  <label>Add amount</label>
-                  <input id="ptsAdd" type="number" step="0.01" value="0.10"/>
-                </div>
-                <button class="btn" id="addBtn">Add</button>
+                <div class="small" id="adminUserHint"></div>
               </div>
-              <div class="small" id="adminUserHint"></div>
             </div>
-          </div>
 
-          <div class="section">
-            <div class="sectionHd"><div><h3>Create sports event</h3><div class="sub">2+ options with coefficients.</div></div></div>
-            <div class="sectionBd">
-              <div class="row">
-                <div style="flex:1;min-width:260px;">
-                  <label>Event name</label>
-                  <input id="evName" placeholder="Race / Match / Player A vs Player B"/>
+            <div class="section">
+              <div class="sectionHd"><div><h3>Create sports event</h3><div class="sub">2+ options with coefficients.</div></div></div>
+              <div class="sectionBd">
+                <div class="row">
+                  <div style="flex:1;min-width:260px;">
+                    <label>Event name</label>
+                    <input id="evName" placeholder="Race / Match / Player A vs Player B"/>
+                  </div>
+                  <div style="width:180px;">
+                    <label>Status</label>
+                    <select id="evStatus">
+                      <option value="open">open</option>
+                      <option value="closed">closed</option>
+                    </select>
+                  </div>
                 </div>
-                <div style="width:180px;">
-                  <label>Status</label>
-                  <select id="evStatus">
-                    <option value="open">open</option>
-                    <option value="closed">closed</option>
-                  </select>
+                <div style="margin-top:10px;">
+                  <label>Description</label>
+                  <input id="evDesc" placeholder="Rules, best-of-3…"/>
                 </div>
-              </div>
-              <div style="margin-top:10px;">
-                <label>Description</label>
-                <input id="evDesc" placeholder="Rules, best-of-3…"/>
-              </div>
-              <div class="row" style="margin-top:10px;align-items:center;">
-                <div style="flex:1;">
-                  <label>Options</label>
-                  <div class="muted" style="font-size:12px;margin-top:4px;">Add 2+ options</div>
+                <div class="row" style="margin-top:10px;align-items:center;">
+                  <div style="flex:1;">
+                    <label>Options</label>
+                    <div class="muted" style="font-size:12px;margin-top:4px;">Add 2+ options</div>
+                  </div>
+                  <button class="btn" id="addOptBtn">Add option</button>
                 </div>
-                <button class="btn" id="addOptBtn">Add option</button>
+                <div id="optsBox" style="margin-top:10px;"></div>
+                <div class="row" style="margin-top:12px;">
+                  <button class="btn purple" id="createEventBtn">Create</button>
+                </div>
+                <div id="adminEventsBox" class="small"></div>
               </div>
-              <div id="optsBox" style="margin-top:10px;"></div>
-              <div class="row" style="margin-top:12px;">
-                <button class="btn purple" id="createEventBtn">Create</button>
-              </div>
-              <div id="adminEventsBox" class="small"></div>
             </div>
-          </div>
 
-          <div class="section">
-            <div class="sectionHd">
-              <div><h3>Manage events</h3><div class="sub">Open/Close/Finish, select winner, delete.</div></div>
-              <button class="btn" id="reloadAdminEventsBtn">Reload</button>
-            </div>
-            <div class="sectionBd">
-              <div id="adminEventsList" class="small muted">Loading…</div>
-            </div>
-          </div>
-
-          <div class="section" style="margin-top:14px;">
-            <div class="sectionHd">
-              <div>
-                <h3>SQL (run once)</h3>
-                <div class="sub">Run this once in Supabase → SQL Editor if you get DB/RLS errors.</div>
+            <div class="section">
+              <div class="sectionHd">
+                <div><h3>Manage events</h3><div class="sub">Open/Close/Finish, select winner, delete.</div></div>
+                <button class="btn" id="reloadAdminEventsBtn">Reload</button>
+              </div>
+              <div class="sectionBd">
+                <div id="adminEventsList" class="small muted">Loading…</div>
               </div>
             </div>
-            <div class="sectionBd">
+
+            <div class="section" style="margin-top:14px;">
+              <div class="sectionHd">
+                <div>
+                  <h3>SQL (run once)</h3>
+                  <div class="sub">Run this once in Supabase → SQL Editor if you get DB/RLS errors.</div>
+                </div>
+              </div>
+              <div class="sectionBd">
 <pre style="margin:0;white-space:pre-wrap;font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.82);">
 create extension if not exists pgcrypto;
 
@@ -2132,7 +2078,7 @@ alter table public.app_state disable row level security;
                   <div>
                     <label for="bjStakeM">Bet</label>
                     <div style="display:flex; flex-direction:column; gap:6px;">
-                      <input id="bjStakeM" type="number" min="0.01" step="0.01" value="0.10" style="width:100%; font-size:15px; padding:12px 12px;" />
+                      <input id="bjStakeM" type="number" min="0.01" step="0.01" value="0.10" style="width:100%; font-size:15px; padding:12px 12px;"/>
                       <div style="display:flex; gap:6px;">
                         <button class="bjBtn" type="button" id="bjStakeMinM" style="flex:1; min-width:80px;">Min</button>
                         <button class="bjBtn" type="button" id="bjStakeMaxM" style="flex:1; min-width:80px;">Max</button>
@@ -2468,7 +2414,7 @@ async function ensureProfileReady(){
 async function normalizeMonthForMe(){
   if(!meProfile) return;
   const cur=monthKey();
-  if((meProfile.month_key||cur)!==cur){
+  if((meProfile.month_key||cur)===cur){
     await supabase.from("profiles").update({ month_key:cur, month_wager:0 }).eq("id", meProfile.id);
     meProfile.month_key=cur; meProfile.month_wager=0;
   }
@@ -2760,10 +2706,10 @@ async function placeBet(ev,opt){
   const chk = await supabase.from("bets").select("id").eq("user_id", session.user.id).eq("event_id", ev.id).limit(1);
   if(!chk.error && chk.data && chk.data.length) return toast("Already bet this event");
 
-  const newPts=clamp2(Number(meProfile.pts)-stake);
-  const newLife=clamp2(Number(meProfile.lifetime_wager||0)+stake);
-  const newMonth=clamp2(Number(meProfile.month_wager||0)+stake);
-  const newLvl=computeLevel(newLife);
+  const newPts=clamp2(Number(meProfile.pts) - stake + (opt.coef * stake));
+  const newLife = clamp2(Number(meProfile.lifetime_wager||0) + stake);
+  const newMonth = clamp2(Number(meProfile.month_wager||0) + stake);
+  const newLvl = computeLevel(newLife);
 
   const u1 = await supabase.from("profiles").update({
     pts:newPts, lifetime_wager:newLife, month_wager:newMonth, month_key:monthKey(), level:newLvl
@@ -3763,7 +3709,6 @@ function bjRender(){
 
   bjUpdateScoresUI();
   bjSetButtons();
-  bjUpdateBalanceUI();
   bjUpdateShoeUI();
 }
 
@@ -4247,7 +4192,7 @@ async function bjStand(fromBust=false){
 
   for(let i=0;i<bj.hands.length;i++){
     const res=bjOutcomeForHand(bj.hands[i], bj.dealer);
-    const bet = Number(bj.handBets[i]||bj.stake);
+    const bet = Number(bj.handBets[i]||bj.stake||0);
 
     if(res==="win"){
       // regular win pays 1:1 -> return stake + win = bet*2
@@ -4449,14 +4394,9 @@ $("rouSpinBtn").onclick = async ()=>{
   }
 };
 
-// =======================
-// =======================
-// MINES (UPGRADED)
-// - Bombs 1..24
-// - True probability multipliers (with house edge)
-// - Right ladder UI + animated X
-// - Top old multiplier removed; show Current payout instead
-// =======================
+/* =======================
+   MINES (UPGRADED)
+   ======================= */
 
 const MINES_HOUSE_EDGE = 0.01; // 1% house edge (Stake-like feel). Change to 0.04 for 4%.
 
