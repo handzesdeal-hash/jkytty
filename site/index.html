@@ -2257,8 +2257,19 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const SUPABASE_URL = "https://jolpzszotsaglwghbyaq.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_H5RpNuvRJu3-HyTiB24RJQ_LzJRe4WA";
 
-const ADMIN_EMAIL = "handzes.deal@gmail.com";
-const ADMIN_DISPLAY_NAME = "Handzes";
+const ADMIN_USERS = {
+  "handzes.deal@gmail.com": "Handzes",
+  "matas1649@gmail.com": "MatasAdmin",
+};
+
+function getAdminDisplayNameByEmail(email){
+  const key = String(email||"").toLowerCase();
+  return ADMIN_USERS[key] || null;
+}
+
+function isAdminEmail(email){
+  return !!getAdminDisplayNameByEmail(email);
+}
 
 const $ = (id)=>document.getElementById(id);
 const esc = (s)=>String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -2922,7 +2933,7 @@ async function ensureProfile(){
     }
     return;
   }
-  const name = (email===ADMIN_EMAIL.toLowerCase()) ? ADMIN_DISPLAY_NAME : ((user.user_metadata?.display_name) || (email.split("@")[0]||"Player"));
+  const name = getAdminDisplayNameByEmail(email) || ((user.user_metadata?.display_name) || (email.split("@")[0]||"Player"));
   const curM=monthKey();
   const { data: ins, error: e2 } = await supabase.from("profiles").insert({
     id:user.id, email:user.email, display_name:name, pts:10.00, lifetime_wager:0, month_wager:0, month_key:curM, level:1
@@ -5757,15 +5768,16 @@ async function showApp(){
   adminPlayersPending = false;
   $("authWrap").classList.remove("show");
   $("app").classList.add("show");
-  isAdmin = (session?.user?.email||"").toLowerCase() === ADMIN_EMAIL.toLowerCase();
+  isAdmin = isAdminEmail(session?.user?.email||"");
   startOnlineSignalChannel();
   startLivePresence();
   await maybeRollMonth();
   await ensureProfileReady();
 
-  if(meProfile && isAdmin && meProfile.display_name !== ADMIN_DISPLAY_NAME){
-    await supabase.from("profiles").update({ display_name: ADMIN_DISPLAY_NAME }).eq("id", session.user.id);
-    meProfile.display_name = ADMIN_DISPLAY_NAME;
+  const adminDisplayName = getAdminDisplayNameByEmail(session?.user?.email||"");
+  if(meProfile && adminDisplayName && meProfile.display_name !== adminDisplayName){
+    await supabase.from("profiles").update({ display_name: adminDisplayName }).eq("id", session.user.id);
+    meProfile.display_name = adminDisplayName;
   }
 
   await normalizeMonthForMe();
