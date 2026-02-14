@@ -53,11 +53,6 @@ if (typeof window !== 'undefined') {
         return;
       }
 
-      // Immediately broadcast an outgoing balance event so the host can update UI synchronously.
-      try {
-        window.dispatchEvent(new CustomEvent('plinkoOutgoingBalance', { detail: Number(val) }));
-      } catch (e) {}
-
       if (typeof winAny.plinkoSetBalance === 'function') {
         // call asynchronously, don't await here
         // ensure we handle promise rejections if host handler is async
@@ -65,6 +60,12 @@ if (typeof window !== 'undefined') {
         if (res && typeof res.catch === 'function') {
           res.catch((e: any) => console.error('plinkoSetBalance', e));
         }
+      } else {
+        // Fallback for cases where host handler is not ready yet.
+        // This keeps visible balance in sync until plinkoSetBalance is installed.
+        try {
+          window.dispatchEvent(new CustomEvent('plinkoOutgoingBalance', { detail: Number(val) }));
+        } catch (e) {}
       }
     } catch (e) {
       // noop

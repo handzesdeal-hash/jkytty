@@ -2273,6 +2273,8 @@ $("tabSignIn").onclick=()=>setAuthTab("in");
 $("tabSignUp").onclick=()=>setAuthTab("up");
 
 let session=null, meProfile=null, isAdmin=false, events=[], myBets=[], usersList=[];
+let pendingPlinkoBalance = null;
+let pendingPlinkoPersistBalance = null;
 
 // Centralized host balance setter so embedded apps can listen for changes.
 function setHostBalance(newPts){
@@ -2399,6 +2401,112 @@ function setView(v){
   if(v==="case") refreshCaseUI();
   if(v==="blackjack") bjOnViewEnter();
   if(v==="plinko"){
+    // Ensure embedded Plinko starts from the real profile balance.
+    try {
+      if (meProfile) {
+        setHostBalance(Number(meProfile.pts || 0));
+      } else if (session?.user) {
+        ensureProfileReady().then(() => {
+          if (meProfile) setHostBalance(Number(meProfile.pts || 0));
+        }).catch(() => {});
+      }
+    } catch (_) {}
+
+    // Always expose/refresh host API for embedded Plinko sync (even if already mounted)
+    window.plinkoSetBalance = async function (newBalance) {
+      try {
+        const nb = Number(newBalance);
+        if (isNaN(nb)) return;
+        if (!meProfile && window.meProfile) meProfile = window.meProfile;
+        if (!meProfile) {
+          try { await ensureProfileReady(); } catch (_) {}
+          if (!meProfile && window.meProfile) meProfile = window.meProfile;
+        }
+        if (!meProfile) {
+          pendingPlinkoBalance = nb;
+          return;
+        }
+
+        const oldPts = Number(meProfile.pts || 0);
+        const diff = Math.round((nb - oldPts) * 100) / 100;
+        if (diff === 0) return;
+
+        const oldLife = Number(meProfile.lifetime_wager || 0);
+        const oldMonth = Number(meProfile.month_wager || 0);
+
+        const stake = diff < 0 ? Math.abs(diff) : 0;
+        const newLife = clamp2(oldLife + stake);
+        const newMonth = clamp2(oldMonth + stake);
+        const newLvl = computeLevel(newLife);
+
+        meProfile.pts = nb;
+        if (stake > 0) {
+          meProfile.lifetime_wager = newLife;
+          meProfile.month_wager = newMonth;
+          meProfile.level = newLvl;
+        }
+        setHostBalance(nb);
+
+        if (!supabase || !session || !session.user || !session.user.id) {
+          pendingPlinkoPersistBalance = nb;
+          return;
+        }
+
+        if (diff < 0) {
+          const { error } = await supabase.from('profiles').update({
+            pts: nb,
+            lifetime_wager: newLife,
+            month_wager: newMonth,
+            month_key: monthKey(),
+            level: newLvl,
+          }).eq('id', session.user.id);
+          if (error) {
+            pendingPlinkoPersistBalance = nb;
+            setHostBalance(oldPts);
+            meProfile.lifetime_wager = oldLife;
+            meProfile.month_wager = oldMonth;
+            meProfile.level = computeLevel(oldLife);
+            try{ window.meProfile = meProfile; }catch(_){ }
+            try{ updateMeUI(); }catch(_){ }
+          }
+          if (!error) pendingPlinkoPersistBalance = null;
+          return;
+        }
+        if (diff > 0) {
+          const { error } = await supabase.from('profiles').update({ pts: nb }).eq('id', session.user.id);
+          if (error) {
+            pendingPlinkoPersistBalance = nb;
+            setHostBalance(oldPts);
+          }
+          if (!error) pendingPlinkoPersistBalance = null;
+          return;
+        }
+      } catch (e) {
+        console.error('plinkoSetBalance error', e);
+      }
+    };
+
+    // Bind fallback outgoing listener once.
+    if (!window._plinkoOutgoingListenerBound) {
+      window._plinkoOutgoingListenerBound = true;
+      try {
+        window.addEventListener('plinkoOutgoingBalance', (ev) => {
+          try {
+            const nb = Number(ev?.detail);
+            if (isNaN(nb)) return;
+            if (!meProfile && window.meProfile) meProfile = window.meProfile;
+            if (!meProfile) {
+              pendingPlinkoBalance = nb;
+              return;
+            }
+            setHostBalance(nb);
+          } catch (err) {
+            console.error('plinkoOutgoingBalance handler', err);
+          }
+        });
+      } catch (err) {}
+    }
+
     // If loader script hasn't run yet, run it
     const embed = document.getElementById("plinko-embed");
     if (embed && !embed.querySelector('#svelte-plinko-root')) {
@@ -2452,106 +2560,6 @@ function setView(v){
             console.error('Plinko loader: could not find entry scripts in build index.html');
           }
 
-          // Expose an API so the Svelte app can sync balance with the host site.
-          window.plinkoSetBalance = async function (newBalance) {
-            try {
-                const nb = Number(newBalance);
-                console.log('host plinkoSetBalance called with', nb);
-              if (isNaN(nb)) return;
-              if (!meProfile && window.meProfile) meProfile = window.meProfile;
-              if (!meProfile) return;
-
-              const oldPts = Number(meProfile.pts || 0);
-              const diff = clamp2(nb - oldPts);
-              if (diff === 0) return;
-
-              // Capture old meta so we can compute updated fields for DB write
-              const oldLife = Number(meProfile.lifetime_wager || 0);
-              const oldMonth = Number(meProfile.month_wager || 0);
-
-              // If this is a wager (negative diff), lifetime & month wager increase by stake
-              const stake = diff < 0 ? Math.abs(diff) : 0;
-              const newLife = clamp2(oldLife + stake);
-              const newMonth = clamp2(oldMonth + stake);
-              const newLvl = computeLevel(newLife);
-
-              // Optimistically update host UI immediately for snappy UX
-              meProfile.pts = nb;
-              // also update lifetime/month/level optimistically when stake applied
-              if (stake > 0) {
-                meProfile.lifetime_wager = newLife;
-                meProfile.month_wager = newMonth;
-                meProfile.level = newLvl;
-              }
-              try{ window.meProfile = meProfile; }catch(_){ }
-              try{ updateMeUI(); }catch(_){}
-              try{ window.dispatchEvent(new CustomEvent('hostBalanceChanged', { detail: Number(nb) })); }catch(_){}
-
-              // Persist change to DB. Use absolute new pts value so we don't depend on in-memory math later.
-              // If supabase or session isn't ready, skip DB write but keep UI optimistic.
-              if (!supabase || !session || !session.user || !session.user.id) {
-                console.warn('plinkoSetBalance: supabase or session not ready, skipping DB persist', { supabase: !!supabase, sessionUser: session?.user?.id });
-                return;
-              }
-
-              if (diff < 0) {
-                // wager: update pts and wagering totals
-                const { error } = await supabase.from('profiles').update({
-                  pts: nb,
-                  lifetime_wager: newLife,
-                  month_wager: newMonth,
-                  month_key: monthKey(),
-                  level: newLvl,
-                }).eq('id', session.user.id);
-                if (error) {
-                  // rollback optimistic UI
-                  meProfile.pts = oldPts;
-                  meProfile.lifetime_wager = oldLife;
-                  meProfile.month_wager = oldMonth;
-                  meProfile.level = computeLevel(oldLife);
-                  try{ window.meProfile = meProfile; }catch(_){ }
-                  try{ updateMeUI(); }catch(_){ }
-                  toast('Wager failed (DB).');
-                  console.error('plinkoSetBalance wager error', error, { diff, nb, sessionUser: session.user.id });
-                }
-                return;
-              }
-              if (diff > 0) {
-                // credit: just update pts
-                const { error } = await supabase.from('profiles').update({ pts: nb }).eq('id', session.user.id);
-                if (error) {
-                  // rollback optimistic UI
-                  meProfile.pts = oldPts;
-                  try{ window.meProfile = meProfile; }catch(_){ }
-                  try{ updateMeUI(); }catch(_){ }
-                  toast('Credit failed (DB).');
-                  console.error('plinkoSetBalance credit error', error, { diff, nb, sessionUser: session.user.id });
-                }
-                return;
-              }
-            } catch (e) {
-              console.error('plinkoSetBalance error', e);
-            }
-          };
-          // Also listen for immediate UI-only balance updates from the embedded app.
-          // This keeps the top/balance display in sync instantly without waiting for DB.
-          try {
-            window.addEventListener('plinkoOutgoingBalance', (ev) => {
-              try {
-                const nb = Number(ev?.detail);
-                if (isNaN(nb)) return;
-                if (!meProfile && window.meProfile) meProfile = window.meProfile;
-                if (!meProfile) return;
-                meProfile.pts = nb;
-                try{ window.meProfile = meProfile; }catch(_){ }
-                try{ updateMeUI(); }catch(_){ }
-                try{ window.dispatchEvent(new CustomEvent('hostBalanceChanged', { detail: Number(nb) })); }catch(_){ }
-              } catch (err) {
-                console.error('plinkoOutgoingBalance handler', err);
-              }
-            });
-          } catch (err) {}
-
             // Drain any queued plinko balance updates that happened before the real handler was installed
             try {
               if (window._plinkoBalanceQueue && window._plinkoBalanceQueue.length) {
@@ -2559,6 +2567,13 @@ function setView(v){
                 window._plinkoBalanceQueue = [];
                 for (const v of q) {
                   try { window.plinkoSetBalance(v); } catch (err) { console.error('drain plinko queue', err); }
+                }
+              }
+              if (pendingPlinkoPersistBalance !== null && session?.user?.id) {
+                const queuedPersist = Number(pendingPlinkoPersistBalance);
+                if (!isNaN(queuedPersist)) {
+                  pendingPlinkoPersistBalance = null;
+                  try { window.plinkoSetBalance(queuedPersist); } catch (err) { console.error('drain plinko persist queue', err); }
                 }
               }
             } catch (err) { /* noop */ }
@@ -2578,7 +2593,33 @@ async function ensureProfile(){
   const email=(user.email||"").toLowerCase();
   const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
   if(error){ toast("Profile not loaded. Run SQL then Refresh."); console.error(error); return; }
-  if(data){ meProfile=data; try{ setHostBalance(Number(meProfile.pts||0)); }catch(e){}; return; }
+  if(data){
+    meProfile=data;
+    try{ setHostBalance(Number(meProfile.pts||0)); }catch(e){}
+    if (pendingPlinkoBalance !== null) {
+      const queued = Number(pendingPlinkoBalance);
+      pendingPlinkoBalance = null;
+      try {
+        if (!isNaN(queued)) {
+          if (typeof window.plinkoSetBalance === 'function') {
+            await window.plinkoSetBalance(queued);
+          } else {
+            setHostBalance(queued);
+          }
+        }
+      } catch (_) {}
+    }
+    if (pendingPlinkoPersistBalance !== null && session?.user?.id && typeof window.plinkoSetBalance === 'function') {
+      const queuedPersist = Number(pendingPlinkoPersistBalance);
+      pendingPlinkoPersistBalance = null;
+      try {
+        if (!isNaN(queuedPersist)) {
+          await window.plinkoSetBalance(queuedPersist);
+        }
+      } catch (_) {}
+    }
+    return;
+  }
   const name = (email===ADMIN_EMAIL.toLowerCase()) ? ADMIN_DISPLAY_NAME : ((user.user_metadata?.display_name) || (email.split("@")[0]||"Player"));
   const curM=monthKey();
   const { data: ins, error: e2 } = await supabase.from("profiles").insert({
@@ -2587,6 +2628,28 @@ async function ensureProfile(){
   if(e2){ toast("Profile create failed (DB/RLS)."); console.error(e2); return; }
   meProfile=ins;
   try{ setHostBalance(Number(meProfile.pts||0)); }catch(e){}
+  if (pendingPlinkoBalance !== null) {
+    const queued = Number(pendingPlinkoBalance);
+    pendingPlinkoBalance = null;
+    try {
+      if (!isNaN(queued)) {
+        if (typeof window.plinkoSetBalance === 'function') {
+          await window.plinkoSetBalance(queued);
+        } else {
+          setHostBalance(queued);
+        }
+      }
+    } catch (_) {}
+  }
+  if (pendingPlinkoPersistBalance !== null && session?.user?.id && typeof window.plinkoSetBalance === 'function') {
+    const queuedPersist = Number(pendingPlinkoPersistBalance);
+    pendingPlinkoPersistBalance = null;
+    try {
+      if (!isNaN(queuedPersist)) {
+        await window.plinkoSetBalance(queuedPersist);
+      }
+    } catch (_) {}
+  }
 }
 
 // Helps phones recover when the first fetch races session/init
