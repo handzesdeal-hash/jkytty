@@ -1698,7 +1698,7 @@ tr:last-child td{border-bottom:none;}
     </section>
 
     <section id="view-plinko" style="display:none;">
-      <iframe src="/site/games/plinko-github/index.html" style="width:100vw;height:100vh;border:none;"></iframe>
+      <div id="plinko-embed"></div>
     </section>
 
     <section id="view-plinko-old" style="display:none;">
@@ -2247,6 +2247,15 @@ $("gemProf").innerHTML = gemBlue();
 $("gemMW").innerHTML = gemBlue();
 $("gemLW").innerHTML = gemBlue();
 
+// Ensure Plinko can call into host even if the real handler isn't defined yet.
+// Calls will be queued and drained once the real `plinkoSetBalance` is installed.
+window._plinkoBalanceQueue = window._plinkoBalanceQueue || [];
+if (typeof window.plinkoSetBalance !== 'function') {
+  window.plinkoSetBalance = function (nb) {
+    try { window._plinkoBalanceQueue.push(nb); } catch (e) { /* noop */ }
+  };
+}
+
 const keysOk = !SUPABASE_URL.includes("PASTE_") && !SUPABASE_ANON_KEY.includes("PASTE_");
 $("setupHint").style.display = keysOk ? "none" : "";
 
@@ -2264,6 +2273,16 @@ $("tabSignIn").onclick=()=>setAuthTab("in");
 $("tabSignUp").onclick=()=>setAuthTab("up");
 
 let session=null, meProfile=null, isAdmin=false, events=[], myBets=[], usersList=[];
+
+// Centralized host balance setter so embedded apps can listen for changes.
+function setHostBalance(newPts){
+  if(!meProfile) return;
+  meProfile.pts = Number(newPts);
+  // keep a global reference for embedded apps that read `window.meProfile`
+  try{ window.meProfile = meProfile; }catch(_){ }
+  try{ updateMeUI(); }catch(e){}
+  try{ window.dispatchEvent(new CustomEvent('hostBalanceChanged', { detail: Number(newPts) })); }catch(e){}
+}
 // ✅ MP3 cashout sound
 const cashoutSound = new Audio("./sounds/cashout.mp3");
 cashoutSound.preload = "auto";
@@ -2379,9 +2398,176 @@ function setView(v){
   if(v==="admin") { loadUsersList(); loadAdminEvents(); }
   if(v==="case") refreshCaseUI();
   if(v==="blackjack") bjOnViewEnter();
-  if(v==="plinko" && window.plinkoResize){
-    // allow layout to settle before measuring canvas
-    requestAnimationFrame(()=>window.plinkoResize());
+  if(v==="plinko"){
+    // If loader script hasn't run yet, run it
+    const embed = document.getElementById("plinko-embed");
+    if (embed && !embed.querySelector('#svelte-plinko-root')) {
+      // Fetch the Svelte build index, extract entry script names and CSS, then load them.
+      fetch('/site/games/plinko/build/index.html')
+        .then((r) => r.text())
+        .then((html) => {
+          // Create embed root
+          embed.innerHTML = '<div id="svelte-plinko-root"></div>';
+
+          // Find entry filenames for start/app (they change per build)
+          const startMatch = html.match(/entry\/(start\.[^"'<>]+\.js)/);
+          const appMatch = html.match(/entry\/(app\.[^"'<>]+\.js)/);
+
+          // Find CSS asset hrefs under _app/immutable/assets
+          const css = Array.from(html.matchAll(/href="(\.\/\_app\/immutable\/assets\/[^"]+\.css)"/g)).map(
+            (m) => m[1].replace(/^\.\//, ''),
+          );
+
+          // Inject CSS links (absolute to build folder)
+          css.forEach((href) => {
+            const abs = '/site/games/plinko/build/' + href;
+            if (!document.querySelector('link[href="' + abs + '"]')) {
+              const link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.href = abs;
+              document.head.appendChild(link);
+            }
+          });
+
+          if (startMatch && appMatch) {
+            const startPath = '/site/games/plinko/build/_app/immutable/entry/' + startMatch[1];
+            const appPath = '/site/games/plinko/build/_app/immutable/entry/' + appMatch[1];
+
+            const script = document.createElement('script');
+            script.type = 'module';
+            script.textContent = `
+              import('${startPath}').then(kit => {
+                import('${appPath}').then(app => {
+                  try{
+                    kit.start(app, document.getElementById('svelte-plinko-root'), {
+                      node_ids: [0, 3], data: [null, null], form: null, error: null
+                    });
+                  }catch(e){ console.error('plinko start error', e); }
+                });
+              });
+            `;
+            document.body.appendChild(script);
+          } else {
+            console.error('Plinko loader: could not find entry scripts in build index.html');
+          }
+
+          // Expose an API so the Svelte app can sync balance with the host site.
+          window.plinkoSetBalance = async function (newBalance) {
+            try {
+                const nb = Number(newBalance);
+                console.log('host plinkoSetBalance called with', nb);
+              if (isNaN(nb)) return;
+              if (!meProfile && window.meProfile) meProfile = window.meProfile;
+              if (!meProfile) return;
+
+              const oldPts = Number(meProfile.pts || 0);
+              const diff = clamp2(nb - oldPts);
+              if (diff === 0) return;
+
+              // Capture old meta so we can compute updated fields for DB write
+              const oldLife = Number(meProfile.lifetime_wager || 0);
+              const oldMonth = Number(meProfile.month_wager || 0);
+
+              // If this is a wager (negative diff), lifetime & month wager increase by stake
+              const stake = diff < 0 ? Math.abs(diff) : 0;
+              const newLife = clamp2(oldLife + stake);
+              const newMonth = clamp2(oldMonth + stake);
+              const newLvl = computeLevel(newLife);
+
+              // Optimistically update host UI immediately for snappy UX
+              meProfile.pts = nb;
+              // also update lifetime/month/level optimistically when stake applied
+              if (stake > 0) {
+                meProfile.lifetime_wager = newLife;
+                meProfile.month_wager = newMonth;
+                meProfile.level = newLvl;
+              }
+              try{ window.meProfile = meProfile; }catch(_){ }
+              try{ updateMeUI(); }catch(_){}
+              try{ window.dispatchEvent(new CustomEvent('hostBalanceChanged', { detail: Number(nb) })); }catch(_){}
+
+              // Persist change to DB. Use absolute new pts value so we don't depend on in-memory math later.
+              // If supabase or session isn't ready, skip DB write but keep UI optimistic.
+              if (!supabase || !session || !session.user || !session.user.id) {
+                console.warn('plinkoSetBalance: supabase or session not ready, skipping DB persist', { supabase: !!supabase, sessionUser: session?.user?.id });
+                return;
+              }
+
+              if (diff < 0) {
+                // wager: update pts and wagering totals
+                const { error } = await supabase.from('profiles').update({
+                  pts: nb,
+                  lifetime_wager: newLife,
+                  month_wager: newMonth,
+                  month_key: monthKey(),
+                  level: newLvl,
+                }).eq('id', session.user.id);
+                if (error) {
+                  // rollback optimistic UI
+                  meProfile.pts = oldPts;
+                  meProfile.lifetime_wager = oldLife;
+                  meProfile.month_wager = oldMonth;
+                  meProfile.level = computeLevel(oldLife);
+                  try{ window.meProfile = meProfile; }catch(_){ }
+                  try{ updateMeUI(); }catch(_){ }
+                  toast('Wager failed (DB).');
+                  console.error('plinkoSetBalance wager error', error, { diff, nb, sessionUser: session.user.id });
+                }
+                return;
+              }
+              if (diff > 0) {
+                // credit: just update pts
+                const { error } = await supabase.from('profiles').update({ pts: nb }).eq('id', session.user.id);
+                if (error) {
+                  // rollback optimistic UI
+                  meProfile.pts = oldPts;
+                  try{ window.meProfile = meProfile; }catch(_){ }
+                  try{ updateMeUI(); }catch(_){ }
+                  toast('Credit failed (DB).');
+                  console.error('plinkoSetBalance credit error', error, { diff, nb, sessionUser: session.user.id });
+                }
+                return;
+              }
+            } catch (e) {
+              console.error('plinkoSetBalance error', e);
+            }
+          };
+          // Also listen for immediate UI-only balance updates from the embedded app.
+          // This keeps the top/balance display in sync instantly without waiting for DB.
+          try {
+            window.addEventListener('plinkoOutgoingBalance', (ev) => {
+              try {
+                const nb = Number(ev?.detail);
+                if (isNaN(nb)) return;
+                if (!meProfile && window.meProfile) meProfile = window.meProfile;
+                if (!meProfile) return;
+                meProfile.pts = nb;
+                try{ window.meProfile = meProfile; }catch(_){ }
+                try{ updateMeUI(); }catch(_){ }
+                try{ window.dispatchEvent(new CustomEvent('hostBalanceChanged', { detail: Number(nb) })); }catch(_){ }
+              } catch (err) {
+                console.error('plinkoOutgoingBalance handler', err);
+              }
+            });
+          } catch (err) {}
+
+            // Drain any queued plinko balance updates that happened before the real handler was installed
+            try {
+              if (window._plinkoBalanceQueue && window._plinkoBalanceQueue.length) {
+                const q = window._plinkoBalanceQueue.slice();
+                window._plinkoBalanceQueue = [];
+                for (const v of q) {
+                  try { window.plinkoSetBalance(v); } catch (err) { console.error('drain plinko queue', err); }
+                }
+              }
+            } catch (err) { /* noop */ }
+        })
+        .catch((e) => console.error('Plinko build fetch failed', e));
+    }
+    if(window.plinkoResize){
+      // allow layout to settle before measuring canvas
+      requestAnimationFrame(()=>window.plinkoResize());
+    }
   }
 }
 document.querySelectorAll(".navBtn[data-view]").forEach(b=>b.onclick=()=>setView(b.dataset.view));
@@ -2391,7 +2577,7 @@ async function ensureProfile(){
   const email=(user.email||"").toLowerCase();
   const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
   if(error){ toast("Profile not loaded. Run SQL then Refresh."); console.error(error); return; }
-  if(data){ meProfile=data; return; }
+  if(data){ meProfile=data; try{ setHostBalance(Number(meProfile.pts||0)); }catch(e){}; return; }
   const name = (email===ADMIN_EMAIL.toLowerCase()) ? ADMIN_DISPLAY_NAME : ((user.user_metadata?.display_name) || (email.split("@")[0]||"Player"));
   const curM=monthKey();
   const { data: ins, error: e2 } = await supabase.from("profiles").insert({
@@ -2399,6 +2585,7 @@ async function ensureProfile(){
   }).select("*").single();
   if(e2){ toast("Profile create failed (DB/RLS)."); console.error(e2); return; }
   meProfile=ins;
+  try{ setHostBalance(Number(meProfile.pts||0)); }catch(e){}
 }
 
 // Helps phones recover when the first fetch races session/init
@@ -2543,8 +2730,9 @@ async function addWagerAndPayout(stake, payout){
     pts:newPts, lifetime_wager:newLife, month_wager:newMonth, month_key:monthKey(), level:newLvl
   }).eq("id", session.user.id);
   if(error) throw error;
-  meProfile.pts=newPts; meProfile.lifetime_wager=newLife; meProfile.month_wager=newMonth; meProfile.level=newLvl;
-  updateMeUI();
+  // Update host balance only after DB confirmed
+  meProfile.lifetime_wager=newLife; meProfile.month_wager=newMonth; meProfile.level=newLvl;
+  setHostBalance(newPts);
   refreshCaseUI();
   return { newPts, newLvl };
 }
@@ -2729,8 +2917,8 @@ async function placeBet(ev,opt){
   });
   if(ins.error){ toast("Bet insert failed (DB/RLS)."); console.error(ins.error); return; }
 
-  meProfile.pts=newPts; meProfile.lifetime_wager=newLife; meProfile.month_wager=newMonth; meProfile.level=newLvl;
-  updateMeUI();
+  meProfile.lifetime_wager=newLife; meProfile.month_wager=newMonth; meProfile.level=newLvl;
+  setHostBalance(newPts);
   await loadMyBets();
   toast("Bet placed");
   closeEventModal();
@@ -2952,8 +3140,9 @@ $("openCaseBtn").onclick=async ()=>{
     const newPts=clamp2(Number(meProfile.pts)+prize);
     const { error } = await supabase.from("profiles").update({ pts:newPts, last_case_open: today }).eq("id", session.user.id);
     if(error){ toast("Case payout failed (DB/RLS)."); console.error(error); caseSpinning=false; return; }
-    meProfile.pts=newPts; meProfile.last_case_open=today;
-    updateMeUI(); refreshCaseUI();
+    meProfile.last_case_open=today;
+    setHostBalance(newPts);
+    refreshCaseUI();
     toast(prize>0 ? `You won ${to2(prize)}` : "You won 0.00");
     caseSpinning=false;
   }, 3600);
@@ -3818,10 +4007,10 @@ async function bjCredit(amount){
   amount = Number(amount||0);
   if(!(amount>0)) return;
   const newPts = clamp2(Number(meProfile.pts) + amount);
+  // Persist to DB, then update host balance
   const { error } = await supabase.from("profiles").update({ pts:newPts }).eq("id", session.user.id);
   if(error) throw error;
-  meProfile.pts = newPts;
-  updateMeUI();
+  setHostBalance(newPts);
 }
 
 function bjResetRound(){
@@ -4668,8 +4857,7 @@ async function doMinesCashout({ auto=false } = {}){
       .eq("id", session.user.id);
     if(error) throw error;
 
-    meProfile.pts = newPts;
-    updateMeUI();
+    setHostBalance(newPts);
     showMinesPop({ amount: payout, mult: mines.mult, win:true });
 
     // ✅ play money sound ONCE
@@ -4892,6 +5080,26 @@ if(supabase){
   showAuth();
 }
 </script>
-<script src="games/plinko/main.js" defer></script>
+<script>
+// Plinko SPA loader
+if (window.location.hash === "#plinko" || window.location.hash.startsWith("#plinko")) {
+  const embed = document.getElementById("plinko-embed");
+  if (embed) {
+    fetch("/site/games/plinko/index.html").then(r => r.text()).then(html => {
+      // Extract only the .layout div from the HTML
+      const div = document.createElement("div");
+      div.innerHTML = html;
+      const layout = div.querySelector(".layout");
+      if (layout) embed.innerHTML = "";
+      if (layout) embed.appendChild(layout);
+      // Load the JS
+      const script = document.createElement("script");
+      script.src = "/site/games/plinko/main.js";
+      document.body.appendChild(script);
+    });
+  }
+}
+</script>
 </body>
 </html>
+
