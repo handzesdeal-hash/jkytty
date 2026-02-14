@@ -1,0 +1,27 @@
+{
+  "name": "HANDZES.BET",
+  "short_name": "HANDZES",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07040f",
+  "theme_color": "#07040f",
+  "icons": [
+    {
+      "src": "./assets/hz-logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/hz-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/hz-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
