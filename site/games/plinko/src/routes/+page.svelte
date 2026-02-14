@@ -3,7 +3,6 @@
   import Balance from '$lib/components/Balance.svelte';
   import LiveStatsWindow from '$lib/components/LiveStatsWindow/LiveStatsWindow.svelte';
   import Plinko from '$lib/components/Plinko';
-  import SettingsWindow from '$lib/components/SettingsWindow';
   import Sidebar from '$lib/components/Sidebar';
   import { setBalanceFromLocalStorage, writeBalanceToLocalStorage } from '$lib/utils/game';
   import GitHubLogo from 'phosphor-svelte/lib/GithubLogo';
@@ -28,7 +27,6 @@
     </div>
   </div>
 
-  <SettingsWindow />
   <LiveStatsWindow />
 
   <footer class="px-5 pt-16 pb-4">

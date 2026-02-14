@@ -20,7 +20,7 @@
   };
 </script>
 
-<div class="relative border-l border-white/10 bg-[linear-gradient(180deg,rgba(10,16,34,.94),rgba(8,12,26,.96))]">
+<div class="relative rounded-t-2xl border-l border-white/10 bg-[linear-gradient(180deg,rgba(10,16,34,.94),rgba(8,12,26,.96))] lg:rounded-t-none lg:rounded-r-2xl">
   <div class="mx-auto flex h-full flex-col px-4 pb-4" style:max-width={`${WIDTH}px`}>
     <div class="relative w-full overflow-hidden rounded-xl border border-white/10 bg-[rgba(11,18,38,.95)] shadow-[inset_0_0_0_1px_rgba(255,255,255,.03)]" style:aspect-ratio={`${WIDTH} / ${HEIGHT}`}>
       {#if $plinkoEngine === null}
