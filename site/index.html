@@ -2403,7 +2403,8 @@ function setView(v){
     const embed = document.getElementById("plinko-embed");
     if (embed && !embed.querySelector('#svelte-plinko-root')) {
       // Fetch the Svelte build index, extract entry script names and CSS, then load them.
-      fetch('/site/games/plinko/build/index.html')
+      const plinkoBuildBase = new URL('./games/plinko/build/', window.location.href);
+      fetch(new URL('index.html', plinkoBuildBase).toString())
         .then((r) => r.text())
         .then((html) => {
           // Create embed root
@@ -2420,7 +2421,7 @@ function setView(v){
 
           // Inject CSS links (absolute to build folder)
           css.forEach((href) => {
-            const abs = '/site/games/plinko/build/' + href;
+            const abs = new URL(href, plinkoBuildBase).toString();
             if (!document.querySelector('link[href="' + abs + '"]')) {
               const link = document.createElement('link');
               link.rel = 'stylesheet';
@@ -2430,8 +2431,8 @@ function setView(v){
           });
 
           if (startMatch && appMatch) {
-            const startPath = '/site/games/plinko/build/_app/immutable/entry/' + startMatch[1];
-            const appPath = '/site/games/plinko/build/_app/immutable/entry/' + appMatch[1];
+            const startPath = new URL('_app/immutable/entry/' + startMatch[1], plinkoBuildBase).toString();
+            const appPath = new URL('_app/immutable/entry/' + appMatch[1], plinkoBuildBase).toString();
 
             const script = document.createElement('script');
             script.type = 'module';
