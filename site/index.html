@@ -668,21 +668,118 @@ tr:last-child td{border-bottom:none;}
 .miniPill input:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4px rgba(124,58,237,.16);}
 
 /* case */
-.caseBox{border:1px solid rgba(255,255,255,.10);background: rgba(0,0,0,.28);border-radius:18px;padding:12px;}
-.caseStage{position:relative;height:140px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background:
-  radial-gradient(650px 260px at 20% 30%, rgba(124,58,237,.32), transparent 60%),
-  radial-gradient(650px 260px at 80% 30%, rgba(239,68,68,.18), transparent 60%),
-  rgba(0,0,0,.38);overflow:hidden;}
-.caseLine{position:absolute;top:0;bottom:0;left:50%;width:2px;transform:translateX(-1px);
-  background:linear-gradient(180deg, transparent, rgba(255,255,255,.7), transparent);filter:drop-shadow(0 0 14px rgba(255,255,255,.18));pointer-events:none;}
-.caseTrack{position:absolute;top:50%;left:0;transform:translateY(-50%);display:flex;gap:14px;align-items:center;will-change:transform;padding:0 20px;}
-.caseItem{width:120px;height:80px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background: rgba(0,0,0,.55);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 18px 55px rgba(0,0,0,.55);user-select:none;}
-.caseItem .amt{font-family:var(--mono);font-weight:950;}
-.caseItem .lbl{font-size:11px;color:var(--muted);margin-top:2px;}
+.caseBox{border:1px solid rgba(255,255,255,.12);background:linear-gradient(180deg, rgba(10,13,22,.78), rgba(7,9,15,.78));border-radius:18px;padding:12px;box-shadow:0 20px 64px rgba(0,0,0,.42);}
+.caseStage{position:relative;height:228px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:
+  radial-gradient(740px 280px at 18% 28%, rgba(43,76,255,.20), transparent 65%),
+  radial-gradient(680px 260px at 82% 28%, rgba(173,63,255,.16), transparent 65%),
+  linear-gradient(180deg, rgba(14,18,30,.94), rgba(8,11,20,.92));overflow:hidden;}
+.caseStage::before,
+.caseStage::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  width:0;
+  height:0;
+  border-left:9px solid transparent;
+  border-right:9px solid transparent;
+  z-index:4;
+  pointer-events:none;
+}
+.caseStage::before{top:8px;border-top:12px solid rgba(205,219,255,.95);filter:drop-shadow(0 0 8px rgba(202,214,255,.45));}
+.caseStage::after{bottom:8px;border-bottom:12px solid rgba(205,219,255,.95);filter:drop-shadow(0 0 8px rgba(202,214,255,.45));}
+.caseLine{position:absolute;top:16px;bottom:16px;left:50%;width:2px;transform:translateX(-1px);
+  background:linear-gradient(180deg, transparent, rgba(225,233,255,.82), transparent);filter:drop-shadow(0 0 12px rgba(213,223,255,.28));pointer-events:none;z-index:3;}
+.caseTrack{position:absolute;top:50%;left:0;transform:translateY(-50%);display:flex;gap:4px;align-items:center;will-change:transform;padding:0 28px;}
+.caseItem{width:180px;height:192px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:linear-gradient(180deg, rgba(38,47,73,.96), rgba(24,31,52,.95));
+  display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;box-shadow:0 18px 46px rgba(0,0,0,.52);overflow:hidden;user-select:none;position:relative;}
+.caseItem::before{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(170,183,255,.72);}
+.caseItem .skinArt{height:120px;display:flex;align-items:center;justify-content:center;background:
+  radial-gradient(220px 110px at 50% 5%, rgba(255,255,255,.15), transparent 70%),
+  linear-gradient(155deg, rgba(255,255,255,.10), rgba(255,255,255,.02));}
+.caseItem .skinIcon{display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 10px 14px rgba(0,0,0,.45));}
+.caseItem .skinIcon .iconSvg{width:54px;height:54px;vertical-align:0;margin:0;}
+.caseItem .skinIcon .iconPoop{width:44px;height:44px;vertical-align:0;margin:0;filter: drop-shadow(0 0 10px rgba(0,0,0,.72));}
+.caseItem .skinMeta{padding:8px 10px 0;line-height:1.2;}
+.caseItem .skinName{font-size:15px;font-weight:950;color:rgba(234,240,255,.95);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.caseItem .skinVariant{font-size:12px;color:rgba(173,188,228,.88);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+.caseItem .skinValue{margin-top:auto;padding:8px 10px 10px;font-family:var(--mono);font-size:15px;font-weight:950;color:rgba(237,243,255,.92);}
+.caseItem.common{background:linear-gradient(180deg, rgba(36,50,92,.95), rgba(22,31,58,.95));}
+.caseItem.common::before{background:rgba(120,151,255,.8);}
+.caseItem.uncommon{background:linear-gradient(180deg, rgba(48,67,113,.95), rgba(26,40,70,.95));}
+.caseItem.uncommon::before{background:rgba(138,219,255,.8);}
+.caseItem.rare{background:linear-gradient(180deg, rgba(68,57,120,.95), rgba(38,31,71,.95));}
+.caseItem.rare::before{background:rgba(186,146,255,.88);}
+.caseItem.mythic{background:linear-gradient(180deg, rgba(87,47,107,.95), rgba(52,25,67,.95));}
+.caseItem.mythic::before{background:rgba(255,126,244,.88);}
+.caseItem.legendary{background:linear-gradient(180deg, rgba(110,66,34,.95), rgba(64,39,19,.95));}
+.caseItem.legendary::before{background:rgba(255,194,94,.92);}
+.caseItem.toneBlue{background:linear-gradient(180deg, rgba(36,50,110,.96), rgba(18,29,72,.95));}
+.caseItem.toneBlue::before{background:rgba(120,169,255,.9);}
+.caseItem.tonePurple{background:linear-gradient(180deg, rgba(78,52,136,.96), rgba(43,28,85,.95));}
+.caseItem.tonePurple::before{background:rgba(196,143,255,.92);}
+.caseItem.toneGold{background:linear-gradient(180deg, rgba(132,94,30,.96), rgba(86,60,18,.95));}
+.caseItem.toneGold::before{background:rgba(255,213,119,.95);}
+.caseItem.toneSilver{background:linear-gradient(180deg, rgba(110,117,133,.94), rgba(69,74,88,.95));}
+.caseItem.toneSilver::before{background:rgba(216,226,246,.9);}
+@media(max-width:760px){
+  .caseStage{height:190px;}
+  .caseTrack{gap:3px;padding:0 18px;}
+  .caseItem{width:146px;height:160px;border-radius:12px;}
+  .caseItem .skinArt{height:95px;}
+  .caseItem .skinIcon .iconSvg{width:42px;height:42px;}
+  .caseItem .skinIcon .iconPoop{width:34px;height:34px;}
+  .caseItem .skinName{font-size:13px;}
+  .caseItem .skinVariant{font-size:11px;}
+  .caseItem .skinValue{font-size:13px;padding:7px 9px 9px;}
+}
 .probList{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
 @media(max-width:760px){.probList{grid-template-columns:1fr;}}
 .prob{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background: rgba(0,0,0,.22);font-size:12px;}
+
+.caseDropOverlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(4,7,14,.76);backdrop-filter:blur(8px);z-index:1002;opacity:0;}
+.caseDropOverlay.show{display:flex;animation:caseDropFadeIn .22s ease forwards;}
+.caseDropOverlay.closing{display:flex;animation:caseDropFadeOut .2s ease forwards;}
+.caseDropCard{width:min(680px,100%);border-radius:22px;border:1px solid rgba(255,255,255,.14);background:linear-gradient(180deg, rgba(11,16,33,.96), rgba(8,12,24,.96));box-shadow:0 30px 80px rgba(0,0,0,.68);overflow:hidden;transform:translateY(10px) scale(.965);opacity:0;}
+.caseDropOverlay.show .caseDropCard{animation:caseDropCardIn .28s cubic-bezier(.2,.78,.12,1) .03s forwards;}
+.caseDropOverlay.closing .caseDropCard{animation:caseDropCardOut .18s ease forwards;}
+@keyframes caseDropFadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes caseDropCardIn{from{opacity:0;transform:translateY(10px) scale(.965);}to{opacity:1;transform:translateY(0) scale(1);}}
+@keyframes caseDropFadeOut{from{opacity:1;}to{opacity:0;}}
+@keyframes caseDropCardOut{from{opacity:1;transform:translateY(0) scale(1);}to{opacity:0;transform:translateY(8px) scale(.972);}}
+.caseDropHd{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px 12px;}
+.caseDropTitle{display:flex;flex-direction:column;gap:2px;}
+.caseDropTitle .k{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:rgba(174,190,232,.86);font-weight:900;}
+.caseDropTitle .v{font-size:34px;line-height:1;font-weight:1000;color:rgba(242,247,255,.96);}
+.caseDropClose{width:42px;height:42px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.03);color:rgba(230,238,255,.86);font-size:22px;cursor:pointer;}
+.caseDropClose:hover{background:rgba(255,255,255,.08);}
+.caseDropBody{padding:8px 20px 18px;display:grid;place-items:center;}
+.caseDropItem{width:min(420px,100%);border-radius:18px;border:1px solid rgba(255,255,255,.14);position:relative;overflow:hidden;box-shadow:0 22px 62px rgba(0,0,0,.56);}
+.caseDropItem .dropArt{height:210px;display:flex;align-items:center;justify-content:center;background:radial-gradient(270px 150px at 50% 10%, rgba(255,255,255,.20), transparent 72%);}
+.caseDropItem .dropArt .iconSvg{width:120px;height:120px;margin:0;vertical-align:0;}
+.caseDropItem .dropArt .iconPoop{width:98px;height:98px;margin:0;vertical-align:0;}
+.caseDropItem .dropMeta{padding:16px 16px 20px;text-align:center;}
+.caseDropItem .dropName{font-size:34px;font-weight:1000;line-height:1;color:rgba(241,247,255,.98);}
+.caseDropItem .dropVariant{font-size:20px;font-weight:900;color:rgba(201,215,246,.95);margin-top:6px;}
+.caseDropItem .dropValue{font-size:30px;font-weight:1000;color:rgba(146,240,128,.96);margin-top:10px;font-family:var(--mono);}
+.caseDropItem .dropMiss{color:rgba(255,179,179,.96);}
+.caseDropItem.toneBlue{background:linear-gradient(180deg, rgba(36,50,110,.96), rgba(18,29,72,.95));}
+.caseDropItem.tonePurple{background:linear-gradient(180deg, rgba(78,52,136,.96), rgba(43,28,85,.95));}
+.caseDropItem.toneGold{background:linear-gradient(180deg, rgba(132,94,30,.96), rgba(86,60,18,.95));}
+.caseDropItem.toneSilver{background:linear-gradient(180deg, rgba(110,117,133,.94), rgba(69,74,88,.95));}
+@media(max-width:760px){
+  .caseDropCard{border-radius:16px;}
+  .caseDropHd{padding:14px 14px 10px;}
+  .caseDropTitle .v{font-size:24px;}
+  .caseDropBody{padding:4px 14px 14px;}
+  .caseDropItem .dropArt{height:160px;}
+  .caseDropItem .dropArt .iconSvg{width:88px;height:88px;}
+  .caseDropItem .dropArt .iconPoop{width:74px;height:74px;}
+  .caseDropItem .dropMeta{padding:12px 12px 14px;}
+  .caseDropItem .dropName{font-size:24px;}
+  .caseDropItem .dropVariant{font-size:15px;}
+  .caseDropItem .dropValue{font-size:22px;}
+}
 
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;padding:10px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.14);
   background: rgba(0,0,0,.62);box-shadow: var(--shadow);backdrop-filter: blur(12px);display:none;max-width:calc(100% - 24px);
@@ -1794,12 +1891,12 @@ tr:last-child td{border-bottom:none;}
               </div>
 
               <div class="probList">
-                <div class="prob"><span>70% → win 0.01</span><span class="mono">0.01</span></div>
-                <div class="prob"><span>10% → win 0.03</span><span class="mono">0.03</span></div>
-                <div class="prob"><span>7.5% → win 0.05</span><span class="mono">0.05</span></div>
-                <div class="prob"><span>2.5% → win 0.10</span><span class="mono">0.10</span></div>
+                <div class="prob"><span>70% → win 100</span><span class="mono">100</span></div>
+                <div class="prob"><span>10% → win 250</span><span class="mono">250</span></div>
+                <div class="prob"><span>7.5% → win 500</span><span class="mono">500</span></div>
+                <div class="prob"><span>2.5% → win 1000</span><span class="mono">1000</span></div>
                 <div class="prob"><span>9% → win nothing</span><span class="mono">0.00</span></div>
-                <div class="prob"><span>1% → win 1.00</span><span class="mono">1.00</span></div>
+                <div class="prob"><span>1% → win 10000</span><span class="mono">10000</span></div>
               </div>
             </div>
           </div>
@@ -2249,6 +2346,20 @@ alter table public.app_state disable row level security;
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="caseDropOverlay" id="caseDropOverlay">
+  <div class="caseDropCard" role="dialog" aria-modal="true" aria-labelledby="caseDropTitle">
+    <div class="caseDropHd">
+      <div class="caseDropTitle">
+        <div class="k">Your drop</div>
+        <div class="v" id="caseDropTitle">Case opening</div>
+      </div>
+      <button class="caseDropClose" id="caseDropClose" aria-label="Close drop popup">×</button>
+    </div>
+    <div class="caseDropBody">
+      <div class="caseDropItem" id="caseDropItem"></div>
+    </div>
+  </div>
+</div>
 <div class="recoveryBadge" id="recoveryBadge"><span class="dot"></span><span id="recoveryBadgeText">Recovery mode</span></div>
 
 <script type="module">
@@ -3417,18 +3528,59 @@ async function refreshLeaderboard(){
 
 /* DAILY CASE + COUNTDOWN */
 const CASE_ITEMS=[
-  {label:"0.01", amount:0.01, iconType:"yellow", p:70},
-  {label:"0.03", amount:0.03, iconType:"yellow", p:10},
-  {label:"0.05", amount:0.05, iconType:"yellow", p:7.5},
-  {label:"0.10", amount:0.10, iconType:"yellow", p:2.5},
-  {label:"0.00", amount:0.00, iconType:"poop", p:9},
-  {label:"1.00", amount:1.00, iconType:"blue", p:1},
+  {label:"100", amount:100, skin:"Common Pull", variant:"Daily Blue", tone:"toneBlue", iconType:"yellow", p:70},
+  {label:"250", amount:250, skin:"Rare Pull", variant:"Daily Violet", tone:"tonePurple", iconType:"yellow", p:10},
+  {label:"500", amount:500, skin:"Epic Pull", variant:"Daily Violet", tone:"tonePurple", iconType:"yellow", p:7.5},
+  {label:"1000", amount:1000, skin:"Mythic Pull", variant:"Daily Violet", tone:"tonePurple", iconType:"yellow", p:2.5},
+  {label:"0.00", amount:0.00, skin:"Miss", variant:"Unlucky", tone:"toneSilver", iconType:"poop", p:9},
+  {label:"10000", amount:10000, skin:"Legend Pull", variant:"Golden Ultra", tone:"toneGold", iconType:"blue", p:1},
 ];
-function iconFor(t){
-  if(t==="yellow") return `<span class="glow">${gemYellow()}</span>`;
-  if(t==="blue") return `<span class="glow">${gemBlue()}</span>`;
-  return poop();
+function caseIcon(iconType){
+  if(iconType==="blue") return `<span class="skinIcon glow">${gemBlue()}</span>`;
+  if(iconType==="yellow") return `<span class="skinIcon glow">${gemYellow()}</span>`;
+  return `<span class="skinIcon">${poop()}</span>`;
 }
+function caseDropIcon(iconType){
+  if(iconType==="blue") return `<span class="glow">${gemBlue()}</span>`;
+  if(iconType==="yellow") return `<span class="glow">${gemYellow()}</span>`;
+  return `${poop()}`;
+}
+function showCaseDropPopup(item){
+  const overlay=$("caseDropOverlay");
+  const card=$("caseDropItem");
+  const title=$("caseDropTitle");
+  if(!overlay || !card || !title || !item) return;
+  clearTimeout(overlay._closeTimer);
+  overlay.classList.remove("closing");
+  title.textContent = Number(item.amount)>0 ? "You won" : "No reward";
+  card.className = `caseDropItem ${item.tone||"toneBlue"}`;
+  card.innerHTML = `
+    <div class="dropArt">${caseDropIcon(item.iconType)}</div>
+    <div class="dropMeta">
+      <div class="dropName">${esc(item.skin||"Drop")}</div>
+      <div class="dropVariant">${esc(item.variant||"Item")}</div>
+      <div class="dropValue ${Number(item.amount)<=0?"dropMiss":""}">${to2(item.amount||0)}</div>
+    </div>
+  `;
+  overlay.classList.add("show");
+}
+function hideCaseDropPopup(){
+  const overlay=$("caseDropOverlay");
+  if(!overlay || !overlay.classList.contains("show")) return;
+  overlay.classList.remove("show");
+  overlay.classList.add("closing");
+  clearTimeout(overlay._closeTimer);
+  overlay._closeTimer = setTimeout(()=>{
+    overlay.classList.remove("closing");
+  }, 210);
+}
+$("caseDropClose")?.addEventListener("click", hideCaseDropPopup);
+$("caseDropOverlay")?.addEventListener("click", (ev)=>{
+  if(ev.target && ev.target.id==="caseDropOverlay") hideCaseDropPopup();
+});
+document.addEventListener("keydown", (ev)=>{
+  if(ev.key==="Escape") hideCaseDropPopup();
+});
 function weightedPick(){
   const r=Math.random()*100; let a=0;
   for(const it of CASE_ITEMS){ a+=it.p; if(r<=a) return it; }
@@ -3446,7 +3598,7 @@ function caseEligible(){
 }
 function buildCaseStrip(target){
   const arr=[];
-  const pre=120, post=50;
+  const pre=56, post=24;
   for(let i=0;i<pre;i++) arr.push({ ...CASE_ITEMS[Math.floor(Math.random()*CASE_ITEMS.length)] });
   arr.push({ ...target, __win:true });
   for(let i=0;i<post;i++) arr.push({ ...CASE_ITEMS[Math.floor(Math.random()*CASE_ITEMS.length)] });
@@ -3456,10 +3608,44 @@ function buildCaseStrip(target){
 function renderCaseTrack(items){
   const track=$("caseTrack"); track.innerHTML="";
   items.forEach(it=>{
-    const el=document.createElement("div"); el.className="caseItem";
-    el.innerHTML = `${iconFor(it.iconType)}<div class="amt">${it.label}</div>`;
+    const el=document.createElement("div"); el.className=`caseItem ${it.tone||"toneBlue"}`;
+    el.innerHTML = `
+      <div class="skinArt">${caseIcon(it.iconType)}</div>
+      <div class="skinMeta">
+        <div class="skinName">${it.skin||"Skin"}</div>
+        <div class="skinVariant">${it.variant||"Pattern"}</div>
+      </div>
+      <div class="skinValue">${it.label}</div>
+    `;
     track.appendChild(el);
   });
+}
+function getTranslateX(el){
+  const tr=getComputedStyle(el).transform;
+  if(!tr || tr==="none") return 0;
+  if(tr.startsWith("matrix3d(")){
+    const parts=tr.slice(9,-1).split(",").map(Number);
+    return Number(parts[12]||0);
+  }
+  if(tr.startsWith("matrix(")){
+    const parts=tr.slice(7,-1).split(",").map(Number);
+    return Number(parts[4]||0);
+  }
+  return 0;
+}
+function animateCaseTrackDecel(track, targetX, durationMs){
+  const startX=getTranslateX(track);
+  const delta=targetX-startX;
+  const start=performance.now();
+  const easeOut=(t)=>1-Math.pow(1-t,2.05);
+  const step=(now)=>{
+    const p=Math.min(1,(now-start)/durationMs);
+    const e=easeOut(p);
+    const x=startX+(delta*e);
+    track.style.transform=`translateY(-50%) translateX(${x}px)`;
+    if(p<1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
 
 function refreshCaseUI(){
@@ -3499,19 +3685,34 @@ $("openCaseBtn").onclick=async ()=>{
 
   const track=$("caseTrack");
   track.style.transition="none";
-  track.style.transform="translateX(0px)";
+  track.style.transform="translateY(-50%) translateX(0px)";
   const stage=track.parentElement;
-  const itemW=120, gap=14;
+  const firstCard=track.firstElementChild;
+  const itemW=firstCard ? firstCard.getBoundingClientRect().width : 120;
+  const computed=getComputedStyle(track);
+  const gap=parseFloat(computed.columnGap || computed.gap || "14") || 14;
+  const sidePad=parseFloat(computed.paddingLeft || "20") || 20;
   const stageW=stage.clientWidth;
-  const lastCenter=20 + (strip.length-1)*(itemW+gap) + itemW/2;
-  const targetX=(stageW/2)-lastCenter;
+  const winIndex = Math.max(0, strip.findIndex((it)=>it.__win));
+  const randomOffset = (itemW * (0.16 + Math.random()*0.68)) + ((Math.random()-0.5) * gap * 0.55);
+  const winPoint = sidePad + winIndex*(itemW+gap) + randomOffset;
+  const targetX=(stageW/2)-winPoint;
+  const spinDurationMs = 6000;
+  const settleAfterMs = spinDurationMs + 140;
 
-  requestAnimationFrame(()=>{
-    track.style.transition="transform 3.4s cubic-bezier(.08,.75,.10,1)";
-    track.style.transform=`translateX(${targetX}px)`;
-  });
+  animateCaseTrackDecel(track, targetX, spinDurationMs);
 
-  let t=0; const tm=setInterval(()=>{ t++; sfx(900,0.015,"square",0.05); if(t>70) clearInterval(tm); }, 48);
+  const step = itemW + gap;
+  let lastSlot = null;
+  const tm=setInterval(()=>{
+    const tx=getTranslateX(track);
+    const pointerX=(stageW/2)-tx;
+    const slot=Math.floor((pointerX-sidePad)/step);
+    if(slot!==lastSlot){
+      sfx(900,0.015,"square",0.05);
+      lastSlot=slot;
+    }
+  }, 22);
 
   setTimeout(async ()=>{
     clearInterval(tm);
@@ -3523,9 +3724,10 @@ $("openCaseBtn").onclick=async ()=>{
     meProfile.last_case_open=today;
     setHostBalance(newPts);
     refreshCaseUI();
+    showCaseDropPopup(reward);
     toast(prize>0 ? `You won ${to2(prize)}` : "You won 0.00");
     caseSpinning=false;
-  }, 3600);
+  }, settleAfterMs);
 };
 renderCaseTrack(buildCaseStrip(CASE_ITEMS[0]));
 
