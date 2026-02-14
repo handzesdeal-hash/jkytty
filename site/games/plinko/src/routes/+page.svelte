@@ -11,7 +11,7 @@
 
 <svelte:window onbeforeunload={writeBalanceToLocalStorage} />
 
-<div class="relative flex h-dvh w-full flex-col overflow-hidden">
+<div class="relative flex min-h-dvh w-full flex-col overflow-x-hidden overflow-y-auto md:h-dvh md:overflow-y-hidden">
   <!-- Nav and Balance removed for integration with main site -->
   <div class="min-h-0 flex-1 px-5">
     <div class="mx-auto mt-5 max-w-xl min-w-[300px] drop-shadow-xl md:mt-8 lg:max-w-7xl">
@@ -40,5 +40,13 @@
 
   :global(html) {
     overflow: hidden;
+  }
+
+  @media (max-width: 767px) {
+    :global(html),
+    :global(body) {
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
   }
 </style>
