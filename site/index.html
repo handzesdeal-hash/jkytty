@@ -740,6 +740,7 @@ tr:last-child td{border-bottom:none;}
 .adminPlayersTools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
 .adminPlayersTools .search{flex:1;min-width:260px;margin-top:0;}
 .adminPlayersMeta{font-size:12px;color:var(--muted);}
+.newBadge{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:1000;letter-spacing:.04em;border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.16);color:rgba(173,255,208,.95);vertical-align:middle;}
 
 .caseDropOverlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(4,7,14,.76);backdrop-filter:blur(8px);z-index:1002;opacity:0;}
 .caseDropOverlay.show{display:flex;animation:caseDropFadeIn .22s ease forwards;}
@@ -1922,6 +1923,7 @@ tr:last-child td{border-bottom:none;}
                     <input id="ptsSet" type="number" step="0.01" value="10.00"/>
                   </div>
                   <button class="btn purple" id="setPtsBtn">Set</button>
+                  <button class="btn" id="resetUserLevelBtn">Reset selected level</button>
                   <div style="width:180px;">
                     <label>Add amount</label>
                     <input id="ptsAdd" type="number" step="0.01" value="0.10"/>
@@ -1941,6 +1943,9 @@ tr:last-child td{border-bottom:none;}
                 </div>
                 <div class="row" style="margin-top:0;gap:8px;align-items:center;">
                   <div class="chip"><span class="mono" id="adminPlayersCount">0</span></div>
+                  <button class="btn red" id="resetAllStatsBtn">Reset everything</button>
+                  <button class="btn" id="repairMonthWagerBtn">Repair monthly wager</button>
+                  <button class="btn" id="resetAllLevelsBtn">Reset all levels</button>
                   <button class="btn" id="reloadAdminPlayersBtn">Reload</button>
                 </div>
               </div>
@@ -2705,7 +2710,7 @@ function renderAdminPlayersTable(){
 
   body.innerHTML = visible.length ? visible.map((p)=>`
     <tr data-uid="${p.id}" data-email="${esc(p.emailLc)}">
-      <td>${esc(p.name||"Player")}</td>
+      <td>${esc(p.name||"Player")}${p.isNew ? `<span class="newBadge">NEW</span>` : ""}</td>
       <td>${esc(p.email||"")}</td>
       <td class="mono" data-col="balance">${to2(Number(p.pts||0))}</td>
       <td data-col="status"><span class="tag ${p.statusClass}">${p.statusText}</span></td>
@@ -2741,13 +2746,6 @@ function patchAdminPlayerRowFromProfile(profile){
     if(balCell) balCell.textContent = to2(ptsNow);
     if(uid) adminBalanceSnapshotMap.set(uid, ptsNow);
   }
-
-  const seenIso = new Date().toISOString();
-  if(uid) markAdminSeen(uid, seenIso);
-  const statusCell = row.querySelector('[data-col="status"]');
-  const seenCell = row.querySelector('[data-col="seen"]');
-  if(statusCell) statusCell.innerHTML = `<span class="tag open">ONLINE</span>`;
-  if(seenCell) seenCell.textContent = fmtLastSeen(seenIso);
 }
 // ✅ MP3 cashout sound
 const cashoutSound = new Audio("./sounds/cashout.mp3");
@@ -2827,7 +2825,8 @@ function computeLevel(lifeW){ return 1 + Math.floor(Number(lifeW||0)/10); }
 
 function updateLevelUI(){
   const life = Number(meProfile?.lifetime_wager||0);
-  const lvl = computeLevel(life);
+  const storedLevel = Math.floor(Number(meProfile?.level || 0));
+  const lvl = storedLevel > 0 ? storedLevel : computeLevel(life);
   const prog = life % 10;
   const pct = Math.max(0, Math.min(100, (prog/10)*100));
   $("topLevel").textContent = `Level ${lvl}`;
@@ -3143,7 +3142,8 @@ async function ensureProfileReady(){
 async function normalizeMonthForMe(){
   if(!meProfile) return;
   const cur=monthKey();
-  if((meProfile.month_key||cur)===cur){
+  const currentKey = String(meProfile.month_key || "").trim() || cur;
+  if(currentKey !== cur){
     await supabase.from("profiles").update({ month_key:cur, month_wager:0 }).eq("id", meProfile.id);
     meProfile.month_key=cur; meProfile.month_wager=0;
   }
@@ -3938,6 +3938,8 @@ async function loadAdminPlayers(){
       const emailLc = email.toLowerCase();
       const name = String(p.display_name||"Player");
       const lastSeenTs = new Date(effectiveSeen || 0).getTime();
+      const createdTs = new Date(p.created_at || 0).getTime();
+      const isNew = Number.isFinite(createdTs) ? ((Date.now() - createdTs) <= 24*60*60*1000) : false;
       return {
         id: p.id,
         name,
@@ -3945,6 +3947,7 @@ async function loadAdminPlayers(){
         email,
         emailLc,
         pts: Number(p.pts||0),
+        isNew,
         online,
         statusText,
         statusClass,
@@ -3974,8 +3977,6 @@ function startAdminPlayersRealtime(){
     .channel("admin-profiles-live")
     .on("postgres_changes", { event:"*", schema:"public", table:"profiles" }, (payload)=>{
       try{
-        const uid = payload?.new?.id || payload?.old?.id;
-        if(uid) markAdminSeen(uid, new Date().toISOString());
         const p = payload?.new || payload?.old;
         if(p) patchAdminPlayerRowFromProfile(p);
       }catch(_){ }
@@ -3991,7 +3992,248 @@ function stopAdminPlayersRealtime(){
   adminProfilesChannel = null;
 }
 
+async function repairMonthlyWagerFromBets(){
+  if(!isAdmin) return toast("Admin only");
+  const btn = $("repairMonthWagerBtn");
+  const prevText = btn ? btn.textContent : "";
+  if(btn){
+    btn.disabled = true;
+    btn.textContent = "Repairing…";
+  }
+  try{
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+    const next = new Date(now.getFullYear(), now.getMonth()+1, 1, 0, 0, 0, 0);
+    const startIso = start.toISOString();
+    const nextIso = next.toISOString();
+    const cur = monthKey(now);
+
+    let bets = [];
+    let amountCol = "";
+    let betsErr = null;
+    for(const candidate of ["stake","amt","amount"]){
+      const res = await supabase
+        .from("bets")
+        .select(`user_id,${candidate},created_at`)
+        .gte("created_at", startIso)
+        .lt("created_at", nextIso)
+        .limit(200000);
+      if(!res.error){
+        bets = res.data || [];
+        amountCol = candidate;
+        betsErr = null;
+        break;
+      }
+      const em = String(res.error.message || "").toLowerCase();
+      const missingColumn = em.includes("does not exist") && em.includes("column");
+      if(missingColumn){
+        betsErr = res.error;
+        continue;
+      }
+      betsErr = res.error;
+      break;
+    }
+
+    if(!amountCol){
+      console.error(betsErr);
+      const msg = String(betsErr?.message || "cannot read bets");
+      toast(`Repair failed (${msg})`);
+      $("adminUserHint").textContent = `Monthly wager repair failed: ${msg}`;
+      return;
+    }
+
+    const sumByUser = new Map();
+    for(const row of (bets||[])){
+      const uid = String(row?.user_id || "");
+      if(!uid) continue;
+      const amt = Number(row?.[amountCol] || 0);
+      if(!(amt > 0)) continue;
+      sumByUser.set(uid, clamp2(Number(sumByUser.get(uid) || 0) + amt));
+    }
+
+    const { data: profiles, error: profErr } = await supabase
+      .from("profiles")
+      .select("id,month_wager,month_key")
+      .limit(2000);
+
+    if(profErr){
+      console.error(profErr);
+      toast("Repair failed (cannot read profiles)");
+      return;
+    }
+
+    const toUpdate = [];
+    for(const p of (profiles||[])){
+      const id = String(p?.id || "");
+      if(!id) continue;
+      const target = clamp2(Number(sumByUser.get(id) || 0));
+      const curVal = clamp2(Number(p?.month_wager || 0));
+      const keyNow = String(p?.month_key || "");
+      if(Math.abs(curVal - target) > 0.0001 || keyNow !== cur){
+        toUpdate.push({ id, month_wager: target, month_key: cur });
+      }
+    }
+
+    for(let i=0;i<toUpdate.length;i+=50){
+      const chunk = toUpdate.slice(i, i+50);
+      await Promise.all(chunk.map((row)=>
+        supabase
+          .from("profiles")
+          .update({ month_wager: row.month_wager, month_key: row.month_key })
+          .eq("id", row.id)
+      ));
+    }
+
+    if(meProfile?.id){
+      meProfile.month_key = cur;
+      meProfile.month_wager = clamp2(Number(sumByUser.get(meProfile.id) || 0));
+      updateMeUI();
+      refreshCaseUI();
+    }
+
+    const changed = toUpdate.length;
+    $("adminUserHint").textContent = `Monthly wager repair done. Updated ${changed} profile(s) using current-month bets.`;
+    toast(`Monthly wager repaired: ${changed}`);
+    await loadUsersList();
+    await loadAdminPlayers();
+  }catch(err){
+    console.error(err);
+    toast("Repair failed");
+  }finally{
+    if(btn){
+      btn.disabled = false;
+      btn.textContent = prevText || "Repair monthly wager";
+    }
+  }
+}
+
+async function resetAllLevels(){
+  if(!isAdmin) return toast("Admin only");
+  const ok = confirm("Reset level to 1 for all users?");
+  if(!ok) return;
+
+  const btn = $("resetAllLevelsBtn");
+  const prevText = btn ? btn.textContent : "";
+  if(btn){
+    btn.disabled = true;
+    btn.textContent = "Resetting…";
+  }
+
+  try{
+    const { error } = await supabase
+      .from("profiles")
+      .update({ level: 1 })
+      .not("id", "is", null);
+
+    if(error){
+      console.error(error);
+      const msg = String(error.message || "reset failed");
+      $("adminUserHint").textContent = `Level reset failed: ${msg}`;
+      toast(`Level reset failed (${msg})`);
+      return;
+    }
+
+    if(meProfile){
+      meProfile.level = 1;
+      updateMeUI();
+    }
+
+    $("adminUserHint").textContent = "All player levels were reset to 1.";
+    toast("All levels reset to 1");
+    await loadUsersList();
+    await loadAdminPlayers();
+    await refreshLeaderboard();
+  }catch(err){
+    console.error(err);
+    toast("Level reset failed");
+  }finally{
+    if(btn){
+      btn.disabled = false;
+      btn.textContent = prevText || "Reset all levels";
+    }
+  }
+}
+
+async function resetAllStatsAndLeaderboard(){
+  if(!isAdmin) return toast("Admin only");
+  const ok = confirm("Reset everyone to balance 1000, level 1, lifetime/month wager 0, and clear bets leaderboard?");
+  if(!ok) return;
+
+  const btn = $("resetAllStatsBtn");
+  const prevText = btn ? btn.textContent : "";
+  if(btn){
+    btn.disabled = true;
+    btn.textContent = "Resetting…";
+  }
+
+  try{
+    const cur = monthKey();
+    const { error: profileErr } = await supabase
+      .from("profiles")
+      .update({
+        pts: 1000,
+        lifetime_wager: 0,
+        month_wager: 0,
+        month_key: cur,
+        level: 1,
+        last_case_open: null,
+      })
+      .not("id", "is", null);
+
+    if(profileErr){
+      console.error(profileErr);
+      const msg = String(profileErr.message || "reset failed");
+      $("adminUserHint").textContent = `Full reset failed: ${msg}`;
+      toast(`Full reset failed (${msg})`);
+      return;
+    }
+
+    const { error: betsErr } = await supabase
+      .from("bets")
+      .delete()
+      .not("id", "is", null);
+
+    if(meProfile){
+      meProfile.pts = 1000;
+      meProfile.lifetime_wager = 0;
+      meProfile.month_wager = 0;
+      meProfile.month_key = cur;
+      meProfile.level = 1;
+      meProfile.last_case_open = null;
+      setHostBalance(1000);
+      updateMeUI();
+      refreshCaseUI();
+    }
+
+    if(betsErr){
+      console.error(betsErr);
+      const msg = String(betsErr.message || "cannot clear bets");
+      $("adminUserHint").textContent = `Profiles reset done, but bets were not cleared: ${msg}`;
+      toast("Reset done, but leaderboard history not fully cleared");
+    }else{
+      $("adminUserHint").textContent = "Full reset completed: balances/stats reset and bets cleared.";
+      toast("Full reset completed");
+    }
+
+    await loadUsersList();
+    await loadAdminPlayers();
+    await refreshLeaderboard();
+    await loadMyBets();
+  }catch(err){
+    console.error(err);
+    toast("Full reset failed");
+  }finally{
+    if(btn){
+      btn.disabled = false;
+      btn.textContent = prevText || "Reset everything";
+    }
+  }
+}
+
 $("reloadAdminPlayersBtn").onclick = ()=>loadAdminPlayers();
+$("resetAllStatsBtn").onclick = ()=>resetAllStatsAndLeaderboard();
+$("repairMonthWagerBtn").onclick = ()=>repairMonthlyWagerFromBets();
+$("resetAllLevelsBtn").onclick = ()=>resetAllLevels();
 $("adminPlayersToggleBtn").onclick = ()=>{
   adminPlayersShowAll = !adminPlayersShowAll;
   renderAdminPlayersTable();
@@ -4025,6 +4267,40 @@ $("addBtn").onclick=async ()=>{
   toast("Added");
   await loadUsersList();
   await loadAdminPlayers();
+};
+$("resetUserLevelBtn").onclick=async ()=>{
+  if(!isAdmin) return toast("Admin only");
+  const u=getSelectedUser();
+  if(!u) return toast("Select user");
+  if(!confirm(`Reset level to 1 for ${u.display_name || "this user"}?`)) return;
+
+  const btn = $("resetUserLevelBtn");
+  const prevText = btn ? btn.textContent : "";
+  if(btn){
+    btn.disabled = true;
+    btn.textContent = "Resetting…";
+  }
+  try{
+    const { error } = await supabase.from("profiles").update({ level: 1 }).eq("id", u.id);
+    if(error){
+      console.error(error);
+      toast("Reset selected level failed (DB/RLS).");
+      return;
+    }
+    if(String(session?.user?.id||"") === String(u.id||"") && meProfile){
+      meProfile.level = 1;
+      updateMeUI();
+    }
+    toast("Selected user level reset to 1");
+    await loadUsersList();
+    await loadAdminPlayers();
+    await refreshLeaderboard();
+  } finally {
+    if(btn){
+      btn.disabled = false;
+      btn.textContent = prevText || "Reset selected level";
+    }
+  }
 };
 
 /* ADMIN: CREATE EVENT */
