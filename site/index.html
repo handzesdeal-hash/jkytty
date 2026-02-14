@@ -737,6 +737,10 @@ tr:last-child td{border-bottom:none;}
 @media(max-width:760px){.probList{grid-template-columns:1fr;}}
 .prob{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background: rgba(0,0,0,.22);font-size:12px;}
 
+.adminPlayersTools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.adminPlayersTools .search{flex:1;min-width:260px;margin-top:0;}
+.adminPlayersMeta{font-size:12px;color:var(--muted);}
+
 .caseDropOverlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(4,7,14,.76);backdrop-filter:blur(8px);z-index:1002;opacity:0;}
 .caseDropOverlay.show{display:flex;animation:caseDropFadeIn .22s ease forwards;}
 .caseDropOverlay.closing{display:flex;animation:caseDropFadeOut .2s ease forwards;}
@@ -1941,6 +1945,11 @@ tr:last-child td{border-bottom:none;}
                 </div>
               </div>
               <div class="sectionBd">
+                <div class="adminPlayersTools">
+                  <input class="search" id="adminPlayersSearch" placeholder="Search by username or gmail" />
+                  <button class="btn" id="adminPlayersToggleBtn" style="display:none;">Show all</button>
+                  <div class="adminPlayersMeta" id="adminPlayersMeta">Showing 0</div>
+                </div>
                 <table>
                   <thead><tr><th>User</th><th>Email</th><th>Balance</th><th>Status</th><th>Last seen</th></tr></thead>
                   <tbody id="adminPlayersBody"><tr><td colspan="5" class="muted">Loading…</td></tr></tbody>
@@ -2474,6 +2483,9 @@ const livePresenceOnlineSet = new Set();
 const liveSignalOnlineSet = new Set();
 let adminPlayersLoading = false;
 let adminPlayersPending = false;
+let adminPlayersShowAll = false;
+let adminPlayersSearchText = "";
+let adminPlayersCache = [];
 
 function loadAdminSeenCache(){
   try{
@@ -2671,6 +2683,48 @@ function updateAdminPlayersSyncStamp(){
   if(!el) return;
   const now = new Date();
   el.textContent = `Last refresh: ${now.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit", second:"2-digit" })}`;
+}
+
+function renderAdminPlayersTable(){
+  const body = $("adminPlayersBody");
+  if(!body) return;
+
+  const query = String(adminPlayersSearchText || "").trim().toLowerCase();
+  const sorted = [...adminPlayersCache].sort((a,b)=>{
+    if(a.online !== b.online) return a.online ? -1 : 1;
+    if(a.lastSeenTs !== b.lastSeenTs) return b.lastSeenTs - a.lastSeenTs;
+    return a.name.localeCompare(b.name);
+  });
+
+  const filtered = query
+    ? sorted.filter((p)=> p.nameLc.includes(query) || p.emailLc.includes(query))
+    : sorted;
+
+  const useLimit = !adminPlayersShowAll;
+  const visible = useLimit ? filtered.slice(0,10) : filtered;
+
+  body.innerHTML = visible.length ? visible.map((p)=>`
+    <tr data-uid="${p.id}" data-email="${esc(p.emailLc)}">
+      <td>${esc(p.name||"Player")}</td>
+      <td>${esc(p.email||"")}</td>
+      <td class="mono" data-col="balance">${to2(Number(p.pts||0))}</td>
+      <td data-col="status"><span class="tag ${p.statusClass}">${p.statusText}</span></td>
+      <td class="mono" data-col="seen">${esc(p.seenText)}</td>
+    </tr>`).join("") : `<tr><td colspan="5" class="muted">No players found.</td></tr>`;
+
+  const toggleBtn = $("adminPlayersToggleBtn");
+  if(toggleBtn){
+    const canToggle = filtered.length > 10;
+    toggleBtn.style.display = canToggle ? "" : "none";
+    toggleBtn.textContent = adminPlayersShowAll ? "Show top 10" : "Show all";
+  }
+
+  const meta = $("adminPlayersMeta");
+  if(meta){
+    if(!filtered.length) meta.textContent = "Showing 0";
+    else if(adminPlayersShowAll || filtered.length <= 10) meta.textContent = `Showing ${visible.length} of ${filtered.length}`;
+    else meta.textContent = `Showing 10 of ${filtered.length}`;
+  }
 }
 
 function patchAdminPlayerRowFromProfile(profile){
@@ -3857,7 +3911,7 @@ async function loadAdminPlayers(){
 
     $("adminPlayersCount").textContent = String(rows.length);
 
-    body.innerHTML = rows.length ? rows.map((p)=>{
+    adminPlayersCache = rows.map((p)=>{
       const ptsNow = Number(p.pts || 0);
       const prevPts = adminBalanceSnapshotMap.get(p.id);
       if(prevPts !== undefined && Math.abs(Number(prevPts) - ptsNow) > 0.0001){
@@ -3880,15 +3934,26 @@ async function loadAdminPlayers(){
       const seenText = hasLastSeen
         ? (online ? "Now" : (isMe ? "Now" : fmtLastSeen(effectiveSeen)))
         : (online ? "Now" : (effectiveSeen ? fmtLastSeen(effectiveSeen) : "—"));
-      return `
-        <tr data-uid="${p.id}" data-email="${esc(String(p.email||"").toLowerCase())}">
-          <td>${esc(p.display_name||"Player")}</td>
-          <td>${esc(p.email||"")}</td>
-          <td class="mono" data-col="balance">${to2(Number(p.pts||0))}</td>
-          <td data-col="status"><span class="tag ${statusClass}">${statusText}</span></td>
-          <td class="mono" data-col="seen">${esc(seenText)}</td>
-        </tr>`;
-    }).join("") : `<tr><td colspan="5" class="muted">No players found.</td></tr>`;
+      const email = String(p.email||"");
+      const emailLc = email.toLowerCase();
+      const name = String(p.display_name||"Player");
+      const lastSeenTs = new Date(effectiveSeen || 0).getTime();
+      return {
+        id: p.id,
+        name,
+        nameLc: name.toLowerCase(),
+        email,
+        emailLc,
+        pts: Number(p.pts||0),
+        online,
+        statusText,
+        statusClass,
+        seenText,
+        lastSeenTs: Number.isFinite(lastSeenTs) ? lastSeenTs : 0,
+      };
+    });
+
+    renderAdminPlayersTable();
 
     if(!hasLastSeen && rows.length){
       $("adminUserHint").textContent = `Loaded ${rows.length} players. Add last_seen column for exact online timestamps.`;
@@ -3927,6 +3992,15 @@ function stopAdminPlayersRealtime(){
 }
 
 $("reloadAdminPlayersBtn").onclick = ()=>loadAdminPlayers();
+$("adminPlayersToggleBtn").onclick = ()=>{
+  adminPlayersShowAll = !adminPlayersShowAll;
+  renderAdminPlayersTable();
+};
+$("adminPlayersSearch")?.addEventListener("input", (ev)=>{
+  adminPlayersSearchText = String(ev?.target?.value || "").trim().toLowerCase();
+  adminPlayersShowAll = false;
+  renderAdminPlayersTable();
+});
 function getSelectedUser(){
   const id=$("userSelect").value;
   return usersList.find(u=>u.id===id) || null;
