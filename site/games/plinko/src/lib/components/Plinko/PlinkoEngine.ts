@@ -69,10 +69,10 @@ class PlinkoEngine {
    */
   private pinsLastRowXCoords: number[] = [];
 
-  static WIDTH = 880;
-  static HEIGHT = 640;
+  static WIDTH = 760;
+  static HEIGHT = 570;
 
-  private static PADDING_X = 62;
+  private static PADDING_X = 52;
   private static PADDING_TOP = 36;
   private static PADDING_BOTTOM = 28;
 
