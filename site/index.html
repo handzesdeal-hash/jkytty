@@ -632,6 +632,15 @@ input:focus,select:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4p
 .tile{border:1px solid rgba(255,255,255,.10);background: rgba(0,0,0,.35);border-radius:18px;overflow:hidden;cursor:pointer;user-select:none;
   transition: transform .08s ease, border-color .15s ease, background .15s ease;box-shadow:0 18px 55px rgba(0,0,0,.50);}
 .tile:hover{transform: translateY(-1px);border-color: rgba(255,255,255,.18);background: rgba(0,0,0,.44);}
+.gamesSplit{display:flex;flex-direction:column;gap:14px;}
+.gamesBlock{display:flex;flex-direction:column;gap:10px;}
+.gamesBlockHd{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;color:rgba(189,208,227,.92);padding:0 2px;}
+.tile.liveGame{border:1px solid rgba(167,139,250,.65);box-shadow:0 18px 55px rgba(0,0,0,.50),0 0 0 1px rgba(167,139,250,.35) inset;}
+.tile.artOnly{display:flex;flex-direction:column;}
+.tile.artOnly .tileBody{display:none;}
+.tile.artOnly .tileArt{flex:1;height:auto;min-height:120px;border-bottom:none;}
+.tile.artOnly .tileArt::before{display:none;}
+.tile.artOnly .tileArt img{object-position:center 62%;}
 .tileArt{height:120px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
 .tileArt::before{content:"";position:absolute;inset:-40%;
   background:
@@ -641,6 +650,7 @@ input:focus,select:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4p
   filter: blur(2px);
 }
 .tileArt span{position:relative;font-size:34px}
+.tileArt img{position:relative;width:100%;height:100%;object-fit:cover;display:block}
 .tileBody{padding:12px;}
 .tileTitle{font-weight:950;font-size:13px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .tileDesc{color:var(--muted);font-size:11.5px;margin-top:6px;line-height:1.35;height:32px;overflow:hidden;}
@@ -1781,7 +1791,18 @@ tr:last-child td{border-bottom:none;}
           <div><h3>HANDZES.BET GAMES</h3><div class="sub">Glowing demo tiles (no stock images).</div></div>
           <div class="chip">Games</div>
         </div>
-        <div class="sectionBd"><div class="grid" id="gamesGridHome"></div></div>
+        <div class="sectionBd">
+          <div class="gamesSplit">
+            <div class="gamesBlock">
+              <div class="gamesBlockHd">Live Games</div>
+              <div class="grid" id="gamesGridHomeLive"></div>
+            </div>
+            <div class="gamesBlock">
+              <div class="gamesBlockHd">Coming Soon</div>
+              <div class="grid" id="gamesGridHomeSoon"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="section">
@@ -1796,7 +1817,18 @@ tr:last-child td{border-bottom:none;}
     <section id="view-games" style="display:none;">
       <div class="section">
         <div class="sectionHd"><div><h3>Games</h3><div class="sub">Demo gallery.</div></div><div class="chip">8</div></div>
-        <div class="sectionBd"><div class="grid" id="gamesGrid"></div></div>
+        <div class="sectionBd">
+          <div class="gamesSplit">
+            <div class="gamesBlock">
+              <div class="gamesBlockHd">Live Games</div>
+              <div class="grid" id="gamesGridLive"></div>
+            </div>
+            <div class="gamesBlock">
+              <div class="gamesBlockHd">Coming Soon</div>
+              <div class="grid" id="gamesGridSoon"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -3464,24 +3496,28 @@ function renderSports(){
 
 function renderGames(){
   const G=[
-    {icon:"🎲",name:"Dice",desc:"Over/Under + live odds"},
-    {icon:"💣",name:"Mines",desc:"Pick safe tiles"},
-    {icon:"🪙",name:"Plinko",desc:"Drop & win"},
-    {icon:"🚀",name:"Crash",desc:"Cash out"},
-    {icon:"🃏",name:"Blackjack",desc:"Classic 21"},
-    {icon:"🎰",name:"Slots",desc:"Spin reels"},
-    {icon:"🎯",name:"Keno",desc:"Pick numbers"},
-    {icon:"🎡",name:"Roulette",desc:"Red / black"},
+    {icon:"🎲",name:"Dice",desc:"Over/Under + live odds",live:true,art:"games/dice/tile.jpg",artOnly:true},
+    {icon:"💣",name:"Mines",desc:"Pick safe tiles",live:true,art:"games/mines/tile.jpg",artOnly:true},
+    {icon:"🪙",name:"Plinko",desc:"Drop & win",live:true,art:"assets/plinko-tile.jpg",artOnly:true},
+    {icon:"🃏",name:"Blackjack",desc:"Classic 21",live:true,art:"assets/blackjack-tile.jpg",artOnly:true},
+    {icon:"🎡",name:"Roulette",desc:"Red / black",live:true,art:"assets/roulette-tile.jpg",artOnly:true},
+    {icon:"🚀",name:"Crash",desc:"Cash out",live:false},
+    {icon:"🎰",name:"Slots",desc:"Spin reels",live:false},
+    {icon:"🎯",name:"Keno",desc:"Pick numbers",live:false},
   ];
   const mk=(g)=>{
-    const el=document.createElement("div"); el.className="tile";
-    el.innerHTML = `
-      <div class="tileArt"><span>${g.icon}</span></div>
-      <div class="tileBody">
-        <p class="tileTitle">${esc(g.name)}</p>
-        <div class="tileDesc">${esc(g.desc)}</div>
-        <div class="tileMeta"><span class="tag">GAME</span><span class="oddsMini">Live/soon</span></div>
-      </div>`;
+    const el=document.createElement("div"); el.className=`tile ${g.live?"liveGame":"soonGame"}${g.artOnly?" artOnly":""}`;
+    if(g.artOnly){
+      el.innerHTML = `<div class="tileArt"><img src="${g.art}" alt="${esc(g.name)}"/></div>`;
+    }else{
+      el.innerHTML = `
+        <div class="tileArt">${g.art?`<img src="${g.art}" alt="${esc(g.name)}"/>`:`<span>${g.icon}</span>`}</div>
+        <div class="tileBody">
+          <p class="tileTitle">${esc(g.name)}</p>
+          <div class="tileDesc">${esc(g.desc)}</div>
+          <div class="tileMeta"><span class="tag ${g.live?"open":""}">${g.live?"LIVE":"SOON"}</span><span class="oddsMini">${g.live?"Live now":"Coming soon"}</span></div>
+        </div>`;
+    }
     el.onclick=()=>{
       if(g.name==="Dice") setView("dice");
       else if(g.name==="Roulette") setView("roulette");
@@ -3492,8 +3528,24 @@ function renderGames(){
     };
     return el;
   };
-  $("gamesGrid").innerHTML=""; $("gamesGridHome").innerHTML="";
-  G.forEach(g=>{ $("gamesGrid").appendChild(mk(g)); $("gamesGridHome").appendChild(mk(g)); });
+  const homeLive=$("gamesGridHomeLive");
+  const homeSoon=$("gamesGridHomeSoon");
+  const gamesLive=$("gamesGridLive");
+  const gamesSoon=$("gamesGridSoon");
+  if(homeLive) homeLive.innerHTML="";
+  if(homeSoon) homeSoon.innerHTML="";
+  if(gamesLive) gamesLive.innerHTML="";
+  if(gamesSoon) gamesSoon.innerHTML="";
+
+  G.forEach(g=>{
+    if(g.live){
+      if(gamesLive) gamesLive.appendChild(mk(g));
+      if(homeLive) homeLive.appendChild(mk(g));
+    }else{
+      if(gamesSoon) gamesSoon.appendChild(mk(g));
+      if(homeSoon) homeSoon.appendChild(mk(g));
+    }
+  });
   $("chipGames").textContent=String(G.length);
 }
 
