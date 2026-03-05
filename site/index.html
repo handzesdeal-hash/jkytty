@@ -1636,6 +1636,128 @@ tr:last-child td{border-bottom:none;}
 .bjStage{
   min-height: 560px;
 }
+
+/* =======================
+   TRADING SECTION
+   ======================= */
+.tradingTabs{display:flex;gap:10px;margin-bottom:16px;}
+.tradingTab{flex:1;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);color:rgba(255,255,255,.7);font-weight:900;font-size:13px;cursor:pointer;text-align:center;transition:all .15s}
+.tradingTab.active{background:rgba(124,58,237,.18);border-color:rgba(167,139,250,.28);color:rgba(255,255,255,.95)}
+.tradingTab:hover:not(.active){background:rgba(255,255,255,.06)}
+
+/* Create coin form */
+.createCoinForm{max-width:560px;}
+.createCoinForm .formGroup{margin-bottom:14px;}
+.createCoinForm .formGroup label{font-size:12px;color:var(--muted);font-weight:900;letter-spacing:.06em;}
+.createCoinForm .formGroup input{width:100%;margin-top:6px;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.28);color:var(--text);outline:none;font-size:14px;}
+.createCoinForm .formGroup input:focus{border-color:rgba(167,139,250,.35);box-shadow:0 0 0 4px rgba(124,58,237,.14)}
+.createCoinForm .formGroup input::placeholder{color:rgba(255,255,255,.3)}
+.createCoinForm .costNote{display:flex;align-items:center;gap:8px;padding:12px 14px;border-radius:14px;border:1px solid rgba(245,158,11,.18);background:rgba(245,158,11,.06);font-size:12px;color:rgba(245,158,11,.9);font-weight:800;margin-bottom:16px;}
+.createCoinForm .costNote .costIcon{font-size:18px;}
+.createCoinForm .preview{padding:14px;border-radius:16px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);margin-bottom:16px;}
+.createCoinForm .preview .previewTitle{font-size:11px;color:var(--muted);font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;}
+.createCoinForm .preview .previewRow{display:flex;justify-content:space-between;padding:4px 0;font-size:13px;}
+.createCoinForm .preview .previewRow .label{color:var(--muted);}
+.createCoinForm .preview .previewRow .value{font-family:var(--mono);font-weight:800;}
+
+/* Market grid */
+.marketGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+.coinCard{padding:16px;border-radius:18px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.28);backdrop-filter:blur(10px);cursor:pointer;transition:all .18s;position:relative;overflow:hidden;}
+.coinCard:hover{border-color:rgba(167,139,250,.22);transform:translateY(-2px);box-shadow:0 14px 40px rgba(0,0,0,.4)}
+.coinCard .coinHeader{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.coinCard .coinEmoji{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(239,68,68,.2));display:flex;align-items:center;justify-content:center;font-size:22px;border:1px solid rgba(255,255,255,.08);}
+.coinCard .coinInfo{flex:1;min-width:0;}
+.coinCard .coinName{font-weight:900;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.coinCard .coinTicker{font-size:12px;color:var(--muted);font-weight:800;}
+.coinCard .coinStats{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.coinCard .coinStat{padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);}
+.coinCard .coinStat .statLabel{font-size:10px;color:var(--muted);font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
+.coinCard .coinStat .statValue{font-family:var(--mono);font-weight:900;font-size:14px;margin-top:2px;}
+.coinCard .coinChange{position:absolute;top:16px;right:16px;padding:4px 10px;border-radius:10px;font-size:12px;font-weight:900;font-family:var(--mono);}
+.coinChange.up{background:rgba(34,197,94,.14);color:rgba(34,197,94,.95);}
+.coinChange.down{background:rgba(239,68,68,.14);color:rgba(239,68,68,.95);}
+.coinChange.flat{background:rgba(255,255,255,.06);color:var(--muted);}
+
+/* Trade view */
+.tradeView{display:grid;grid-template-columns:1fr 360px;gap:16px;}
+@media(max-width:900px){.tradeView{grid-template-columns:1fr;}.tradeSidebar{order:-1;}}
+.tradeBack{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--muted);font-size:13px;font-weight:800;cursor:pointer;margin-bottom:14px;transition:all .15s;}
+.tradeBack:hover{background:rgba(255,255,255,.08);color:var(--text);}
+.tradeHero{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.tradeHero .coinEmoji{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(239,68,68,.2));display:flex;align-items:center;justify-content:center;font-size:28px;border:1px solid rgba(255,255,255,.10);}
+.tradeHero .heroInfo h3{margin:0;font-size:20px;font-weight:1000;}
+.tradeHero .heroInfo .heroTicker{font-size:13px;color:var(--muted);font-weight:800;}
+.tradeHero .heroPrice{margin-left:auto;text-align:right;}
+.tradeHero .heroPrice .priceMain{font-family:var(--mono);font-size:24px;font-weight:1000;}
+.tradeHero .heroPrice .priceChange{font-size:13px;font-weight:800;}
+
+/* Chart */
+.chartWrap{border:1px solid rgba(255,255,255,.08);border-radius:18px;background:rgba(0,0,0,.22);padding:16px;margin-bottom:16px;}
+.chartWrap canvas{width:100%!important;height:260px!important;border-radius:12px;}
+.chartPeriods{display:flex;gap:6px;margin-bottom:12px;}
+.chartPeriod{padding:6px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:var(--muted);font-size:11px;font-weight:900;cursor:pointer;}
+.chartPeriod.active{background:rgba(124,58,237,.16);border-color:rgba(167,139,250,.22);color:var(--text);}
+
+/* Order book */
+.orderBook{border:1px solid rgba(255,255,255,.08);border-radius:18px;background:rgba(0,0,0,.22);padding:16px;}
+.orderBook .obTitle{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.orderBook table{width:100%;border-collapse:collapse;font-size:12px;}
+.orderBook th{text-align:left;padding:6px 8px;color:var(--muted);font-weight:800;font-size:10px;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.06);}
+.orderBook td{padding:6px 8px;font-family:var(--mono);font-weight:700;}
+.orderBook .askRow td{color:rgba(239,68,68,.85);}
+.orderBook .bidRow td{color:rgba(34,197,94,.85);}
+
+/* Trade sidebar */
+.tradeSidebar{}
+.tradePanel{border:1px solid rgba(255,255,255,.08);border-radius:18px;background:rgba(0,0,0,.28);padding:16px;}
+.tradePanel .tpTitle{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.tradeBuySellTabs{display:flex;gap:8px;margin-bottom:14px;}
+.tradeBuySellTab{flex:1;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);font-weight:900;font-size:13px;cursor:pointer;text-align:center;transition:all .15s;}
+.tradeBuySellTab.buyActive{background:rgba(34,197,94,.16);border-color:rgba(34,197,94,.28);color:rgba(34,197,94,.95);}
+.tradeBuySellTab.sellActive{background:rgba(239,68,68,.16);border-color:rgba(239,68,68,.28);color:rgba(239,68,68,.95);}
+.tradePanel .formGroup{margin-bottom:12px;}
+.tradePanel .formGroup label{font-size:11px;color:var(--muted);font-weight:800;}
+.tradePanel .formGroup input{width:100%;margin-top:4px;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.22);color:var(--text);outline:none;font-size:14px;font-family:var(--mono);}
+.tradePanel .formGroup input:focus{border-color:rgba(167,139,250,.3);box-shadow:0 0 0 3px rgba(124,58,237,.12)}
+.tradePanel .tradeTotal{padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;font-size:13px;margin-bottom:14px;}
+.tradePanel .tradeTotal .label{color:var(--muted);font-weight:800;}
+.tradePanel .tradeTotal .value{font-family:var(--mono);font-weight:900;}
+.tradeBuyBtn{width:100%;padding:12px;border-radius:14px;border:none;font-weight:900;font-size:14px;cursor:pointer;transition:all .15s;}
+.tradeBuyBtn.buy{background:linear-gradient(135deg,rgba(34,197,94,.9),rgba(74,222,128,.8));color:#fff;}
+.tradeBuyBtn.sell{background:linear-gradient(135deg,rgba(239,68,68,.9),rgba(251,113,133,.8));color:#fff;}
+.tradeBuyBtn:hover{filter:brightness(1.1);}
+.tradeBuyBtn:active{transform:translateY(1px);}
+.tradeBuyBtn:disabled{opacity:.5;cursor:not-allowed;filter:none;}
+
+/* Holdings */
+.holdingsPanel{border:1px solid rgba(255,255,255,.08);border-radius:18px;background:rgba(0,0,0,.28);padding:16px;margin-top:12px;}
+.holdingsPanel .hpTitle{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.holdingRow{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);margin-bottom:6px;}
+.holdingRow .holdName{font-weight:800;font-size:13px;}
+.holdingRow .holdAmt{font-family:var(--mono);font-weight:800;font-size:13px;}
+.holdingRow .holdVal{font-family:var(--mono);font-size:12px;color:var(--muted);}
+
+/* Recent trades */
+.recentTrades{border:1px solid rgba(255,255,255,.08);border-radius:18px;background:rgba(0,0,0,.22);padding:16px;margin-top:12px;}
+.recentTrades .rtTitle{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.recentTrades table{width:100%;border-collapse:collapse;font-size:12px;}
+.recentTrades th{text-align:left;padding:5px 8px;color:var(--muted);font-weight:800;font-size:10px;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.06);}
+.recentTrades td{padding:5px 8px;font-family:var(--mono);font-weight:700;}
+.recentTrades .buyTrade{color:rgba(34,197,94,.85);}
+.recentTrades .sellTrade{color:rgba(239,68,68,.85);}
+
+/* Empty state */
+.emptyState{text-align:center;padding:40px 20px;color:var(--muted);}
+.emptyState .emptyIcon{font-size:48px;margin-bottom:12px;}
+.emptyState .emptyText{font-size:14px;font-weight:800;}
+.emptyState .emptySub{font-size:12px;margin-top:6px;color:rgba(255,255,255,.4);}
+
+/* Coin search */
+.coinSearch{margin-bottom:14px;display:flex;gap:10px;}
+.coinSearch input{flex:1;padding:11px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.22);color:var(--text);outline:none;font-size:13px;}
+.coinSearch input:focus{border-color:rgba(167,139,250,.3);box-shadow:0 0 0 3px rgba(124,58,237,.12)}
+.coinSearch input::placeholder{color:rgba(255,255,255,.3)}
+.coinSearch select{padding:11px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.22);color:var(--text);font-size:13px;outline:none;}
 </style>
 </head>
 <body>
@@ -1718,6 +1840,7 @@ tr:last-child td{border-bottom:none;}
     <button class="navBtn" data-view="leaderboard"><span>Leaderboard</span><span class="chip" id="chipLb">0</span></button>
     <button class="navBtn" data-view="bets"><span>My Bets</span><span class="chip" id="chipMyBets">0</span></button>
     <button class="navBtn" data-view="case"><span>Daily Case</span><span class="chip">🎁</span></button>
+    <button class="navBtn" data-view="trading"><span>Trading</span><span class="chip">📈</span></button>
 
     <div id="adminNavWrap" style="display:none;">
       <div class="sideTitle">Admin</div>
@@ -1781,6 +1904,7 @@ tr:last-child td{border-bottom:none;}
         <button class="navBtn" data-view="leaderboard"><span>Leaderboard</span></button>
         <button class="navBtn" data-view="bets"><span>My Bets</span></button>
         <button class="navBtn" data-view="case"><span>Daily Case</span></button>
+        <button class="navBtn" data-view="trading"><span>Trading</span></button>
         <button class="navBtn" data-view="admin" id="mobileAdminNav" style="display:none;"><span>Admin</span></button>
       </div>
     </div>
@@ -2075,6 +2199,151 @@ tr:last-child td{border-bottom:none;}
                 <div class="prob"><span>2.5% → win 1000</span><span class="mono">1000</span></div>
                 <div class="prob"><span>9% → win nothing</span><span class="mono">0.00</span></div>
                 <div class="prob"><span>1% → win 10000</span><span class="mono">10000</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-trading" style="display:none;">
+        <div class="section">
+          <div class="sectionHd">
+            <div><h3>Meme Coin Trading</h3><div class="sub">Create tokens, trade with others, watch charts live.</div></div>
+            <div class="chip">LIVE</div>
+          </div>
+          <div class="sectionBd">
+            <div class="tradingTabs">
+              <button class="tradingTab active" id="tradingTabMarket" type="button">Market</button>
+              <button class="tradingTab" id="tradingTabCreate" type="button">Create Coin</button>
+              <button class="tradingTab" id="tradingTabPortfolio" type="button">My Portfolio</button>
+            </div>
+
+            <!-- MARKET VIEW -->
+            <div id="tradingMarketView">
+              <div class="coinSearch">
+                <input type="text" id="coinSearchInput" placeholder="Search coins..." />
+                <select id="coinSortSelect">
+                  <option value="newest">Newest</option>
+                  <option value="price-high">Price: High → Low</option>
+                  <option value="price-low">Price: Low → High</option>
+                  <option value="volume">Volume</option>
+                  <option value="mcap">Market Cap</option>
+                </select>
+              </div>
+              <div class="marketGrid" id="marketGrid">
+                <div class="emptyState"><div class="emptyIcon">🪙</div><div class="emptyText">No coins yet</div><div class="emptySub">Be the first to create a meme coin!</div></div>
+              </div>
+            </div>
+
+            <!-- CREATE COIN VIEW -->
+            <div id="tradingCreateView" style="display:none;">
+              <div class="createCoinForm">
+                <div class="costNote">
+                  <span class="costIcon">⚠️</span>
+                  <span>Creating a coin costs <b>1,000 points</b> from your balance. Choose wisely!</span>
+                </div>
+                <div class="formGroup">
+                  <label>Coin Name</label>
+                  <input type="text" id="ccName" placeholder="e.g. DogeMoon" maxlength="24" />
+                </div>
+                <div class="formGroup">
+                  <label>Ticker Symbol</label>
+                  <input type="text" id="ccTicker" placeholder="e.g. DGMN" maxlength="8" style="text-transform:uppercase;" />
+                </div>
+                <div class="formGroup">
+                  <label>Emoji / Icon</label>
+                  <input type="text" id="ccEmoji" placeholder="e.g. 🐕" maxlength="4" />
+                </div>
+                <div class="formGroup">
+                  <label>Total Supply (how many tokens)</label>
+                  <input type="number" id="ccSupply" placeholder="e.g. 1000000" min="100" max="100000000" value="1000000" />
+                </div>
+                <div class="formGroup">
+                  <label>Initial Price (points per token)</label>
+                  <input type="number" id="ccPrice" placeholder="e.g. 0.01" min="0.0001" step="0.0001" value="0.01" />
+                </div>
+                <div class="preview" id="ccPreview">
+                  <div class="previewTitle">Preview</div>
+                  <div class="previewRow"><span class="label">Name</span><span class="value" id="ccPrevName">—</span></div>
+                  <div class="previewRow"><span class="label">Ticker</span><span class="value" id="ccPrevTicker">—</span></div>
+                  <div class="previewRow"><span class="label">Supply</span><span class="value" id="ccPrevSupply">—</span></div>
+                  <div class="previewRow"><span class="label">Price</span><span class="value" id="ccPrevPrice">—</span></div>
+                  <div class="previewRow"><span class="label">Market Cap</span><span class="value" id="ccPrevMcap">—</span></div>
+                  <div class="previewRow"><span class="label">Your Cost</span><span class="value" style="color:rgba(245,158,11,.95)">1,000.00</span></div>
+                </div>
+                <button class="btn purple" id="createCoinBtn" style="width:100%;padding:14px;font-size:14px;">🚀 Launch Coin — 1,000 pts</button>
+              </div>
+            </div>
+
+            <!-- PORTFOLIO VIEW -->
+            <div id="tradingPortfolioView" style="display:none;">
+              <div class="holdingsPanel" style="border:none;padding:0;background:none;">
+                <div class="hpTitle">Your Holdings</div>
+                <div id="portfolioHoldings">
+                  <div class="emptyState"><div class="emptyIcon">💼</div><div class="emptyText">No holdings yet</div><div class="emptySub">Buy some coins from the market!</div></div>
+                </div>
+              </div>
+              <div class="recentTrades" style="margin-top:18px;border:none;padding:0;background:none;">
+                <div class="rtTitle">Your Trade History</div>
+                <div id="portfolioTradeHistory">
+                  <div class="emptyState"><div class="emptyIcon">📜</div><div class="emptyText">No trades yet</div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SINGLE COIN TRADE VIEW (hidden by default) -->
+            <div id="tradingTradeView" style="display:none;">
+              <button class="tradeBack" id="tradeBackBtn" type="button">← Back to Market</button>
+              <div class="tradeHero" id="tradeHero"></div>
+              <div class="tradeView">
+                <div class="tradeMain">
+                  <div class="chartWrap">
+                    <div class="chartPeriods">
+                      <button class="chartPeriod active" data-period="1h">1H</button>
+                      <button class="chartPeriod" data-period="6h">6H</button>
+                      <button class="chartPeriod" data-period="24h">24H</button>
+                      <button class="chartPeriod" data-period="7d">7D</button>
+                      <button class="chartPeriod" data-period="all">ALL</button>
+                    </div>
+                    <canvas id="tradingChart"></canvas>
+                  </div>
+                  <div class="orderBook">
+                    <div class="obTitle">Recent Trades</div>
+                    <table>
+                      <thead><tr><th>Time</th><th>Type</th><th>Price</th><th>Amount</th><th>Total</th></tr></thead>
+                      <tbody id="orderBookBody"><tr><td colspan="5" style="color:var(--muted);text-align:center;">No trades yet</td></tr></tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="tradeSidebar">
+                  <div class="tradePanel">
+                    <div class="tpTitle">Trade</div>
+                    <div class="tradeBuySellTabs">
+                      <button class="tradeBuySellTab buyActive" id="tradeBuyTab" type="button">Buy</button>
+                      <button class="tradeBuySellTab" id="tradeSellTab" type="button">Sell</button>
+                    </div>
+                    <div class="formGroup">
+                      <label>Amount (tokens)</label>
+                      <input type="number" id="tradeAmount" placeholder="0" min="1" step="1" />
+                    </div>
+                    <div class="formGroup">
+                      <label>Price (points per token)</label>
+                      <input type="number" id="tradePrice" placeholder="0.00" min="0.0001" step="0.0001" />
+                    </div>
+                    <div class="tradeTotal">
+                      <span class="label">Total</span>
+                      <span class="value" id="tradeTotalValue">0.00 pts</span>
+                    </div>
+                    <button class="tradeBuyBtn buy" id="tradeExecuteBtn" type="button">Buy</button>
+                    <div class="small" id="tradeNote" style="text-align:center;">Your balance: <span class="mono" id="tradeBalDisplay">0.00</span></div>
+                  </div>
+                  <div class="holdingsPanel">
+                    <div class="hpTitle">Your Position</div>
+                    <div id="tradePosition">
+                      <div style="color:var(--muted);font-size:13px;text-align:center;padding:12px;">No position</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -3027,7 +3296,7 @@ function setView(v){
   const prevView = document.querySelector(".navBtn[data-view].active")?.dataset?.view || "";
   try{ sessionStorage.setItem(LAST_VIEW_KEY, String(v||"home")); }catch(_){ }
   document.querySelectorAll(".navBtn[data-view]").forEach(b=>b.classList.toggle("active", b.dataset.view===v));
-  ["home","games","dice","roulette","mines","blackjack","plinko","sports","leaderboard","bets","case","admin"].forEach(id=>{
+  ["home","games","dice","roulette","mines","blackjack","plinko","sports","leaderboard","bets","case","trading","admin"].forEach(id=>{
     const el=$("view-"+id); if(el) el.style.display=(id===v)?"":"none";
   });
   if(prevView === "dice" && v !== "dice") diceResetState();
@@ -3051,6 +3320,7 @@ function setView(v){
     stopAdminPlayersRealtime();
   }
   if(v==="case") refreshCaseUI();
+  if(v==="trading") tradingOnViewEnter();
   if(v==="blackjack") bjOnViewEnter();
   if(v==="plinko"){
     // Ensure embedded Plinko starts from the real profile balance.
@@ -3504,6 +3774,7 @@ function renderGames(){
     {icon:"🚀",name:"Crash",desc:"Cash out",live:false},
     {icon:"🎰",name:"Slots",desc:"Spin reels",live:false},
     {icon:"🎯",name:"Keno",desc:"Pick numbers",live:false},
+    {icon:"📈",name:"Trading",desc:"Meme coin market",live:true},
   ];
   const mk=(g)=>{
     const el=document.createElement("div"); el.className=`tile ${g.live?"liveGame":"soonGame"}${g.artOnly?" artOnly":""}`;
@@ -3524,6 +3795,7 @@ function renderGames(){
       else if(g.name==="Mines") setView("mines");
       else if(g.name==="Blackjack") setView("blackjack");
       else if(g.name==="Plinko") setView("plinko");
+      else if(g.name==="Trading") setView("trading");
       else toast("Coming soon");
     };
     return el;
@@ -6983,7 +7255,7 @@ async function showApp(){
   if(isAdmin){ await loadAdminPlayers(); await loadAdminEvents(); }
   let savedView = "home";
   try{ savedView = sessionStorage.getItem(LAST_VIEW_KEY) || "home"; }catch(_){ }
-  const allowedViews = new Set(["home","games","dice","roulette","mines","blackjack","plinko","sports","leaderboard","bets","case","admin"]);
+  const allowedViews = new Set(["home","games","dice","roulette","mines","blackjack","plinko","sports","leaderboard","bets","case","trading","admin"]);
   let targetView = allowedViews.has(savedView) ? savedView : "home";
   if(targetView === "admin" && !isAdmin) targetView = "home";
   setView(targetView);
@@ -7311,6 +7583,618 @@ window.addEventListener("beforeunload", ()=>{
     }
   }catch(_){ }
 });
+
+/* ===================================================================
+   TRADING ENGINE — Meme Coin Creation, Market, Charts, Trading
+   =================================================================== */
+const TRADING_STORE_KEY = "handzes_trading_v2";
+const TRADE_HISTORY_KEY = "handzes_trades_v2";
+let tradingCoins = [];
+let tradeHistory = [];
+let currentTradeCoinId = null;
+let tradeSide = "buy"; // "buy" | "sell"
+let tradingChartInstance = null;
+
+function loadTradingData(){
+  try{
+    tradingCoins = JSON.parse(localStorage.getItem(TRADING_STORE_KEY) || "[]");
+    tradeHistory = JSON.parse(localStorage.getItem(TRADE_HISTORY_KEY) || "[]");
+  }catch(_){ tradingCoins=[]; tradeHistory=[]; }
+}
+function saveTradingData(){
+  try{
+    localStorage.setItem(TRADING_STORE_KEY, JSON.stringify(tradingCoins));
+    localStorage.setItem(TRADE_HISTORY_KEY, JSON.stringify(tradeHistory));
+  }catch(_){}
+}
+
+function generateCoinId(){ return "coin_" + Date.now() + "_" + Math.random().toString(36).slice(2,8); }
+
+function getUserHoldings(coinId){
+  const uid = session?.user?.id;
+  if(!uid) return 0;
+  const coin = tradingCoins.find(c=>c.id===coinId);
+  if(!coin) return 0;
+  return Number(coin.holdings?.[uid] || 0);
+}
+
+function setUserHoldings(coinId, amount){
+  const uid = session?.user?.id;
+  if(!uid) return;
+  const coin = tradingCoins.find(c=>c.id===coinId);
+  if(!coin) return;
+  if(!coin.holdings) coin.holdings={};
+  coin.holdings[uid] = amount;
+}
+
+function getCoinPriceChange(coin){
+  if(!coin.priceHistory || coin.priceHistory.length < 2) return 0;
+  const first = coin.priceHistory[0].price;
+  const last = coin.priceHistory[coin.priceHistory.length-1].price;
+  if(first===0) return 0;
+  return ((last - first) / first) * 100;
+}
+
+function getMarketCap(coin){
+  return coin.currentPrice * coin.totalSupply;
+}
+
+function getCoinVolume24h(coin){
+  const cutoff = Date.now() - 24*60*60*1000;
+  return tradeHistory.filter(t=>t.coinId===coin.id && t.time>=cutoff).reduce((s,t)=>s+t.total,0);
+}
+
+/* Trading tabs */
+function switchTradingTab(tab){
+  ["tradingTabMarket","tradingTabCreate","tradingTabPortfolio"].forEach(id=>{
+    $(id).classList.toggle("active", id==="tradingTab"+tab);
+  });
+  $("tradingMarketView").style.display = tab==="Market" ? "" : "none";
+  $("tradingCreateView").style.display = tab==="Create" ? "" : "none";
+  $("tradingPortfolioView").style.display = tab==="Portfolio" ? "" : "none";
+  $("tradingTradeView").style.display = "none";
+  if(tab==="Market") renderMarketGrid();
+  if(tab==="Portfolio") renderPortfolio();
+}
+
+$("tradingTabMarket").onclick=()=>switchTradingTab("Market");
+$("tradingTabCreate").onclick=()=>switchTradingTab("Create");
+$("tradingTabPortfolio").onclick=()=>switchTradingTab("Portfolio");
+
+/* Create coin form live preview */
+["ccName","ccTicker","ccSupply","ccPrice","ccEmoji"].forEach(id=>{
+  $(id).addEventListener("input",updateCoinPreview);
+});
+
+function updateCoinPreview(){
+  const name = $("ccName").value.trim() || "—";
+  const ticker = $("ccTicker").value.trim().toUpperCase() || "—";
+  const supply = Number($("ccSupply").value) || 0;
+  const price = Number($("ccPrice").value) || 0;
+  $("ccPrevName").textContent = name;
+  $("ccPrevTicker").textContent = "$" + ticker;
+  $("ccPrevSupply").textContent = supply.toLocaleString();
+  $("ccPrevPrice").textContent = price.toFixed(4);
+  $("ccPrevMcap").textContent = (supply * price).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+/* Create coin */
+$("createCoinBtn").onclick = async ()=>{
+  if(!meProfile){ toast("Profile not loaded."); return; }
+  const name = $("ccName").value.trim();
+  const ticker = $("ccTicker").value.trim().toUpperCase();
+  const emoji = $("ccEmoji").value.trim() || "🪙";
+  const supply = Math.floor(Number($("ccSupply").value) || 0);
+  const price = Number($("ccPrice").value) || 0;
+
+  if(!name || name.length<2){ toast("Coin name too short (min 2 chars)."); return; }
+  if(!ticker || ticker.length<2){ toast("Ticker too short (min 2 chars)."); return; }
+  if(supply < 100){ toast("Min supply is 100."); return; }
+  if(supply > 100000000){ toast("Max supply is 100,000,000."); return; }
+  if(price < 0.0001){ toast("Min price is 0.0001."); return; }
+  if(tradingCoins.some(c=>c.ticker===ticker)){ toast("Ticker $" + ticker + " already exists!"); return; }
+  if(Number(meProfile.pts) < 1000){ toast("You need at least 1,000 points to create a coin."); return; }
+
+  /* Deduct 1000 from balance */
+  try{
+    const newPts = clamp2(Number(meProfile.pts) - 1000);
+    const { error } = await supabase.from("profiles").update({ pts: newPts }).eq("id", session.user.id);
+    if(error) throw error;
+    setHostBalance(newPts);
+  }catch(e){
+    toast("Failed to deduct creation fee."); console.error(e); return;
+  }
+
+  const coin = {
+    id: generateCoinId(),
+    name,
+    ticker,
+    emoji,
+    totalSupply: supply,
+    circulatingSupply: 0,
+    currentPrice: price,
+    initialPrice: price,
+    createdBy: session.user.id,
+    creatorName: meProfile.display_name || meProfile.username || "Anon",
+    createdAt: Date.now(),
+    holdings: {},
+    priceHistory: [{ time: Date.now(), price }],
+    liquidityPool: supply, // creator tokens available
+  };
+
+  tradingCoins.push(coin);
+  saveTradingData();
+  toast("🚀 $" + ticker + " launched!");
+  $("ccName").value=""; $("ccTicker").value=""; $("ccEmoji").value=""; $("ccSupply").value="1000000"; $("ccPrice").value="0.01";
+  updateCoinPreview();
+  switchTradingTab("Market");
+};
+
+/* Render market grid */
+function renderMarketGrid(){
+  loadTradingData();
+  const grid = $("marketGrid");
+  const search = ($("coinSearchInput")?.value || "").toLowerCase();
+  const sort = $("coinSortSelect")?.value || "newest";
+
+  let coins = [...tradingCoins];
+  if(search){
+    coins = coins.filter(c=>c.name.toLowerCase().includes(search) || c.ticker.toLowerCase().includes(search));
+  }
+
+  switch(sort){
+    case "newest": coins.sort((a,b)=>b.createdAt-a.createdAt); break;
+    case "price-high": coins.sort((a,b)=>b.currentPrice-a.currentPrice); break;
+    case "price-low": coins.sort((a,b)=>a.currentPrice-b.currentPrice); break;
+    case "volume": coins.sort((a,b)=>getCoinVolume24h(b)-getCoinVolume24h(a)); break;
+    case "mcap": coins.sort((a,b)=>getMarketCap(b)-getMarketCap(a)); break;
+  }
+
+  if(!coins.length){
+    grid.innerHTML = `<div class="emptyState"><div class="emptyIcon">🪙</div><div class="emptyText">${search?"No coins match your search":"No coins yet"}</div><div class="emptySub">${search?"Try a different search":"Be the first to create a meme coin!"}</div></div>`;
+    return;
+  }
+
+  grid.innerHTML = coins.map(c=>{
+    const change = getCoinPriceChange(c);
+    const changeCls = change>0?"up":change<0?"down":"flat";
+    const changeStr = change>0?"+"+change.toFixed(1)+"%":change<0?change.toFixed(1)+"%":"0.0%";
+    const vol = getCoinVolume24h(c);
+    const mcap = getMarketCap(c);
+    return `<div class="coinCard" data-coin-id="${c.id}">
+      <div class="coinChange ${changeCls}">${changeStr}</div>
+      <div class="coinHeader">
+        <div class="coinEmoji">${c.emoji}</div>
+        <div class="coinInfo">
+          <div class="coinName">${esc(c.name)}</div>
+          <div class="coinTicker">$${esc(c.ticker)} · by ${esc(c.creatorName)}</div>
+        </div>
+      </div>
+      <div class="coinStats">
+        <div class="coinStat"><div class="statLabel">Price</div><div class="statValue">${c.currentPrice.toFixed(4)}</div></div>
+        <div class="coinStat"><div class="statLabel">Market Cap</div><div class="statValue">${mcap>=1000?(mcap/1000).toFixed(1)+"K":mcap.toFixed(0)}</div></div>
+        <div class="coinStat"><div class="statLabel">24h Vol</div><div class="statValue">${vol>=1000?(vol/1000).toFixed(1)+"K":vol.toFixed(2)}</div></div>
+        <div class="coinStat"><div class="statLabel">Supply</div><div class="statValue">${c.totalSupply>=1e6?(c.totalSupply/1e6).toFixed(1)+"M":c.totalSupply>=1000?(c.totalSupply/1000).toFixed(0)+"K":c.totalSupply}</div></div>
+      </div>
+    </div>`;
+  }).join("");
+
+  grid.querySelectorAll(".coinCard").forEach(card=>{
+    card.onclick=()=>openTradeView(card.dataset.coinId);
+  });
+}
+
+$("coinSearchInput").addEventListener("input", renderMarketGrid);
+$("coinSortSelect").addEventListener("change", renderMarketGrid);
+
+/* Open coin trade view */
+function openTradeView(coinId){
+  loadTradingData();
+  const coin = tradingCoins.find(c=>c.id===coinId);
+  if(!coin){ toast("Coin not found."); return; }
+  currentTradeCoinId = coinId;
+
+  // Hide tabs + market, show trade view
+  $("tradingMarketView").style.display="none";
+  $("tradingCreateView").style.display="none";
+  $("tradingPortfolioView").style.display="none";
+  $("tradingTradeView").style.display="";
+
+  // Hero
+  const change = getCoinPriceChange(coin);
+  const changeCls = change>0?"up":change<0?"down":"flat";
+  const changeStr = change>0?"+"+change.toFixed(2)+"%":change<0?change.toFixed(2)+"%":"0.00%";
+  $("tradeHero").innerHTML = `
+    <div class="coinEmoji">${coin.emoji}</div>
+    <div class="heroInfo"><h3>${esc(coin.name)}</h3><div class="heroTicker">$${esc(coin.ticker)} · by ${esc(coin.creatorName)}</div></div>
+    <div class="heroPrice"><div class="priceMain">${coin.currentPrice.toFixed(4)}</div><div class="priceChange ${changeCls}">${changeStr}</div></div>
+  `;
+
+  // Set default price
+  $("tradePrice").value = coin.currentPrice.toFixed(4);
+  $("tradeAmount").value = "";
+  updateTradeTotal();
+  updateTradePosition(coin);
+  renderCoinTrades(coin);
+  renderTradingChart(coin);
+  tradeSide = "buy";
+  updateTradeSideUI();
+
+  if(meProfile) $("tradeBalDisplay").textContent = to2(meProfile.pts||0);
+}
+
+$("tradeBackBtn").onclick=()=>{
+  $("tradingTradeView").style.display="none";
+  $("tradingMarketView").style.display="";
+  currentTradeCoinId=null;
+  renderMarketGrid();
+};
+
+/* Buy / sell tabs */
+function updateTradeSideUI(){
+  $("tradeBuyTab").className = "tradeBuySellTab" + (tradeSide==="buy"?" buyActive":"");
+  $("tradeSellTab").className = "tradeBuySellTab" + (tradeSide==="sell"?" sellActive":"");
+  const btn = $("tradeExecuteBtn");
+  btn.textContent = tradeSide==="buy" ? "Buy" : "Sell";
+  btn.className = "tradeBuyBtn " + tradeSide;
+  updateTradeTotal();
+}
+
+$("tradeBuyTab").onclick=()=>{ tradeSide="buy"; updateTradeSideUI(); };
+$("tradeSellTab").onclick=()=>{ tradeSide="sell"; updateTradeSideUI(); };
+
+/* Trade total */
+function updateTradeTotal(){
+  const amt = Number($("tradeAmount").value) || 0;
+  const price = Number($("tradePrice").value) || 0;
+  const total = amt * price;
+  $("tradeTotalValue").textContent = total.toFixed(2) + " pts";
+  if(meProfile) $("tradeBalDisplay").textContent = to2(meProfile.pts||0);
+}
+
+$("tradeAmount").addEventListener("input", updateTradeTotal);
+$("tradePrice").addEventListener("input", updateTradeTotal);
+
+/* Execute trade */
+$("tradeExecuteBtn").onclick = async ()=>{
+  if(!meProfile){ toast("Profile not loaded."); return; }
+  loadTradingData();
+  const coin = tradingCoins.find(c=>c.id===currentTradeCoinId);
+  if(!coin){ toast("Coin not found."); return; }
+
+  const amount = Math.floor(Number($("tradeAmount").value) || 0);
+  const price = Number($("tradePrice").value) || 0;
+  if(amount <= 0){ toast("Enter a valid token amount."); return; }
+  if(price <= 0){ toast("Enter a valid price."); return; }
+  const total = clamp2(amount * price);
+
+  if(tradeSide === "buy"){
+    // Check balance
+    if(Number(meProfile.pts) < total){ toast("Insufficient balance. Need " + total.toFixed(2) + " pts."); return; }
+    // Check available supply
+    const available = coin.liquidityPool + (coin.totalSupply - coin.circulatingSupply - coin.liquidityPool);
+    // For simplicity: as long as the pool has tokens or circulating allows
+    if(amount > coin.liquidityPool){
+      toast("Only " + coin.liquidityPool + " tokens available."); return;
+    }
+
+    // Deduct from balance
+    try{
+      const newPts = clamp2(Number(meProfile.pts) - total);
+      const { error } = await supabase.from("profiles").update({ pts: newPts }).eq("id", session.user.id);
+      if(error) throw error;
+      setHostBalance(newPts);
+    }catch(e){
+      toast("Trade failed."); console.error(e); return;
+    }
+
+    // Update coin state
+    const held = getUserHoldings(coin.id);
+    setUserHoldings(coin.id, held + amount);
+    coin.circulatingSupply += amount;
+    coin.liquidityPool -= amount;
+
+    // Price impact: buying increases price slightly (simple bonding curve)
+    const impact = 1 + (amount / coin.totalSupply) * 0.5;
+    coin.currentPrice = clamp2(coin.currentPrice * impact * 10000) / 10000;
+    coin.priceHistory.push({ time: Date.now(), price: coin.currentPrice });
+
+    tradeHistory.push({
+      id: "t_"+Date.now()+"_"+Math.random().toString(36).slice(2,6),
+      coinId: coin.id,
+      coinTicker: coin.ticker,
+      coinName: coin.name,
+      type: "buy",
+      amount,
+      price,
+      total,
+      userId: session.user.id,
+      userName: meProfile.display_name || meProfile.username || "Anon",
+      time: Date.now(),
+    });
+
+    saveTradingData();
+    toast("✅ Bought " + amount.toLocaleString() + " $" + coin.ticker);
+
+  } else {
+    // SELL
+    const held = getUserHoldings(coin.id);
+    if(amount > held){ toast("You only hold " + held.toLocaleString() + " tokens."); return; }
+
+    // Add to balance
+    try{
+      const newPts = clamp2(Number(meProfile.pts) + total);
+      const { error } = await supabase.from("profiles").update({ pts: newPts }).eq("id", session.user.id);
+      if(error) throw error;
+      setHostBalance(newPts);
+    }catch(e){
+      toast("Trade failed."); console.error(e); return;
+    }
+
+    // Update coin state
+    setUserHoldings(coin.id, held - amount);
+    coin.circulatingSupply -= amount;
+    coin.liquidityPool += amount;
+
+    // Price impact: selling decreases price
+    const impact = 1 - (amount / coin.totalSupply) * 0.5;
+    coin.currentPrice = Math.max(0.0001, clamp2(coin.currentPrice * impact * 10000) / 10000);
+    coin.priceHistory.push({ time: Date.now(), price: coin.currentPrice });
+
+    tradeHistory.push({
+      id: "t_"+Date.now()+"_"+Math.random().toString(36).slice(2,6),
+      coinId: coin.id,
+      coinTicker: coin.ticker,
+      coinName: coin.name,
+      type: "sell",
+      amount,
+      price,
+      total,
+      userId: session.user.id,
+      userName: meProfile.display_name || meProfile.username || "Anon",
+      time: Date.now(),
+    });
+
+    saveTradingData();
+    toast("✅ Sold " + amount.toLocaleString() + " $" + coin.ticker);
+  }
+
+  // Refresh UI
+  openTradeView(coin.id);
+};
+
+/* Render recent trades for a coin */
+function renderCoinTrades(coin){
+  const trades = tradeHistory.filter(t=>t.coinId===coin.id).slice(-20).reverse();
+  if(!trades.length){
+    $("orderBookBody").innerHTML = `<tr><td colspan="5" style="color:var(--muted);text-align:center;">No trades yet</td></tr>`;
+    return;
+  }
+  $("orderBookBody").innerHTML = trades.map(t=>`
+    <tr class="${t.type==="buy"?"bidRow":"askRow"}">
+      <td>${new Date(t.time).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"})}</td>
+      <td style="text-transform:uppercase;">${t.type}</td>
+      <td>${t.price.toFixed(4)}</td>
+      <td>${t.amount.toLocaleString()}</td>
+      <td>${t.total.toFixed(2)}</td>
+    </tr>
+  `).join("");
+}
+
+/* Update position display */
+function updateTradePosition(coin){
+  const held = getUserHoldings(coin.id);
+  const pos = $("tradePosition");
+  if(held <= 0){
+    pos.innerHTML = `<div style="color:var(--muted);font-size:13px;text-align:center;padding:12px;">No position</div>`;
+    return;
+  }
+  const value = held * coin.currentPrice;
+  pos.innerHTML = `
+    <div class="holdingRow">
+      <div><div class="holdName">${esc(coin.emoji)} $${esc(coin.ticker)}</div><div class="holdVal">${held.toLocaleString()} tokens</div></div>
+      <div class="holdAmt">${value.toFixed(2)} pts</div>
+    </div>
+  `;
+}
+
+/* Chart */
+function renderTradingChart(coin, period){
+  const canvas = $("tradingChart");
+  if(!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = rect.width * dpr;
+  canvas.height = 260 * dpr;
+  canvas.style.width = rect.width + "px";
+  canvas.style.height = "260px";
+  ctx.scale(dpr, dpr);
+  const W = rect.width;
+  const H = 260;
+  const pad = { top:20, right:60, bottom:30, left:10 };
+
+  period = period || "all";
+  let history = [...(coin.priceHistory || [])];
+
+  // Filter by period
+  const now = Date.now();
+  const periods = { "1h":3600000, "6h":6*3600000, "24h":86400000, "7d":7*86400000 };
+  if(period !== "all" && periods[period]){
+    const cutoff = now - periods[period];
+    history = history.filter(h=>h.time >= cutoff);
+  }
+
+  if(history.length < 2){
+    // Add a synthetic point
+    if(history.length === 0) history = [{ time:now-60000, price:coin.currentPrice }, { time:now, price:coin.currentPrice }];
+    else history.push({ time:now, price:coin.currentPrice });
+  }
+
+  const prices = history.map(h=>h.price);
+  const times = history.map(h=>h.time);
+  const minP = Math.min(...prices) * 0.95;
+  const maxP = Math.max(...prices) * 1.05;
+  const minT = Math.min(...times);
+  const maxT = Math.max(...times);
+  const rangeP = maxP - minP || 1;
+  const rangeT = maxT - minT || 1;
+
+  const toX = (t)=> pad.left + ((t-minT)/rangeT) * (W - pad.left - pad.right);
+  const toY = (p)=> H - pad.bottom - ((p-minP)/rangeP) * (H - pad.top - pad.bottom);
+
+  // Clear
+  ctx.clearRect(0,0,W,H);
+
+  // Grid lines
+  ctx.strokeStyle = "rgba(255,255,255,.04)";
+  ctx.lineWidth = 1;
+  for(let i=0;i<5;i++){
+    const y = pad.top + (i/4)*(H-pad.top-pad.bottom);
+    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(W-pad.right,y); ctx.stroke();
+  }
+
+  // Gradient fill
+  const lastPrice = prices[prices.length-1];
+  const firstPrice = prices[0];
+  const isUp = lastPrice >= firstPrice;
+  const lineColor = isUp ? "rgba(34,197,94,.9)" : "rgba(239,68,68,.9)";
+  const fillTop = isUp ? "rgba(34,197,94,.15)" : "rgba(239,68,68,.15)";
+  const fillBot = "rgba(0,0,0,0)";
+
+  ctx.beginPath();
+  history.forEach((h,i)=>{
+    const x=toX(h.time), y=toY(h.price);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  const grad = ctx.createLinearGradient(0,pad.top,0,H-pad.bottom);
+  grad.addColorStop(0, fillTop);
+  grad.addColorStop(1, fillBot);
+  ctx.lineTo(toX(times[times.length-1]), H-pad.bottom);
+  ctx.lineTo(toX(times[0]), H-pad.bottom);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  history.forEach((h,i)=>{
+    const x=toX(h.time), y=toY(h.price);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle = lineColor;
+  ctx.lineWidth = 2;
+  ctx.lineJoin = "round";
+  ctx.stroke();
+
+  // Last price dot
+  const lastX = toX(times[times.length-1]);
+  const lastY = toY(prices[prices.length-1]);
+  ctx.beginPath();
+  ctx.arc(lastX, lastY, 4, 0, Math.PI*2);
+  ctx.fillStyle = lineColor;
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(lastX, lastY, 8, 0, Math.PI*2);
+  ctx.strokeStyle = lineColor;
+  ctx.lineWidth = 1;
+  ctx.globalAlpha = 0.3;
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+
+  // Price labels on right
+  ctx.fillStyle = "rgba(255,255,255,.5)";
+  ctx.font = "11px " + getComputedStyle(document.body).getPropertyValue("--mono");
+  ctx.textAlign = "left";
+  for(let i=0;i<5;i++){
+    const p = maxP - (i/4)*rangeP;
+    const y = pad.top + (i/4)*(H-pad.top-pad.bottom);
+    ctx.fillText(p.toFixed(4), W-pad.right+6, y+4);
+  }
+
+  // Time labels on bottom
+  ctx.textAlign = "center";
+  const step = Math.max(1, Math.floor(history.length/5));
+  for(let i=0;i<history.length;i+=step){
+    const x = toX(history[i].time);
+    const d = new Date(history[i].time);
+    const lbl = d.getHours()+":"+String(d.getMinutes()).padStart(2,"0");
+    ctx.fillText(lbl, x, H-8);
+  }
+
+  // Current price label
+  ctx.fillStyle = lineColor;
+  ctx.font = "bold 12px " + getComputedStyle(document.body).getPropertyValue("--mono");
+  ctx.textAlign = "left";
+  ctx.fillText(prices[prices.length-1].toFixed(4), lastX+10, lastY-6);
+}
+
+// Chart period buttons
+document.querySelectorAll(".chartPeriod").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".chartPeriod").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    if(currentTradeCoinId){
+      loadTradingData();
+      const coin = tradingCoins.find(c=>c.id===currentTradeCoinId);
+      if(coin) renderTradingChart(coin, btn.dataset.period);
+    }
+  };
+});
+
+/* Portfolio */
+function renderPortfolio(){
+  loadTradingData();
+  const uid = session?.user?.id;
+  if(!uid) return;
+
+  // Holdings
+  const holdingsEl = $("portfolioHoldings");
+  const myCoins = tradingCoins.filter(c=> c.holdings && Number(c.holdings[uid]||0) > 0);
+  if(!myCoins.length){
+    holdingsEl.innerHTML = `<div class="emptyState"><div class="emptyIcon">💼</div><div class="emptyText">No holdings yet</div><div class="emptySub">Buy some coins from the market!</div></div>`;
+  } else {
+    let totalVal = 0;
+    holdingsEl.innerHTML = myCoins.map(c=>{
+      const amt = Number(c.holdings[uid]);
+      const val = amt * c.currentPrice;
+      totalVal += val;
+      return `<div class="holdingRow" style="cursor:pointer;" data-coin-id="${c.id}">
+        <div><div class="holdName">${c.emoji} ${esc(c.name)} <span style="color:var(--muted);font-size:11px;">$${esc(c.ticker)}</span></div><div class="holdVal">${amt.toLocaleString()} tokens @ ${c.currentPrice.toFixed(4)}</div></div>
+        <div class="holdAmt">${val.toFixed(2)} pts</div>
+      </div>`;
+    }).join("") + `<div style="text-align:right;padding:8px 10px;font-weight:900;font-size:14px;font-family:var(--mono);">Total: ${totalVal.toFixed(2)} pts</div>`;
+
+    holdingsEl.querySelectorAll(".holdingRow").forEach(row=>{
+      row.onclick=()=>{ switchTradingTab("Market"); openTradeView(row.dataset.coinId); };
+    });
+  }
+
+  // Trade history
+  const histEl = $("portfolioTradeHistory");
+  const myTrades = tradeHistory.filter(t=>t.userId===uid).slice(-30).reverse();
+  if(!myTrades.length){
+    histEl.innerHTML = `<div class="emptyState"><div class="emptyIcon">📜</div><div class="emptyText">No trades yet</div></div>`;
+  } else {
+    histEl.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr><th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:800;font-size:10px;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.06);">Time</th><th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:800;font-size:10px;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.06);">Coin</th><th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:800;font-size:10px;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.06);">Type</th><th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:800;font-size:10px;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.06);">Amount</th><th style="text-align:left;padding:6px 8px;color:var(--muted);font-weight:800;font-size:10px;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.06);">Total</th></tr></thead>
+      <tbody>${myTrades.map(t=>`<tr>
+        <td style="padding:6px 8px;font-family:var(--mono);font-weight:700;">${new Date(t.time).toLocaleString([],{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"})}</td>
+        <td style="padding:6px 8px;font-weight:800;">$${esc(t.coinTicker)}</td>
+        <td style="padding:6px 8px;font-family:var(--mono);font-weight:700;" class="${t.type==="buy"?"buyTrade":"sellTrade"}">${t.type.toUpperCase()}</td>
+        <td style="padding:6px 8px;font-family:var(--mono);font-weight:700;">${t.amount.toLocaleString()}</td>
+        <td style="padding:6px 8px;font-family:var(--mono);font-weight:700;">${t.total.toFixed(2)}</td>
+      </tr>`).join("")}</tbody>
+    </table>`;
+  }
+}
+
+/* On view enter */
+function tradingOnViewEnter(){
+  loadTradingData();
+  renderMarketGrid();
+  if(meProfile) $("tradeBalDisplay").textContent = to2(meProfile.pts||0);
+}
 
 if(supabase){
   const { data } = await supabase.auth.getSession();
