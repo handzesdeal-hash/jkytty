@@ -1862,85 +1862,100 @@ tr:last-child td{border-bottom:none;}
 .recentTrades .sellTrade{color:#ef4444;}
 
 /* =======================
-   ROULETTE — UPGRADED
+   ROULETTE — UPGRADED V2
    ======================= */
 #view-roulette .section{background:#0e0e10;border-radius:0;border:none;}
 #view-roulette .sectionHd{border-bottom:1px solid rgba(255,255,255,.06);padding:18px 20px 14px;}
 #view-roulette .sectionHd h3{font-size:22px;font-weight:800;color:#fff;}
 #view-roulette .sectionHd .sub{font-size:12px;color:rgba(255,255,255,.35);font-weight:500;margin-top:2px;}
 #view-roulette .sectionBd{padding:0;}
-.rouLayout{display:flex;gap:0;min-height:520px;}
+.rouLayout{display:flex;gap:0;min-height:560px;}
 @media(max-width:900px){.rouLayout{flex-direction:column;}}
+
 /* --- Wheel Panel (left) --- */
-.rouWheelPanel{width:400px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#0a0a0c;border-right:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden;min-height:400px;}
-@media(max-width:900px){.rouWheelPanel{width:100%;min-height:320px;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);}}
-.rouWheelWrap{position:relative;width:320px;height:320px;}
-@media(max-width:900px){.rouWheelWrap{width:260px;height:260px;}}
+.rouWheelPanel{width:420px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#111113;border-right:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden;min-height:420px;}
+@media(max-width:900px){.rouWheelPanel{width:100%;min-height:340px;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);}}
+.rouWheelWrap{position:relative;width:360px;height:360px;}
+@media(max-width:900px){.rouWheelWrap{width:290px;height:290px;}}
 .rouWheelCanvas{width:100%;height:100%;}
-.rouPointer{position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:22px solid #fff;z-index:5;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6));}
-.rouResultOverlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;background:rgba(0,0,0,.7);border:2px solid rgba(255,255,255,.15);pointer-events:none;opacity:0;transition:opacity .3s;}
+.rouResultOverlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;background:rgba(0,0,0,.8);border:2px solid rgba(255,255,255,.2);pointer-events:none;opacity:0;transition:opacity .4s;z-index:6;}
 .rouResultOverlay.show{opacity:1;}
 .rouResultOverlay .rouResNum{font-size:28px;font-weight:900;color:#fff;font-family:var(--mono);}
 .rouResultOverlay .rouResColor{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-top:1px;}
 
 /* --- Table Panel (right) --- */
-.rouTablePanel{flex:1;display:flex;flex-direction:column;background:#111113;min-width:0;}
-/* Chip selector bar */
-.rouChipBar{display:flex;align-items:center;gap:6px;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;}
-.rouChipBtn{width:48px;height:48px;border-radius:50%;border:3px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;cursor:pointer;transition:all .12s;font-family:var(--mono);position:relative;text-shadow:0 1px 2px rgba(0,0,0,.5);}
-.rouChipBtn:hover{transform:scale(1.08);}
-.rouChipBtn.active{border-color:#fff;transform:scale(1.12);box-shadow:0 0 12px rgba(255,255,255,.2);}
-.rouChipBtn[data-val="0.01"]{background:radial-gradient(circle at 35% 35%,#6b7280,#374151);}
-.rouChipBtn[data-val="0.1"]{background:radial-gradient(circle at 35% 35%,#3b82f6,#1e40af);}
-.rouChipBtn[data-val="1"]{background:radial-gradient(circle at 35% 35%,#22c55e,#15803d);}
-.rouChipBtn[data-val="10"]{background:radial-gradient(circle at 35% 35%,#f59e0b,#b45309);}
-.rouChipBtn[data-val="100"]{background:radial-gradient(circle at 35% 35%,#ef4444,#991b1b);}
-.rouChipBtn[data-val="1000"]{background:radial-gradient(circle at 35% 35%,#8b5cf6,#5b21b6);}
-.rouChipBtn[data-val="10000"]{background:radial-gradient(circle at 35% 35%,#ec4899,#9d174d);}
-/* Bet amount row */
-.rouBetRow{display:flex;align-items:center;gap:6px;padding:8px 16px;border-bottom:1px solid rgba(255,255,255,.06);}
-.rouBetRow label{font-size:10px;color:rgba(255,255,255,.3);font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
-.rouBetRow input{flex:1;padding:7px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.04);color:#fff;font-size:13px;font-family:var(--mono);outline:none;min-width:0;}
-.rouBetRow input:focus{border-color:rgba(123,97,255,.3);}
-.rouHalf,.rouDouble{padding:5px 10px;border-radius:4px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.04);color:rgba(255,255,255,.5);font-size:11px;font-weight:700;cursor:pointer;transition:all .1s;font-family:var(--mono);}
-.rouHalf:hover,.rouDouble:hover{background:rgba(255,255,255,.08);color:#fff;}
+.rouTablePanel{flex:1;display:flex;flex-direction:column;background:#16161a;min-width:0;}
 
-/* Betting grid */
-.rouGrid{flex:1;padding:12px 16px;overflow-y:auto;}
-.rouNumbers{display:grid;grid-template-columns:50px repeat(12,1fr);gap:2px;margin-bottom:6px;}
-.rouCell{position:relative;padding:10px 0;text-align:center;border-radius:4px;font-size:13px;font-weight:700;cursor:pointer;transition:all .1s;border:1px solid transparent;user-select:none;font-family:var(--mono);min-height:38px;display:flex;align-items:center;justify-content:center;}
-.rouCell:hover{filter:brightness(1.2);border-color:rgba(255,255,255,.15);}
+/* Chip selector bar */
+.rouChipBar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.06);background:#1c1c22;justify-content:center;}
+.rouChipBtn{width:52px;height:52px;border-radius:50%;border:3px solid transparent;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;cursor:pointer;transition:all .15s;font-family:var(--mono);position:relative;text-shadow:0 1px 3px rgba(0,0,0,.7);background-clip:padding-box;}
+.rouChipBtn::before{content:'';position:absolute;inset:-3px;border-radius:50%;border:3px dashed rgba(255,255,255,.25);pointer-events:none;}
+.rouChipBtn:hover{transform:scale(1.1);}
+.rouChipBtn.active{transform:scale(1.15);}
+.rouChipBtn.active::after{content:'';position:absolute;inset:-7px;border-radius:50%;border:3px solid #22c55e;pointer-events:none;}
+.rouChipBtn[data-val="0.01"]{background:#5b21b6;}
+.rouChipBtn[data-val="0.1"]{background:#3730a3;}
+.rouChipBtn[data-val="1"]{background:#a855f7;}
+.rouChipBtn[data-val="10"]{background:#c026d3;}
+.rouChipBtn[data-val="100"]{background:#a855f7;}
+.rouChipBtn[data-val="1000"]{background:#0d9488;}
+.rouChipBtn[data-val="10000"]{background:#dc2626;}
+
+/* Bet amount row */
+.rouBetRow{display:flex;align-items:center;gap:6px;padding:8px 16px;border-bottom:1px solid rgba(255,255,255,.06);background:#1c1c22;}
+.rouBetRow label{font-size:10px;color:rgba(255,255,255,.3);font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
+.rouBetRow input{flex:1;padding:7px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05);color:#fff;font-size:13px;font-family:var(--mono);outline:none;min-width:0;}
+.rouBetRow input:focus{border-color:rgba(123,97,255,.3);}
+.rouHalf,.rouDouble{padding:5px 10px;border-radius:4px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);font-size:11px;font-weight:700;cursor:pointer;transition:all .1s;font-family:var(--mono);}
+.rouHalf:hover,.rouDouble:hover{background:rgba(255,255,255,.1);color:#fff;}
+
+/* Betting grid — vertical table layout like reference */
+.rouGrid{flex:1;padding:10px 12px;overflow-y:auto;}
+.rouTableWrap{display:flex;gap:2px;}
+.rouSideBets{display:flex;flex-direction:column;gap:2px;width:60px;flex-shrink:0;}
+.rouDozBets{display:flex;flex-direction:column;gap:2px;width:52px;flex-shrink:0;}
+.rouMainGrid{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;}
+
+.rouCell{position:relative;text-align:center;border-radius:5px;font-size:14px;font-weight:700;cursor:pointer;transition:all .1s;border:1px solid rgba(255,255,255,.08);user-select:none;font-family:var(--mono);display:flex;align-items:center;justify-content:center;min-height:42px;}
+.rouCell:hover{filter:brightness(1.25);border-color:rgba(255,255,255,.2);}
 .rouCell.red{background:#c62828;color:#fff;}
-.rouCell.black{background:#1a1a2e;color:#fff;border-color:rgba(255,255,255,.06);}
-.rouCell.green{background:#15803d;color:#fff;}
-.rouCell.zero{grid-row:span 3;writing-mode:vertical-rl;text-orientation:mixed;font-size:16px;padding:0;background:#15803d;color:#fff;}
-.rouCell.doz{grid-column:span 4;background:rgba(255,255,255,.04);color:rgba(255,255,255,.5);font-size:11px;font-weight:700;border:1px solid rgba(255,255,255,.06);}
-.rouBottom{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;margin-top:2px;}
-.rouBottomCell{position:relative;padding:10px 0;text-align:center;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;transition:all .1s;background:rgba(255,255,255,.04);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.06);user-select:none;min-height:38px;display:flex;align-items:center;justify-content:center;}
-.rouBottomCell:hover{background:rgba(255,255,255,.08);color:#fff;}
-.rouBottomCell.redCell{color:#ef4444;}
-.rouBottomCell.blackCell{color:#aaa;}
-.rouBottomCell.greenCell{color:#22c55e;}
+.rouCell.black{background:#1e1e2a;color:#fff;}
+.rouCell.green{background:#16a34a;color:#fff;}
+.rouZeroCell{border-radius:5px;background:#16a34a;color:#fff;font-size:18px;font-weight:800;min-height:42px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;font-family:var(--mono);border:1px solid rgba(255,255,255,.08);transition:all .1s;}
+.rouZeroCell:hover{filter:brightness(1.2);}
+.rouNumRow{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+.rouSideCell{display:flex;align-items:center;justify-content:center;border-radius:5px;background:#1e1e2a;color:rgba(255,255,255,.5);font-size:11px;font-weight:700;cursor:pointer;border:1px solid rgba(255,255,255,.08);transition:all .1s;position:relative;writing-mode:vertical-lr;text-orientation:mixed;padding:6px 2px;min-height:0;font-family:var(--mono);}
+.rouSideCell:hover{background:#2a2a36;color:#fff;}
+.rouSideCell.redBlock{background:#c62828;color:#fff;writing-mode:horizontal-tb;}
+.rouSideCell.blackBlock{background:#1e1e2a;border-color:rgba(255,255,255,.12);color:#fff;writing-mode:horizontal-tb;}
+
+/* Bottom row: column 2:1 + undo/clear */
+.rouBottomRow{display:flex;gap:2px;margin-top:2px;}
+.rouBottomCell{position:relative;flex:1;text-align:center;border-radius:5px;font-size:12px;font-weight:700;cursor:pointer;transition:all .1s;background:#1e1e2a;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.08);user-select:none;min-height:40px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);}
+.rouBottomCell:hover{background:#2a2a36;color:#fff;}
+.rouUndoBtn,.rouClearBtnSmall{width:52px;flex-shrink:0;border-radius:5px;background:#1e1e2a;border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.4);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .1s;}
+.rouUndoBtn:hover,.rouClearBtnSmall:hover{background:#2a2a36;color:#fff;}
+
 /* Chip on cell */
-.rouBetChip{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);min-width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:900;color:#fff;z-index:3;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.5);border:2px solid rgba(255,255,255,.5);font-family:var(--mono);text-shadow:0 1px 2px rgba(0,0,0,.6);background:radial-gradient(circle at 35% 35%,#7c3aed,#4c1d95);}
+.rouBetChip{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);min-width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#fff;z-index:3;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.6);font-family:var(--mono);text-shadow:0 1px 2px rgba(0,0,0,.7);background:#7c3aed;border:2px dashed rgba(255,255,255,.35);}
 
 /* Action buttons */
-.rouActions{padding:10px 16px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;align-items:center;}
-.rouSpinBtn2{flex:1;padding:12px;border-radius:6px;border:none;font-weight:800;font-size:14px;cursor:pointer;background:#00e0a3;color:#000;transition:all .1s;font-family:inherit;}
-.rouSpinBtn2:hover{background:#00f5b4;}
+.rouActions{padding:10px 16px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;align-items:center;background:#1c1c22;}
+.rouSpinBtn2{flex:1;padding:12px;border-radius:6px;border:none;font-weight:800;font-size:14px;cursor:pointer;background:#22c55e;color:#fff;transition:all .1s;font-family:inherit;text-transform:uppercase;letter-spacing:.03em;}
+.rouSpinBtn2:hover{background:#16a34a;}
 .rouSpinBtn2:active{transform:translateY(1px);}
 .rouSpinBtn2.spinning{opacity:.5;cursor:not-allowed;}
-.rouClearBtn{padding:10px 16px;border-radius:6px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.04);color:rgba(255,255,255,.5);font-weight:700;font-size:12px;cursor:pointer;transition:all .1s;font-family:inherit;}
-.rouClearBtn:hover{background:rgba(255,255,255,.08);color:#fff;}
+.rouClearBtn{padding:10px 16px;border-radius:6px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);font-weight:700;font-size:12px;cursor:pointer;transition:all .1s;font-family:inherit;}
+.rouClearBtn:hover{background:rgba(255,255,255,.1);color:#fff;}
 .rouTotalBet{font-size:12px;color:rgba(255,255,255,.4);font-family:var(--mono);font-weight:700;margin-left:auto;}
 
 /* History */
-.rouHistory{padding:8px 16px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:4px;flex-wrap:wrap;align-items:center;min-height:40px;}
+.rouHistory{padding:8px 16px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:4px;flex-wrap:wrap;align-items:center;min-height:40px;background:#1c1c22;}
 .rouHistLabel{font-size:9px;color:rgba(255,255,255,.25);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-right:4px;}
 .rouHistDot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;font-family:var(--mono);}
 .rouHistDot.red{background:#c62828;}
-.rouHistDot.black{background:#1a1a2e;border:1px solid rgba(255,255,255,.1);}
-.rouHistDot.green{background:#15803d;}
+.rouHistDot.black{background:#1e1e2a;border:1px solid rgba(255,255,255,.12);}
+.rouHistDot.green{background:#16a34a;}
 </style>
 </head>
 <body>
@@ -2218,7 +2233,6 @@ tr:last-child td{border-bottom:none;}
             <!-- WHEEL -->
             <div class="rouWheelPanel">
               <div class="rouWheelWrap">
-                <div class="rouPointer"></div>
                 <canvas class="rouWheelCanvas" id="rouWheelCanvas"></canvas>
                 <div class="rouResultOverlay" id="rouResultOverlay">
                   <div class="rouResNum" id="rouResNum">—</div>
@@ -2245,11 +2259,8 @@ tr:last-child td{border-bottom:none;}
                 <button class="rouHalf" id="rouHalf">½</button>
                 <button class="rouDouble" id="rouDbl">2×</button>
               </div>
-              <!-- Betting grid -->
-              <div class="rouGrid">
-                <div class="rouNumbers" id="rouNumbers"></div>
-                <div class="rouBottom" id="rouBottom"></div>
-              </div>
+              <!-- Betting grid (built by JS) -->
+              <div class="rouGrid" id="rouGrid"></div>
               <!-- Actions -->
               <div class="rouActions">
                 <button class="rouClearBtn" id="rouClearBtn">Clear</button>
@@ -6956,41 +6967,38 @@ diceSetChance(diceChance);
 diceUpdateUI();
 
 // =======================
-// ROULETTE — UPGRADED ENGINE
+// ROULETTE — V2: REALISTIC WHEEL + BALL PHYSICS
 // =======================
 try{
 (function(){
-  // European wheel order
   const ROU_ORDER=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
   const ROU_REDS=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
   const rouColor=(n)=>n===0?"green":ROU_REDS.has(n)?"red":"black";
+  const SLICE=2*Math.PI/37;
 
-  // State
   let rouSelectedChip=0.01;
-  let rouBets={};         // key -> { amount, label, type, numbers[] }
+  let rouBets={};
+  let rouBetStack=[];
   let rouSpinning=false;
-  let rouAngle=0;         // current wheel angle
-  let rouTargetAngle=0;
-  let rouAnimFrame=null;
-  let rouHistory=[];
-  const ROU_HOUSE_EDGE=0.02; // 2% edge
+  let rouAngle=0;
+  let rouIdleRunning=true;
+  let rouHistoryArr=[];
+  const ROU_HOUSE_EDGE=0.02;
+  const ROU_PAYOUTS={straight:36,split:18,street:12,corner:9,six:6,doz:3,col:3,half:2,evenodd:2,color:2};
 
-  // Payout multipliers
-  const ROU_PAYOUTS={
-    straight:36, split:18, street:12, corner:9, six:6,
-    doz:3, col:3, half:2, evenodd:2, color:2
-  };
+  // Ball state
+  let ball={active:false,angle:0,radius:0,phase:"idle",speed:0,dropSpeed:0,bounceCount:0,settleTarget:0,settleRadius:0};
 
-  // --- WHEEL DRAWING ---
   const rouCanvas=$("rouWheelCanvas");
-  if(!rouCanvas){ console.warn("rouWheelCanvas not found"); }
+  if(!rouCanvas){console.warn("rouWheelCanvas not found");}
   const rouCtx=rouCanvas?rouCanvas.getContext("2d"):null;
 
+  // --- WHEEL DRAWING (realistic) ---
   function rouDrawWheel(){
     if(!rouCanvas||!rouCtx) return;
     const wrap=rouCanvas.parentElement;
-    const size=Math.min(wrap.clientWidth, wrap.clientHeight);
-    if(size<10) return; // hidden or too small
+    const size=Math.min(wrap.clientWidth,wrap.clientHeight);
+    if(size<10) return;
     const dpr=window.devicePixelRatio||1;
     rouCanvas.width=size*dpr;
     rouCanvas.height=size*dpr;
@@ -6998,66 +7006,182 @@ try{
     rouCanvas.style.height=size+"px";
     rouCtx.save();
     rouCtx.scale(dpr,dpr);
-    const cx=size/2, cy=size/2, r=size/2-6;
-    const sliceAngle=2*Math.PI/37;
+    const cx=size/2,cy=size/2,R=size/2-4;
 
-    // Outer ring
+    // 1) Dark outer border ring
     rouCtx.beginPath();
-    rouCtx.arc(cx,cy,r+4,0,2*Math.PI);
-    rouCtx.fillStyle="#1a1a2e";
+    rouCtx.arc(cx,cy,R,0,2*Math.PI);
+    const outerGrad=rouCtx.createRadialGradient(cx,cy,R-12,cx,cy,R);
+    outerGrad.addColorStop(0,"#1a1a22");
+    outerGrad.addColorStop(1,"#0a0a0e");
+    rouCtx.fillStyle=outerGrad;
     rouCtx.fill();
-    rouCtx.strokeStyle="rgba(255,255,255,.08)";
+    // Subtle outer glow
+    rouCtx.strokeStyle="rgba(255,215,0,.12)";
     rouCtx.lineWidth=2;
     rouCtx.stroke();
 
-    // Slices
+    // 2) Gold trim ring (outer)
+    const goldR=R-8;
+    rouCtx.beginPath();
+    rouCtx.arc(cx,cy,goldR,0,2*Math.PI);
+    rouCtx.strokeStyle="#b8860b";
+    rouCtx.lineWidth=3;
+    rouCtx.stroke();
+
+    // 3) Number pockets (colored slices with 3D depth)
+    const pocketOuterR=goldR-3;
+    const pocketInnerR=pocketOuterR*0.62;
     for(let i=0;i<37;i++){
       const n=ROU_ORDER[i];
-      const startA=rouAngle+i*sliceAngle - Math.PI/2;
-      const endA=startA+sliceAngle;
+      const startA=rouAngle+i*SLICE-Math.PI/2;
+      const endA=startA+SLICE;
       const col=rouColor(n);
+
+      // Pocket background
       rouCtx.beginPath();
-      rouCtx.moveTo(cx,cy);
-      rouCtx.arc(cx,cy,r,startA,endA);
+      rouCtx.arc(cx,cy,pocketOuterR,startA,endA);
+      rouCtx.arc(cx,cy,pocketInnerR,endA,startA,true);
       rouCtx.closePath();
-      rouCtx.fillStyle=col==="red"?"#c62828":col==="green"?"#15803d":"#1a1a2e";
+      const baseColor=col==="red"?"#b71c1c":col==="green"?"#1b5e20":"#1a1a28";
+      rouCtx.fillStyle=baseColor;
       rouCtx.fill();
-      rouCtx.strokeStyle="rgba(0,0,0,.4)";
-      rouCtx.lineWidth=1;
+
+      // 3D depth effect — darker inner edge
+      const depthGrad=rouCtx.createRadialGradient(cx,cy,pocketInnerR,cx,cy,pocketOuterR);
+      depthGrad.addColorStop(0,"rgba(0,0,0,.35)");
+      depthGrad.addColorStop(0.3,"rgba(0,0,0,.12)");
+      depthGrad.addColorStop(1,"rgba(255,255,255,.04)");
+      rouCtx.beginPath();
+      rouCtx.arc(cx,cy,pocketOuterR,startA,endA);
+      rouCtx.arc(cx,cy,pocketInnerR,endA,startA,true);
+      rouCtx.closePath();
+      rouCtx.fillStyle=depthGrad;
+      rouCtx.fill();
+
+      // Pocket dividers
+      rouCtx.beginPath();
+      rouCtx.moveTo(cx+Math.cos(startA)*pocketInnerR,cy+Math.sin(startA)*pocketInnerR);
+      rouCtx.lineTo(cx+Math.cos(startA)*pocketOuterR,cy+Math.sin(startA)*pocketOuterR);
+      rouCtx.strokeStyle="#b8860b";
+      rouCtx.lineWidth=1.2;
       rouCtx.stroke();
 
       // Number text
       const midA=(startA+endA)/2;
-      const textR=r*0.78;
+      const textR=(pocketOuterR+pocketInnerR)/2;
       rouCtx.save();
-      rouCtx.translate(cx+Math.cos(midA)*textR, cy+Math.sin(midA)*textR);
+      rouCtx.translate(cx+Math.cos(midA)*textR,cy+Math.sin(midA)*textR);
       rouCtx.rotate(midA+Math.PI/2);
       rouCtx.fillStyle="#fff";
-      rouCtx.font=`bold ${Math.max(9,r*0.08)}px var(--mono)`;
+      rouCtx.font="bold "+Math.max(9,R*0.055)+"px var(--mono)";
       rouCtx.textAlign="center";
       rouCtx.textBaseline="middle";
+      rouCtx.shadowColor="rgba(0,0,0,.7)";
+      rouCtx.shadowBlur=3;
       rouCtx.fillText(String(n),0,0);
+      rouCtx.shadowBlur=0;
       rouCtx.restore();
     }
 
-    // Center hub
-    const hubR=r*0.18;
+    // 4) Gold trim ring (inner)
+    rouCtx.beginPath();
+    rouCtx.arc(cx,cy,pocketInnerR,0,2*Math.PI);
+    rouCtx.strokeStyle="#b8860b";
+    rouCtx.lineWidth=2.5;
+    rouCtx.stroke();
+
+    // 5) Dark inner circle
+    const innerR=pocketInnerR-3;
+    rouCtx.beginPath();
+    rouCtx.arc(cx,cy,innerR,0,2*Math.PI);
+    const innerGrad=rouCtx.createRadialGradient(cx-innerR*0.2,cy-innerR*0.2,0,cx,cy,innerR);
+    innerGrad.addColorStop(0,"#222230");
+    innerGrad.addColorStop(1,"#0c0c12");
+    rouCtx.fillStyle=innerGrad;
+    rouCtx.fill();
+
+    // 6) Gold spinner cross in center
+    const crossR=innerR*0.85;
+    const armW=innerR*0.07;
+    rouCtx.save();
+    rouCtx.translate(cx,cy);
+    // Draw 4 spoke arms
+    for(let a=0;a<4;a++){
+      const angle=a*Math.PI/2+rouAngle*0.5;
+      rouCtx.save();
+      rouCtx.rotate(angle);
+      rouCtx.beginPath();
+      rouCtx.moveTo(-armW,-armW);
+      rouCtx.lineTo(crossR*0.9,0);
+      rouCtx.lineTo(-armW,armW);
+      rouCtx.closePath();
+      const armGrad=rouCtx.createLinearGradient(0,0,crossR,0);
+      armGrad.addColorStop(0,"#daa520");
+      armGrad.addColorStop(0.5,"#ffd700");
+      armGrad.addColorStop(1,"#b8860b");
+      rouCtx.fillStyle=armGrad;
+      rouCtx.fill();
+      rouCtx.strokeStyle="rgba(0,0,0,.3)";
+      rouCtx.lineWidth=0.5;
+      rouCtx.stroke();
+      rouCtx.restore();
+    }
+    rouCtx.restore();
+
+    // 7) Center hub
+    const hubR=innerR*0.18;
     rouCtx.beginPath();
     rouCtx.arc(cx,cy,hubR,0,2*Math.PI);
     const hubGrad=rouCtx.createRadialGradient(cx-hubR*0.3,cy-hubR*0.3,0,cx,cy,hubR);
-    hubGrad.addColorStop(0,"#2a2a3e");
-    hubGrad.addColorStop(1,"#0e0e10");
+    hubGrad.addColorStop(0,"#ffd700");
+    hubGrad.addColorStop(1,"#b8860b");
     rouCtx.fillStyle=hubGrad;
     rouCtx.fill();
-    rouCtx.strokeStyle="rgba(255,255,255,.1)";
-    rouCtx.lineWidth=1.5;
+    rouCtx.strokeStyle="rgba(0,0,0,.3)";
+    rouCtx.lineWidth=1;
+    rouCtx.stroke();
+
+    // 8) Draw ball (if active)
+    if(ball.active){
+      const bx=cx+Math.cos(ball.angle)*ball.radius;
+      const by=cy+Math.sin(ball.angle)*ball.radius;
+      const ballR=Math.max(4,R*0.028);
+      rouCtx.beginPath();
+      rouCtx.arc(bx,by,ballR,0,2*Math.PI);
+      const ballGrad=rouCtx.createRadialGradient(bx-ballR*0.3,by-ballR*0.3,0,bx,by,ballR);
+      ballGrad.addColorStop(0,"#ffffff");
+      ballGrad.addColorStop(0.6,"#e0e0e0");
+      ballGrad.addColorStop(1,"#999");
+      rouCtx.fillStyle=ballGrad;
+      rouCtx.fill();
+      rouCtx.strokeStyle="rgba(0,0,0,.3)";
+      rouCtx.lineWidth=0.5;
+      rouCtx.stroke();
+      // Ball shadow
+      rouCtx.beginPath();
+      rouCtx.arc(bx+1,by+1,ballR,0,2*Math.PI);
+      rouCtx.fillStyle="rgba(0,0,0,.15)";
+      rouCtx.fill();
+    }
+
+    // 9) Pointer triangle at top
+    const ptrX=cx,ptrY=cy-R-1;
+    rouCtx.beginPath();
+    rouCtx.moveTo(ptrX,ptrY+18);
+    rouCtx.lineTo(ptrX-8,ptrY);
+    rouCtx.lineTo(ptrX+8,ptrY);
+    rouCtx.closePath();
+    rouCtx.fillStyle="#ffd700";
+    rouCtx.fill();
+    rouCtx.strokeStyle="rgba(0,0,0,.4)";
+    rouCtx.lineWidth=1;
     rouCtx.stroke();
 
     rouCtx.restore();
   }
 
-  // Idle spin animation
-  let rouIdleRunning=true;
+  // --- IDLE SPIN ---
   function rouIdleSpin(){
     if(!rouSpinning && rouIdleRunning){
       const sec=$('view-roulette');
@@ -7070,70 +7194,106 @@ try{
   }
   rouIdleSpin();
 
-  // --- BUILD BETTING TABLE ---
+  // --- BUILD VERTICAL BETTING TABLE ---
   function rouBuildTable(){
-    const grid=$("rouNumbers");
+    const grid=$("rouGrid");
     grid.innerHTML="";
 
-    // Zero cell (spans 3 rows)
-    const z=document.createElement("div");
-    z.className="rouCell zero";
-    z.textContent="0";
-    z.dataset.bet="s_0";
-    z.onclick=()=>rouPlaceBet("s_0","0","straight",[0],z);
-    grid.appendChild(z);
+    const wrap=document.createElement("div");
+    wrap.className="rouTableWrap";
 
-    // Numbers 1-36 in 3-row layout: row1=[3,6,9,...,36], row2=[2,5,8,...,35], row3=[1,4,7,...,34]
-    // Standard roulette table layout: columns left-to-right, rows top-to-bottom = 3,2,1 | 6,5,4 | ...
-    const rows=[[3,6,9,12,15,18,21,24,27,30,33,36],[2,5,8,11,14,17,20,23,26,29,32,35],[1,4,7,10,13,16,19,22,25,28,31,34]];
-    for(const row of rows){
-      for(const n of row){
-        const cell=document.createElement("div");
-        cell.className="rouCell "+rouColor(n);
-        cell.textContent=n;
-        cell.dataset.bet="s_"+n;
-        cell.onclick=()=>rouPlaceBet("s_"+n,String(n),"straight",[n],cell);
-        grid.appendChild(cell);
-      }
-    }
+    // Left side bets column
+    const sideBets=document.createElement("div");
+    sideBets.className="rouSideBets";
 
-    // 2:1 column bets
-    const colNums=[[3,6,9,12,15,18,21,24,27,30,33,36],[2,5,8,11,14,17,20,23,26,29,32,35],[1,4,7,10,13,16,19,22,25,28,31,34]];
-    // Dozen row
-    const dozRow=document.createElement("div");
-    dozRow.style.cssText="display:grid;grid-template-columns:50px repeat(3,1fr);gap:2px;margin-top:2px;";
-    const dozSpacer=document.createElement("div");
-    dozSpacer.style.cssText="background:transparent;";
-    dozRow.appendChild(dozSpacer);
-    [["1st 12",[1,2,3,4,5,6,7,8,9,10,11,12]],["2nd 12",[13,14,15,16,17,18,19,20,21,22,23,24]],["3rd 12",[25,26,27,28,29,30,31,32,33,34,35,36]]].forEach(([label,nums])=>{
-      const d=document.createElement("div");
-      d.className="rouCell doz";
-      d.textContent=label;
-      d.dataset.bet="doz_"+label;
-      d.onclick=()=>rouPlaceBet("doz_"+label,label,"doz",nums,d);
-      dozRow.appendChild(d);
+    // Dozen bets (tall vertical cells)
+    const dozData=[
+      {label:"1st 12",key:"doz_1st",nums:Array.from({length:12},(_,i)=>i+1)},
+      {label:"2nd 12",key:"doz_2nd",nums:Array.from({length:12},(_,i)=>i+13)},
+      {label:"3rd 12",key:"doz_3rd",nums:Array.from({length:12},(_,i)=>i+25)}
+    ];
+    dozData.forEach(d=>{
+      const cell=document.createElement("div");
+      cell.className="rouSideCell";
+      cell.textContent=d.label;
+      cell.style.flex="1";
+      cell._rouKey=d.key;
+      cell.onclick=()=>rouPlaceBet(d.key,d.label,"doz",d.nums,cell);
+      sideBets.appendChild(cell);
     });
-    grid.parentElement.insertBefore(dozRow,grid.nextSibling);
 
-    // Bottom bets
-    const bot=$("rouBottom");
-    bot.innerHTML="";
-    const bottomBets=[
+    // Side bets column (1-18, Even, Red, Black, Odd, 19-36)
+    const sideBets2=document.createElement("div");
+    sideBets2.className="rouSideBets";
+    const sideData=[
       {label:"1-18",key:"half_lo",type:"half",nums:Array.from({length:18},(_,i)=>i+1)},
       {label:"EVEN",key:"eo_even",type:"evenodd",nums:Array.from({length:36},(_,i)=>i+1).filter(n=>n%2===0)},
-      {label:"RED",key:"col_red",type:"color",nums:[...ROU_REDS],cls:"redCell"},
-      {label:"BLACK",key:"col_black",type:"color",nums:Array.from({length:36},(_,i)=>i+1).filter(n=>!ROU_REDS.has(n)),cls:"blackCell"},
+      {label:"◆",key:"col_red",type:"color",nums:[...ROU_REDS],cls:"redBlock"},
+      {label:"◆",key:"col_black",type:"color",nums:Array.from({length:36},(_,i)=>i+1).filter(n=>!ROU_REDS.has(n)),cls:"blackBlock"},
       {label:"ODD",key:"eo_odd",type:"evenodd",nums:Array.from({length:36},(_,i)=>i+1).filter(n=>n%2!==0)},
       {label:"19-36",key:"half_hi",type:"half",nums:Array.from({length:18},(_,i)=>i+19)}
     ];
-    bottomBets.forEach(b=>{
+    sideData.forEach(s=>{
       const cell=document.createElement("div");
-      cell.className="rouBottomCell"+(b.cls?" "+b.cls:"");
-      cell.textContent=b.label;
-      cell.dataset.bet=b.key;
-      cell.onclick=()=>rouPlaceBet(b.key,b.label,b.type,b.nums,cell);
-      bot.appendChild(cell);
+      cell.className="rouSideCell"+(s.cls?" "+s.cls:"");
+      cell.textContent=s.label;
+      cell.style.flex="1";
+      cell._rouKey=s.key;
+      cell.onclick=()=>rouPlaceBet(s.key,s.label,s.type,s.nums,cell);
+      sideBets2.appendChild(cell);
     });
+
+    // Main number grid
+    const mainGrid=document.createElement("div");
+    mainGrid.className="rouMainGrid";
+
+    // Zero row
+    const zeroCell=document.createElement("div");
+    zeroCell.className="rouZeroCell";
+    zeroCell.textContent="0";
+    zeroCell._rouKey="s_0";
+    zeroCell.onclick=()=>rouPlaceBet("s_0","0","straight",[0],zeroCell);
+    mainGrid.appendChild(zeroCell);
+
+    // Number rows: 1,2,3 / 4,5,6 / ... / 34,35,36
+    for(let row=0;row<12;row++){
+      const rowDiv=document.createElement("div");
+      rowDiv.className="rouNumRow";
+      for(let col=0;col<3;col++){
+        const n=row*3+col+1;
+        const cell=document.createElement("div");
+        cell.className="rouCell "+rouColor(n);
+        cell.textContent=n;
+        cell._rouKey="s_"+n;
+        cell.onclick=(function(num,el){return function(){rouPlaceBet("s_"+num,String(num),"straight",[num],el);};})(n,cell);
+        rowDiv.appendChild(cell);
+      }
+      mainGrid.appendChild(rowDiv);
+    }
+
+    // Bottom row: 2:1 column bets
+    const bottomRow=document.createElement("div");
+    bottomRow.className="rouBottomRow";
+    const colBets=[
+      {label:"2:1",key:"col_1",type:"col",nums:[1,4,7,10,13,16,19,22,25,28,31,34]},
+      {label:"2:1",key:"col_2",type:"col",nums:[2,5,8,11,14,17,20,23,26,29,32,35]},
+      {label:"2:1",key:"col_3",type:"col",nums:[3,6,9,12,15,18,21,24,27,30,33,36]}
+    ];
+    colBets.forEach(c=>{
+      const cell=document.createElement("div");
+      cell.className="rouBottomCell";
+      cell.textContent=c.label;
+      cell._rouKey=c.key;
+      cell.onclick=()=>rouPlaceBet(c.key,c.label,c.type,c.nums,cell);
+      bottomRow.appendChild(cell);
+    });
+    mainGrid.appendChild(bottomRow);
+
+    // Assemble: sideBets | sideBets2 | mainGrid
+    wrap.appendChild(sideBets);
+    wrap.appendChild(sideBets2);
+    wrap.appendChild(mainGrid);
+    grid.appendChild(wrap);
   }
 
   // --- CHIP LOGIC ---
@@ -7145,7 +7305,6 @@ try{
       $("rouBetAmt").value=rouSelectedChip;
     };
   });
-
   $("rouHalf").onclick=()=>{
     const v=Number($("rouBetAmt").value);
     $("rouBetAmt").value=Math.max(0.01,v/2).toFixed(2);
@@ -7161,43 +7320,155 @@ try{
   };
 
   // --- PLACE BET ---
-  function rouPlaceBet(key, label, type, numbers, cellEl){
+  function rouPlaceBet(key,label,type,numbers,cellEl){
     if(rouSpinning) return;
     const amt=rouSelectedChip;
-    if(!rouBets[key]){
-      rouBets[key]={amount:0,label,type,numbers};
-    }
+    if(!rouBets[key]) rouBets[key]={amount:0,label,type,numbers};
     rouBets[key].amount=Math.round((rouBets[key].amount+amt)*100)/100;
-    rouRenderChipOn(cellEl, rouBets[key].amount);
+    rouBetStack.push({key,amt});
+    rouRenderChipOn(cellEl,rouBets[key].amount);
     rouUpdateTotal();
   }
-
-  function rouRenderChipOn(cellEl, amount){
+  function rouRenderChipOn(cellEl,amount){
     let chip=cellEl.querySelector(".rouBetChip");
-    if(!chip){
-      chip=document.createElement("div");
-      chip.className="rouBetChip";
-      cellEl.appendChild(chip);
-    }
+    if(!chip){chip=document.createElement("div");chip.className="rouBetChip";cellEl.appendChild(chip);}
     chip.textContent=amount>=1000?(amount/1000).toFixed(amount%1000===0?0:1)+"K":amount>=1?amount.toFixed(amount%1===0?0:2):amount.toFixed(2);
   }
-
   function rouUpdateTotal(){
-    let total=0;
-    for(const k in rouBets) total+=rouBets[k].amount;
+    let total=0;for(const k in rouBets) total+=rouBets[k].amount;
     $("rouTotalBet").textContent=total.toFixed(2);
+  }
+
+  // Undo last bet
+  function rouUndo(){
+    if(rouSpinning||!rouBetStack.length) return;
+    const last=rouBetStack.pop();
+    const bet=rouBets[last.key];
+    if(bet){
+      bet.amount=Math.round((bet.amount-last.amt)*100)/100;
+      if(bet.amount<=0) delete rouBets[last.key];
+    }
+    // Re-render chips on all cells
+    document.querySelectorAll("[data-bet]").forEach(cell=>{
+      const k=cell.dataset.bet||cell.getAttribute("data-bet-key");
+      const chip=cell.querySelector(".rouBetChip");
+      if(chip) chip.remove();
+    });
+    // Re-apply all remaining bets visually
+    rouRebuildChips();
+    rouUpdateTotal();
+  }
+  function rouRebuildChips(){
+    document.querySelectorAll(".rouBetChip").forEach(c=>c.remove());
+    for(const key in rouBets){
+      const bet=rouBets[key];
+      // Find cell by clicking through all possible cells
+      const allCells=document.querySelectorAll(".rouCell,.rouZeroCell,.rouSideCell,.rouBottomCell");
+      allCells.forEach(cell=>{
+        if(cell._rouKey===key && bet.amount>0) rouRenderChipOn(cell,bet.amount);
+      });
+    }
   }
 
   // Clear bets
   $("rouClearBtn").onclick=()=>{
     if(rouSpinning) return;
-    rouBets={};
+    rouBets={};rouBetStack=[];
     document.querySelectorAll(".rouBetChip").forEach(c=>c.remove());
     rouUpdateTotal();
   };
 
+  // Tag cells with their bet key for undo/rebuild
+  function rouTagCells(){
+    const origPlaceBet=rouPlaceBet;
+    // Patch: store key on cell element
+  }
+
+  // --- BALL PHYSICS ---
+  function rouStartBall(resultNum,onSettle){
+    const wrap=rouCanvas.parentElement;
+    const size=Math.min(wrap.clientWidth,wrap.clientHeight);
+    const R=size/2-4;
+    const pocketOuterR=(R-8-3);
+    const pocketInnerR=pocketOuterR*0.62;
+    const rimR=pocketOuterR-4;
+    const settleR=(pocketOuterR+pocketInnerR)/2;
+
+    // Ball starts on outer rim, moving opposite to wheel
+    ball.active=true;
+    ball.phase="rim";
+    ball.angle=Math.random()*2*Math.PI;
+    ball.radius=rimR;
+    ball.speed=-0.12-Math.random()*0.04; // fast, opposite direction
+    ball.dropSpeed=0;
+    ball.bounceCount=0;
+
+    // Target angle for settling
+    const idx=ROU_ORDER.indexOf(resultNum);
+    const targetA=rouAngle+idx*SLICE+SLICE/2-Math.PI/2;
+
+    const totalDuration=4200+Math.random()*1200;
+    const rimDuration=totalDuration*0.55;
+    const dropDuration=totalDuration*0.15;
+    const bounceDuration=totalDuration*0.30;
+    const startTime=performance.now();
+
+    function animBall(now){
+      const elapsed=now-startTime;
+
+      if(ball.phase==="rim"){
+        // Ball on outer rim, decelerating
+        const rimT=Math.min(1,elapsed/rimDuration);
+        ball.speed=(-0.12-0.04*0.5)*(1-rimT*rimT);
+        ball.angle+=ball.speed;
+        ball.radius=rimR;
+        if(rimT>=1){
+          ball.phase="drop";
+          ball.dropSpeed=0;
+        }
+      } else if(ball.phase==="drop"){
+        // Ball drops from rim toward pockets
+        const dropElapsed=elapsed-rimDuration;
+        const dropT=Math.min(1,dropElapsed/dropDuration);
+        const eased=dropT*dropT; // accelerating drop
+        ball.radius=rimR-(rimR-settleR)*eased;
+        // Slow angular movement
+        ball.angle+=ball.speed*0.3*(1-dropT);
+        if(dropT>=1){
+          ball.phase="bounce";
+          ball.bounceCount=0;
+        }
+      } else if(ball.phase==="bounce"){
+        // Ball bounces in pockets, settling toward target
+        const bounceElapsed=elapsed-rimDuration-dropDuration;
+        const bounceT=Math.min(1,bounceElapsed/bounceDuration);
+
+        // Settle angle toward winning slot
+        const curTargetA=rouAngle+idx*SLICE+SLICE/2-Math.PI/2;
+        ball.angle+=(curTargetA-ball.angle)*0.03;
+
+        // Bouncing radius
+        const bounceAmp=(rimR-settleR)*0.3*Math.pow(1-bounceT,2);
+        const bounceFreq=8+bounceT*4;
+        ball.radius=settleR+bounceAmp*Math.abs(Math.sin(bounceT*bounceFreq*Math.PI));
+
+        if(bounceT>=1){
+          ball.phase="settled";
+          ball.radius=settleR;
+          ball.angle=rouAngle+idx*SLICE+SLICE/2-Math.PI/2;
+          onSettle();
+          return;
+        }
+      }
+
+      rouDrawWheel();
+      if(ball.phase!=="settled") requestAnimationFrame(animBall);
+    }
+    requestAnimationFrame(animBall);
+  }
+
   // --- SPIN ---
-  $("rouSpinBtn2").onclick=async ()=>{
+  $("rouSpinBtn2").onclick=async()=>{
     if(rouSpinning) return;
     if(!(await ensureActionReady())) return;
     if(!meProfile) return toast("Profile not loaded");
@@ -7206,7 +7477,6 @@ try{
     for(const k in rouBets) totalBet+=rouBets[k].amount;
     if(totalBet<0.01) return toast("Place a bet first");
     totalBet=Math.round(totalBet*100)/100;
-
     if(totalBet>meProfile.pts) return toast("Not enough points");
 
     rouSpinning=true;
@@ -7214,108 +7484,87 @@ try{
     $("rouSpinBtn2").classList.add("spinning");
     $("rouResultOverlay").classList.remove("show");
 
-    // Pick result
     const resultNum=Math.floor(Math.random()*37);
     const resultColor=rouColor(resultNum);
 
-    // Calculate target angle
-    const sliceAngle=2*Math.PI/37;
+    // Calculate target wheel angle
     const idx=ROU_ORDER.indexOf(resultNum);
-    // We want the pointer (top) to land on this slice
-    const targetSliceCenter=(idx+0.5)*sliceAngle;
-    // Pointer is at top = -PI/2 in our drawing coord, the wheel angle offsets slices by rouAngle
-    // Need: rouAngle + idx*sliceAngle + sliceAngle/2 ≡ -PI/2 + 2kPI → solve for rouAngle
-    // Actually pointer is fixed at top. The wheel rotates. We need the winning slice under the pointer.
-    // In draw: slice i starts at rouAngle + i*sliceAngle - PI/2
-    // Pointer is at angle -PI/2 (top)
-    // Winning: rouAngle + idx*sliceAngle = 0 (mod 2PI) — so slice center at -PI/2 matches pointer
-    // So rouAngle target = -idx*sliceAngle - sliceAngle/2 + random wiggle
-    const wiggle=(Math.random()-0.5)*sliceAngle*0.6;
-    const baseTarget=-idx*sliceAngle - sliceAngle/2 + wiggle;
-    // Add multiple full rotations
+    const wiggle=(Math.random()-0.5)*SLICE*0.6;
+    const baseTarget=-idx*SLICE-SLICE/2+wiggle;
     const fullSpins=5+Math.floor(Math.random()*3);
-    rouTargetAngle=rouAngle + fullSpins*2*Math.PI + (baseTarget - rouAngle%(2*Math.PI) + 4*Math.PI)%(2*Math.PI);
+    const targetAngle=rouAngle+fullSpins*2*Math.PI+(baseTarget-rouAngle%(2*Math.PI)+4*Math.PI)%(2*Math.PI);
 
-    // Animate spin
+    // Animate wheel + ball together
     const startAngle=rouAngle;
-    const totalRotation=rouTargetAngle-startAngle;
-    const duration=4000+Math.random()*1500;
+    const totalRotation=targetAngle-startAngle;
+    const duration=4200+Math.random()*1200;
     const startTime=performance.now();
 
     function easeOutCubic(t){return 1-Math.pow(1-t,3);}
 
-    function animateSpin(now){
+    // Start ball
+    rouStartBall(resultNum,function onBallSettle(){
+      // Ball has settled, resolve bets
+      rouResolveBets(resultNum,resultColor,totalBet);
+    });
+
+    function animWheel(now){
       const elapsed=now-startTime;
       const t=Math.min(1,elapsed/duration);
-      const eased=easeOutCubic(t);
-      rouAngle=startAngle+totalRotation*eased;
-      rouDrawWheel();
-      if(t<1){
-        rouAnimFrame=requestAnimationFrame(animateSpin);
-      } else {
-        // Spin complete — resolve bets
-        rouResolveBets(resultNum, resultColor, totalBet);
-      }
+      rouAngle=startAngle+totalRotation*easeOutCubic(t);
+      // Ball draws itself via its own RAF loop; we just draw wheel here
+      if(ball.phase==="settled"||!ball.active) rouDrawWheel();
+      if(t<1) requestAnimationFrame(animWheel);
     }
-    rouAnimFrame=requestAnimationFrame(animateSpin);
+    requestAnimationFrame(animWheel);
   };
 
-  async function rouResolveBets(resultNum, resultColor, totalBet){
-    // Show result
+  async function rouResolveBets(resultNum,resultColor,totalBet){
     $("rouResNum").textContent=resultNum;
     $("rouResColorLabel").textContent=resultColor.toUpperCase();
-    $("rouResColorLabel").style.color=resultColor==="red"?"#ef4444":resultColor==="green"?"#00e0a3":"#aaa";
+    $("rouResColorLabel").style.color=resultColor==="red"?"#ef4444":resultColor==="green"?"#22c55e":"#aaa";
     $("rouResultOverlay").classList.add("show");
 
-    // Calculate winnings
     let totalPayout=0;
     for(const key in rouBets){
       const bet=rouBets[key];
       if(bet.numbers.includes(resultNum)){
-        const mult=ROU_PAYOUTS[bet.type]||2;
-        totalPayout+=bet.amount*mult;
+        totalPayout+=bet.amount*(ROU_PAYOUTS[bet.type]||2);
       }
     }
-
-    // Apply house edge on winnings only
-    if(totalPayout>0){
-      totalPayout=Math.round(totalPayout*(1-ROU_HOUSE_EDGE)*100)/100;
-    }
+    if(totalPayout>0) totalPayout=Math.round(totalPayout*(1-ROU_HOUSE_EDGE)*100)/100;
 
     try{
-      await addWagerAndPayout(totalBet, totalPayout);
-      if(totalPayout>0){
-        toast(`Roulette WIN! +${to2(totalPayout-totalBet)} pts`);
-      } else {
-        toast(`Roulette: ${resultNum} ${resultColor} — no win`);
-      }
+      await addWagerAndPayout(totalBet,totalPayout);
+      if(totalPayout>0) toast("Roulette WIN! +"+to2(totalPayout-totalBet)+" pts");
+      else toast("Roulette: "+resultNum+" "+resultColor+" — no win");
     }catch(e){
       if(String(e).includes("balance")) toast("Not enough points");
       else toast("Roulette error");
       console.error(e);
     }
 
-    // Add to history
-    rouHistory.unshift({num:resultNum,color:resultColor});
-    if(rouHistory.length>20) rouHistory.length=20;
+    rouHistoryArr.unshift({num:resultNum,color:resultColor});
+    if(rouHistoryArr.length>20) rouHistoryArr.length=20;
     rouRenderHistory();
 
-    // Clear bets and chips
     setTimeout(()=>{
-      rouBets={};
+      ball.active=false;
+      ball.phase="idle";
+      rouBets={};rouBetStack=[];
       document.querySelectorAll(".rouBetChip").forEach(c=>c.remove());
       rouUpdateTotal();
       rouSpinning=false;
       rouIdleRunning=true;
       $("rouSpinBtn2").classList.remove("spinning");
-    },1800);
+      $("rouResultOverlay").classList.remove("show");
+    },2200);
   }
 
-  // --- HISTORY ---
   function rouRenderHistory(){
     const wrap=$("rouHistory");
     wrap.innerHTML='<span class="rouHistLabel">History</span>';
-    rouHistory.forEach(h=>{
+    rouHistoryArr.forEach(h=>{
       const d=document.createElement("div");
       d.className="rouHistDot "+h.color;
       d.textContent=h.num;
