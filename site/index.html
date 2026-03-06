@@ -1872,7 +1872,7 @@ tr:last-child td{border-bottom:none;}
 .rouLayout{display:flex;flex-direction:column;align-items:center;gap:0;}
 
 /* --- Wheel Panel (top, centered) --- */
-.rouWheelPanel{display:flex;align-items:center;justify-content:center;background:#0b3d0b;position:relative;overflow:hidden;padding:20px 0;width:100%;}
+.rouWheelPanel{display:flex;align-items:center;justify-content:center;background:#0e0e10;position:relative;overflow:hidden;padding:20px 0;width:100%;}
 .rouWheelWrap{position:relative;width:340px;height:340px;}
 @media(max-width:600px){.rouWheelWrap{width:280px;height:280px;}}
 .rouWheelCanvas{width:100%;height:100%;}
@@ -7411,7 +7411,7 @@ try{
     rouUpdateTotal();
   };
 
-  // --- BALL PHYSICS — V4: spins on outer track, drops into pockets ---
+  // --- BALL PHYSICS — V5: realistic rolling + divider bounces ---
   function rouStartBall(resultNum,onSettle){
     const wrap=rouCanvas.parentElement;
     const size=Math.min(wrap.clientWidth,wrap.clientHeight);
@@ -7421,26 +7421,32 @@ try{
     ball.active=true;
     ball.phase="rim";
     ball.angle=Math.random()*2*Math.PI;
-    ball.radius=trackR;  // start on the outer ball track
-    ball.angVel=-0.16-Math.random()*0.06; // fast, opposite to wheel
-    ball.radVel=0;
+    ball.radius=trackR;
     ball.settled=false;
+
+    // Ball spins OPPOSITE to wheel, faster
+    const initAngVel=-0.18-Math.random()*0.07;
 
     const idx=ROU_ORDER.indexOf(resultNum);
 
-    // Pre-generate random bounce offsets
-    const numBounces=5+Math.floor(Math.random()*4);
-    const bounceAngOffsets=[];
+    // Generate bounce plan: each bounce hits a divider and kicks the ball
+    const numBounces=6+Math.floor(Math.random()*5); // 6-10 bounces
+    const bounceKicks=[];
     for(let i=0;i<numBounces;i++){
-      bounceAngOffsets.push((Math.random()-0.5)*SLICE*3);
+      // Each kick: small angular push (simulates hitting a divider)
+      bounceKicks.push({
+        angKick:(Math.random()-0.5)*SLICE*2.5, // angular deflection
+        radKick:0.3+Math.random()*0.5 // how high it bounces radially (0-1)
+      });
     }
 
-    const totalDuration=5000+Math.random()*1500;
-    const rimDuration=totalDuration*0.50;   // spinning on outer track
-    const dropDuration=totalDuration*0.12;  // dropping from track into pockets
-    const bounceDuration=totalDuration*0.38; // bouncing between pockets
+    const totalDuration=5500+Math.random()*1500;
+    const rimDuration=totalDuration*0.48;
+    const dropDuration=totalDuration*0.10;
+    const bounceDuration=totalDuration*0.42;
     const startTime=performance.now();
     let lastTime=startTime;
+    let curAngVel=initAngVel;
 
     function animBall(now){
       const elapsed=now-startTime;
@@ -7448,53 +7454,69 @@ try{
       lastTime=now;
 
       if(ball.phase==="rim"){
-        // Ball spinning fast on the outer wooden track
+        // Ball rolling on outer wooden track, decelerating smoothly
         const rimT=Math.min(1,elapsed/rimDuration);
-        const friction=1-rimT*rimT;
-        ball.angVel=(-0.16-0.06*0.5)*friction;
-        ball.angle+=ball.angVel*dt;
-        // Stay on track, slight wobble inward near end
-        ball.radius=trackR-rimT*rimT*(trackR-pocketOuterR)*0.3;
+        // Smooth deceleration curve
+        const speedMult=Math.pow(1-rimT,2.2);
+        curAngVel=initAngVel*speedMult;
+        ball.angle+=curAngVel*dt;
+        // Slight inward drift as ball loses speed
+        ball.radius=trackR-(rimT*rimT)*(trackR-pocketOuterR)*0.25;
         if(rimT>=1){
           ball.phase="drop";
+          curAngVel=initAngVel*0.08; // residual spin when dropping
         }
       } else if(ball.phase==="drop"){
-        // Ball drops from track down into the pocket ring
+        // Ball falls from track into pocket ring
         const dropElapsed=elapsed-rimDuration;
         const dropT=Math.min(1,dropElapsed/dropDuration);
-        const eased=dropT*dropT; // accelerating drop
-        ball.radius=trackR-(trackR-pocketOuterR+4)*eased;
-        // Still has some angular velocity while dropping
-        ball.angle+=ball.angVel*0.3*dt*(1-dropT*0.5);
+        const eased=dropT*dropT;
+        ball.radius=trackR-(trackR-pocketOuterR+5)*eased;
+        ball.angle+=curAngVel*dt*(1-dropT*0.6);
         if(dropT>=1){
           ball.phase="bounce";
-          ball.radVel=0;
         }
       } else if(ball.phase==="bounce"){
-        // Ball bounces randomly in pocket area, settling on winner
+        // Ball bounces off pocket dividers, losing energy each time
         const bounceElapsed=elapsed-rimDuration-dropDuration;
         const bounceT=Math.min(1,bounceElapsed/bounceDuration);
 
-        const curTargetA=rouAngle+idx*SLICE+SLICE/2-Math.PI/2;
+        // Target pocket angle (follows wheel rotation)
+        const targetA=rouAngle+idx*SLICE+SLICE/2-Math.PI/2;
 
-        const bounceIdx=Math.min(numBounces-1,Math.floor(bounceT*numBounces));
+        // Which bounce segment are we in?
+        const seg=bounceT*numBounces;
+        const bounceIdx=Math.min(numBounces-1,Math.floor(seg));
+        const segT=seg-bounceIdx; // 0-1 within current bounce
 
-        const chaosScale=Math.pow(1-bounceT,1.5);
-        let angOffset=0;
+        // Decaying energy
+        const energy=Math.pow(1-bounceT,1.6);
+
+        // Angular: move toward target but get kicked at each divider
+        let kickOffset=0;
         for(let i=0;i<=bounceIdx;i++){
-          angOffset+=bounceAngOffsets[i]*Math.max(0,1-bounceT*2);
+          const fade=Math.max(0,1-(bounceT*1.8));
+          kickOffset+=bounceKicks[i].angKick*fade;
         }
+        const aimA=targetA+kickOffset*energy;
+        // Smoothly chase the target — faster as we settle
+        const chaseSpeed=0.015+bounceT*0.12;
+        ball.angle+=(aimA-ball.angle)*chaseSpeed*dt;
 
-        const targetWithChaos=curTargetA+angOffset*chaosScale;
-        ball.angle+=(targetWithChaos-ball.angle)*(0.02+bounceT*0.08)*dt;
+        // Radial: bounce off dividers (pocket walls)
+        // Sharp bounce shape: quick up, slower down
+        const kick=bounceKicks[bounceIdx];
+        const bounceAmp=(pocketOuterR-pocketInnerR)*0.45*kick.radKick*energy;
+        // Triangle-ish bounce: sharp peak at segT=0.3
+        let radOffset;
+        if(segT<0.3){
+          radOffset=bounceAmp*(segT/0.3); // fast rise
+        } else {
+          radOffset=bounceAmp*(1-(segT-0.3)/0.7); // slower fall
+        }
+        ball.radius=settleR+radOffset;
 
-        // Radial bounce: hops between pocket edges, decaying
-        const bounceHeight=(pocketOuterR-pocketInnerR)*0.5*Math.pow(1-bounceT,1.8);
-        const bounceFreq=Math.PI/(1/(numBounces*1.2));
-        const radBounce=Math.abs(Math.sin(bounceT*bounceFreq*Math.PI))*bounceHeight;
-        ball.radius=settleR+radBounce;
-
-        // Clamp to pocket area
+        // Clamp
         ball.radius=Math.max(pocketInnerR+3,Math.min(pocketOuterR-2,ball.radius));
 
         if(bounceT>=1){
@@ -7532,16 +7554,15 @@ try{
     const resultNum=Math.floor(Math.random()*37);
     const resultColor=rouColor(resultNum);
 
-    // Calculate target wheel angle
-    const idx=ROU_ORDER.indexOf(resultNum);
-    const wiggle=(Math.random()-0.5)*SLICE*0.6;
-    const baseTarget=-idx*SLICE-SLICE/2+wiggle;
-    const fullSpins=5+Math.floor(Math.random()*3);
-    const targetAngle=rouAngle+fullSpins*2*Math.PI+(baseTarget-rouAngle%(2*Math.PI)+4*Math.PI)%(2*Math.PI);
+    // Calculate wheel angle — wheel stops at RANDOM position
+    // Ball lands in the winning pocket wherever it ends up on the wheel
+    const fullSpins=4+Math.floor(Math.random()*3);
+    const randomStop=Math.random()*2*Math.PI; // any random angle
+    const targetAngle=rouAngle+fullSpins*2*Math.PI+randomStop;
 
     const startAngle=rouAngle;
     const totalRotation=targetAngle-startAngle;
-    const duration=4500+Math.random()*1500;
+    const duration=5000+Math.random()*1500;
     const startTime=performance.now();
 
     function easeOutCubic(t){return 1-Math.pow(1-t,3);}
