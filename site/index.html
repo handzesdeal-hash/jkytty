@@ -64,7 +64,18 @@ body{
     var(--bg);
   background-attachment:fixed;
   overflow-x:hidden;
+  /* Must be explicit. Plinko's bundle ships `body{overflow:hidden}` and its
+     stylesheet stays in <head> for good — we only beat it on properties we
+     actually declare, so without this the page stops scrolling after a visit. */
+  overflow-y:auto;
 }
+/* Plinko locks <html> too. Both axes must be reset in one shorthand: setting only
+   overflow-y:visible fails, because CSS computes `visible` to `auto` when the other
+   axis is hidden — and Plinko sets overflow-x:hidden on <html>. Any non-visible
+   value here makes <html> its own scroll container, which stops body's overflow
+   propagating to the viewport and kills page scrolling by itself.
+   keepThemeLast() puts this sheet after Plinko's, so this wins. */
+html{overflow:visible;}
 body::-webkit-scrollbar{width:10px}
 body::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#a855f7,#4c1d95);border-radius:99px}
 body::-webkit-scrollbar-track{background:var(--bg)}
@@ -3026,6 +3037,100 @@ th{color:#7f7790;}
 /* keep the coloured nav icons */
 .navBtn .nIco{opacity:.95;}
 
+/* ============================================================
+   2.5 — CALM DARK UI (Shuffle / CSDrop style)
+   Flat near-black surfaces with a faint dark-purple cast. No washes,
+   no gradient panels — the colour comes from the game art and banners,
+   and purple is kept for accents only (active nav, primary buttons).
+   ============================================================ */
+:root{
+  --bg:#0e0b14; --bg2:#0e0b14;
+  --panel:#151119; --panel2:#1b1622; --panel3:#231d2c;
+  --nav:#100d16;    /* topbar */
+  --side:#131019;   /* sidebar — a touch off the canvas, not a statement */
+  --chat:#121017;
+  --line:rgba(255,255,255,.07);
+  --stroke:rgba(255,255,255,.09);
+  --purple:#8b5cf6; --purple2:#a78bfa;
+  --grad-purple:linear-gradient(180deg,#8b5cf6,#7c3aed);
+  --shadow:0 12px 40px rgba(0,0,0,.5);
+  --shadow2:0 8px 24px rgba(0,0,0,.4);
+}
+
+/* flat canvas — no radial washes */
+body{background:var(--bg);}
+
+.sidebar{background:var(--side);border-right:1px solid var(--line);}
+.sbBrand{background:transparent;border-bottom:1px solid var(--line);}
+.sbSection{color:#7e768f;}
+.navBtn.active{
+  background:rgba(139,92,246,.16);
+  border-color:rgba(139,92,246,.34);
+}
+.navBtn:hover{background:rgba(255,255,255,.04);}
+
+.chatPanel{background:var(--chat);border-left:1px solid var(--line);}
+.chatHd{background:transparent;border-bottom:1px solid var(--line);}
+.chatInputRow{background:transparent;border-top:1px solid var(--line);}
+.chatInputRow input{background:rgba(255,255,255,.05);}
+.cMsg:hover{background:rgba(255,255,255,.04);}
+
+.topbar{background:var(--nav);border-bottom:1px solid var(--line);}
+
+/* flat surfaces */
+.section,table,#view-leaderboard .lbCard{background:var(--panel);border:1px solid var(--line);}
+.tile,.gTile,.caseCard{background:var(--panel2);border:1px solid var(--line);}
+.modal,.authCard,.gameStatsPanel{background:var(--panel);border:1px solid var(--line);}
+.gspCard{background:var(--panel2);}
+.toast{background:var(--panel3);border:1px solid var(--line);}
+
+/* controls: quiet by default, purple only when it means something */
+.btn,.catPill,.casesFilterBtn{background:var(--panel2);border:1px solid var(--line);color:#ddd8e6;box-shadow:none;}
+.btn:hover,.catPill:hover,.casesFilterBtn:hover{background:var(--panel3);border-color:rgba(255,255,255,.12);}
+.btn.purple,.walletBtn,.catPill.active,.casesFilterBtn.active,.tab.active{
+  background:var(--purple);border:1px solid transparent;color:#fff;box-shadow:none;
+}
+.btn.purple:hover,.walletBtn:hover{background:#7c4df0;}
+.btn.green,.diceBetBtn,.bjBtn.green{background:#12c47c;border:1px solid transparent;color:#04150e;}
+.btn.red,.bjBtn.red{background:#e33a58;border:1px solid transparent;color:#fff;}
+.chatSendBtn{background:var(--purple);box-shadow:none;}
+
+/* round profile pictures everywhere: topbar, profile modal, chat, player popup.
+   #pAvatar also carries an inline border-radius, which is set to 50% in the markup. */
+.avatar,#pAvatar,.cAva,.ppAva{border-radius:50%;}
+
+/* hero adverts: one colour each instead of three purples. An earlier pass forced
+   them all into the purple family — these are meant to stand out from the chrome,
+   matched to their own artwork (dice / gift box / gold trophy). */
+.heroA{background:linear-gradient(135deg,#a855f7 0%,#6d28d9 46%,#2e1065 100%);}
+.heroB{background:linear-gradient(135deg,#f59e0b 0%,#c2410c 46%,#7c2d12 100%);}
+.heroC{background:linear-gradient(135deg,#06b6d4 0%,#0e7490 46%,#083344 100%);}
+/* keep the small text legible on the brighter amber banner */
+.heroB .hKick,.heroB .hSub{color:rgba(255,255,255,.94);}
+
+/* ---------- avatar crop dialog ---------- */
+/* Opens on top of the profile modal, which is also z-index:999 and comes later
+   in the DOM — without this it renders behind and swallows every click. */
+#cropOverlay{z-index:1005;}
+.cropStage{
+  position:relative;width:100%;max-width:300px;aspect-ratio:1/1;margin:0 auto;
+  border-radius:16px;overflow:hidden;background:#0a0713;border:1px solid var(--line);
+  cursor:grab;touch-action:none;user-select:none;
+}
+.cropStage.dragging{cursor:grabbing;}
+.cropStage img{
+  position:absolute;top:0;left:0;transform-origin:0 0;will-change:transform;
+  max-width:none;pointer-events:none;user-select:none;-webkit-user-drag:none;
+}
+/* circular guide showing what will be kept */
+.cropRing{position:absolute;inset:0;pointer-events:none;}
+.cropRing::after{
+  content:"";position:absolute;inset:6px;border-radius:50%;
+  border:2px dashed rgba(255,255,255,.6);box-shadow:0 0 0 9999px rgba(0,0,0,.45);
+}
+.cropZoomRow{display:flex;align-items:center;gap:10px;margin-top:14px;}
+.cropZoomRow input[type=range]{flex:1;margin-top:0;accent-color:var(--purple);}
+
 </style>
 </head>
 <body>
@@ -4320,6 +4425,30 @@ alter table public.tips disable row level security;
   </div>
 </div>
 
+<!-- Avatar crop modal -->
+<div class="overlay" id="cropOverlay">
+  <div class="modal" style="width:min(420px,100%);">
+    <div class="modalHd">
+      <div><h4>Adjust photo</h4><p class="muted">Drag to move · scroll or slide to zoom</p></div>
+      <button class="closeBtn" id="cropCloseBtn">✕</button>
+    </div>
+    <div class="modalBd">
+      <div class="cropStage" id="cropStage">
+        <img id="cropImg" alt="" draggable="false"/>
+        <div class="cropRing"></div>
+      </div>
+      <div class="cropZoomRow">
+        <span class="muted">Zoom</span>
+        <input type="range" id="cropZoom" min="1" max="4" step="0.01" value="1"/>
+      </div>
+      <div class="row" style="justify-content:flex-end;gap:8px;margin-top:12px;">
+        <button class="btn" id="cropCancelBtn">Cancel</button>
+        <button class="btn purple" id="cropOkBtn">Use photo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Profile modal -->
 <div class="overlay" id="profileOverlay">
   <div class="modal" style="width:min(760px,100%);">
@@ -4330,7 +4459,7 @@ alter table public.tips disable row level security;
     <div class="modalBd">
       <div class="row" style="gap:10px;align-items:flex-end;">
         <div style="display:flex;align-items:center;gap:12px;">
-          <div class="avatar" id="pAvatar" style="width:44px;height:44px;border-radius:16px;"></div>
+          <div class="avatar" id="pAvatar" style="width:44px;height:44px;border-radius:50%;"></div>
           <div style="display:flex;flex-direction:column;gap:6px;">
             <label>Username</label>
             <input id="pUserEdit" placeholder="Username" style="width:220px"/>
@@ -5812,7 +5941,69 @@ if($("pTipSendBtn")) $("pTipSendBtn").onclick = async ()=>{
   await doTip(target, amt);
 };
 
-/* ---------- avatar upload ---------- */
+/* ---------- avatar upload + crop ----------
+   Picking a file used to be cropped blindly to the centre. Now it opens a stage
+   you can drag and zoom, and only the visible square is saved. */
+const cropState = { img:null, base:1, scale:1, ox:0, oy:0, natW:0, natH:0, D:300 };
+
+function cropRender(){
+  const s = cropState.base * cropState.scale;
+  const w = cropState.natW * s, h = cropState.natH * s, D = cropState.D;
+  // never let the image pull away from the edges of the square
+  cropState.ox = Math.min(0, Math.max(D - w, cropState.ox));
+  cropState.oy = Math.min(0, Math.max(D - h, cropState.oy));
+  const el = $("cropImg");
+  if(el) el.style.transform = `translate(${cropState.ox}px, ${cropState.oy}px) scale(${s})`;
+}
+
+// keep the centre of the square fixed while zooming
+function cropZoomTo(next){
+  const prev = cropState.scale;
+  cropState.scale = Math.min(4, Math.max(1, next));
+  const D = cropState.D, k = cropState.scale / prev;
+  cropState.ox = D/2 - (D/2 - cropState.ox) * k;
+  cropState.oy = D/2 - (D/2 - cropState.oy) * k;
+  cropRender();
+}
+
+function openCrop(dataUrl){
+  const img = new Image();
+  img.onload = ()=>{
+    $("cropOverlay").classList.add("show");
+    const stage = $("cropStage");
+    const D = stage.clientWidth || 300;   // measure only after the modal is visible
+    Object.assign(cropState, {
+      img, natW: img.naturalWidth, natH: img.naturalHeight, D, scale: 1,
+      base: D / Math.min(img.naturalWidth, img.naturalHeight),   // "cover" the square
+    });
+    cropState.ox = (D - cropState.natW * cropState.base) / 2;
+    cropState.oy = (D - cropState.natH * cropState.base) / 2;
+    const el = $("cropImg");
+    el.src = dataUrl;
+    el.style.width  = cropState.natW + "px";
+    el.style.height = cropState.natH + "px";
+    $("cropZoom").value = "1";
+    cropRender();
+  };
+  img.onerror = ()=> toast("Could not read that image");
+  img.src = dataUrl;
+}
+
+function cropConfirm(){
+  if(!cropState.img) return;
+  const S = 256, c = document.createElement("canvas");
+  c.width = S; c.height = S;
+  const eff = cropState.base * cropState.scale;
+  // map the visible square back onto the source image
+  const sx = -cropState.ox / eff, sy = -cropState.oy / eff, sSize = cropState.D / eff;
+  c.getContext("2d").drawImage(cropState.img, sx, sy, sSize, sSize, 0, 0, S, S);
+  const dataUrl = c.toDataURL("image/jpeg", .85);
+  window.__pendingAvatarUrl = dataUrl;
+  applyAvatar($("pAvatar"), dataUrl);
+  $("cropOverlay").classList.remove("show");
+  toast("Photo ready — press Save profile");
+}
+
 if($("pAvaUploadBtn")) $("pAvaUploadBtn").onclick = ()=>$("pAvaFile").click();
 if($("pAvaFile")) $("pAvaFile").addEventListener("change", async (e)=>{
   const f = e.target.files && e.target.files[0];
@@ -5821,21 +6012,44 @@ if($("pAvaFile")) $("pAvaFile").addEventListener("change", async (e)=>{
   if(!/^image\//.test(f.type)) return toast("Pick an image file");
   try{
     const url = await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(f); });
-    const img = new Image();
-    await new Promise((res,rej)=>{ img.onload=res; img.onerror=rej; img.src=url; });
-    const S = 128, c = document.createElement("canvas");
-    c.width = S; c.height = S;
-    const ctx = c.getContext("2d");
-    const m = Math.min(img.width, img.height);
-    ctx.drawImage(img, (img.width-m)/2, (img.height-m)/2, m, m, 0, 0, S, S);
-    const dataUrl = c.toDataURL("image/jpeg", .82);
-    window.__pendingAvatarUrl = dataUrl;
-    applyAvatar($("pAvatar"), dataUrl);
-    toast("Photo ready — press Save profile");
+    openCrop(url);
   }catch(err){
     console.error(err); toast("Could not read that image");
   }
 });
+
+(function(){
+  const stage = $("cropStage");
+  if(!stage) return;
+  let dragging = false, lx = 0, ly = 0;
+  stage.addEventListener("pointerdown", (e)=>{
+    dragging = true; lx = e.clientX; ly = e.clientY;
+    stage.classList.add("dragging");
+    try{ stage.setPointerCapture(e.pointerId); }catch(_){ }
+  });
+  stage.addEventListener("pointermove", (e)=>{
+    if(!dragging) return;
+    cropState.ox += e.clientX - lx; cropState.oy += e.clientY - ly;
+    lx = e.clientX; ly = e.clientY;
+    cropRender();
+  });
+  const endDrag = (e)=>{
+    dragging = false; stage.classList.remove("dragging");
+    try{ stage.releasePointerCapture(e.pointerId); }catch(_){ }
+  };
+  stage.addEventListener("pointerup", endDrag);
+  stage.addEventListener("pointercancel", endDrag);
+  stage.addEventListener("wheel", (e)=>{
+    e.preventDefault();
+    cropZoomTo(cropState.scale * (e.deltaY < 0 ? 1.1 : 1/1.1));
+    $("cropZoom").value = String(cropState.scale);
+  }, { passive:false });
+})();
+
+if($("cropZoom")) $("cropZoom").addEventListener("input", (e)=> cropZoomTo(Number(e.target.value) || 1));
+if($("cropOkBtn")) $("cropOkBtn").onclick = cropConfirm;
+if($("cropCancelBtn")) $("cropCancelBtn").onclick = ()=> $("cropOverlay").classList.remove("show");
+if($("cropCloseBtn")) $("cropCloseBtn").onclick = ()=> $("cropOverlay").classList.remove("show");
 
 /* ---------- privacy toggle ---------- */
 if($("privToggle")) $("privToggle").onclick = ()=>{
@@ -6343,33 +6557,69 @@ document.querySelectorAll('[data-ava]').forEach(btn=>{
     toast("Avatar selected");
   };
 });
+/* Save must NEVER fail silently. It used to read `session.user.id` directly — after
+   the file picker steals focus, a failed token refresh can leave `session` null while
+   `meProfile` is still populated, so that threw a TypeError inside an async handler
+   with no catch: no toast, no error, the button just did nothing. Now every exit
+   path reports, the request can't hang forever, and the button shows its state. */
 $("pSaveBtn").onclick=async ()=>{
-  if(!meProfile) return toast("Profile not loaded");
+  const btn = $("pSaveBtn");
+  if(btn.disabled) return;
   const newName = $("pUserEdit").value.trim();
   if(!newName) return toast("Username required");
-  const seed = window.__selectedAvatar || (meProfile.avatar_seed||"p1");
-  const patch = { display_name:newName, avatar_seed:seed };
-  if(window.__pendingAvatarUrl !== undefined) patch.avatar_url = window.__pendingAvatarUrl; // string or null
-  if(window.__pendingPrivacy !== undefined) patch.is_public = !!window.__pendingPrivacy;
-  let { error } = await supabase.from("profiles").update(patch).eq("id", session.user.id);
-  if(error && /avatar_url|is_public|column|schema cache/i.test(String(error.message||""))){
-    // columns not added yet (admin hasn't run the v2.1 SQL) — save what we can
-    const fallback = { display_name:newName, avatar_seed: (typeof window.__pendingAvatarUrl === "string" ? window.__pendingAvatarUrl : seed) };
-    ({ error } = await supabase.from("profiles").update(fallback).eq("id", session.user.id));
-    if(!error){
-      meProfile.display_name=newName;
-      meProfile.avatar_seed=fallback.avatar_seed;
-      updateMeUI();
-      toast("Saved (run the new SQL in Admin for photo & privacy support)");
+
+  const label = btn.textContent;
+  btn.disabled = true; btn.textContent = "Saving…";
+  try{
+    if(!meProfile) return toast("Profile not loaded");
+
+    // the session may have lapsed while the OS file dialog had focus
+    let uid = session?.user?.id;
+    if(!uid){
+      try{
+        const { data } = await withTimeout(supabase.auth.getSession(), 8000);
+        if(data?.session){ session = data.session; uid = session.user?.id; }
+      }catch(_){ }
+    }
+    if(!uid) return toast("Session expired — sign in again, then re-save");
+
+    const seed = window.__selectedAvatar || (meProfile.avatar_seed||"p1");
+    const patch = { display_name:newName, avatar_seed:seed };
+    if(window.__pendingAvatarUrl !== undefined) patch.avatar_url = window.__pendingAvatarUrl; // string or null
+    if(window.__pendingPrivacy !== undefined) patch.is_public = !!window.__pendingPrivacy;
+
+    let { error } = await withTimeout(supabase.from("profiles").update(patch).eq("id", uid), 20000);
+    if(error && /avatar_url|is_public|column|schema cache/i.test(String(error.message||""))){
+      // columns not added yet (admin hasn't run the v2.1 SQL) — save what we can
+      const fallback = { display_name:newName, avatar_seed: (typeof window.__pendingAvatarUrl === "string" ? window.__pendingAvatarUrl : seed) };
+      ({ error } = await withTimeout(supabase.from("profiles").update(fallback).eq("id", uid), 20000));
+      if(!error){
+        meProfile.display_name=newName;
+        meProfile.avatar_seed=fallback.avatar_seed;
+        updateMeUI();
+        toast("Saved (run the new SQL in Admin for photo & privacy support)");
+        return;
+      }
+    }
+    if(error){
+      console.error("save profile", error);
+      toast("Save failed: " + (error.message || "database error"));
       return;
     }
+
+    meProfile.display_name=newName; meProfile.avatar_seed=seed;
+    if(window.__pendingAvatarUrl !== undefined) meProfile.avatar_url = window.__pendingAvatarUrl;
+    if(window.__pendingPrivacy !== undefined) meProfile.is_public = !!window.__pendingPrivacy;
+    window.__pendingAvatarUrl = undefined;   // committed — don't resend on the next save
+    updateMeUI();
+    toast("Profile updated");
+  }catch(err){
+    console.error("save profile", err);
+    toast(/timeout/i.test(String(err?.message||"")) ? "Save timed out — check your connection"
+                                                    : "Save failed: " + (err?.message || "unexpected error"));
+  }finally{
+    btn.disabled = false; btn.textContent = label;
   }
-  if(error){ toast("Save failed (DB/RLS)."); console.error(error); return; }
-  meProfile.display_name=newName; meProfile.avatar_seed=seed;
-  if(window.__pendingAvatarUrl !== undefined) meProfile.avatar_url = window.__pendingAvatarUrl;
-  if(window.__pendingPrivacy !== undefined) meProfile.is_public = !!window.__pendingPrivacy;
-  updateMeUI();
-  toast("Profile updated");
 };
 $("profileOverlay").onclick=(e)=>{ if(e.target===$("profileOverlay")) closeProfile(); };
 
@@ -11027,14 +11277,11 @@ window.addEventListener("visibilitychange", ()=>{
   }
 
   if(document.visibilityState === "visible"){
-    const hiddenFor = tabHiddenAt ? (Date.now() - tabHiddenAt) : 0;
-
-    // User requested instant refresh on return.
-    if(hiddenFor > 500){
-      forceAppReload("instant-return");
-      return;
-    }
-
+    // Never hard-reload here. This used to call forceAppReload() after only 500ms
+    // away, so any tab switch threw away in-memory game state: an open Mines round
+    // could no longer be cashed out, and the next game refused bets. Recovering
+    // refreshes the session, profile and realtime channels without touching what
+    // the games are holding.
     touchPresence();
     sendOnlineSignal(true);
     recoverAfterTabSwitch("visibility");
