@@ -3116,6 +3116,29 @@ body{background:var(--bg);}
 /* keep the small text legible on the brighter amber banner */
 .heroB .hKick,.heroB .hSub{color:rgba(255,255,255,.94);}
 
+/* #chatMsgs is a flex column with overflow-y:auto. Flex children default to
+   flex-shrink:1, so as soon as the list overflowed, the taller rain/tip cards were
+   crushed — measured 16px tall when they needed 65 — and their `overflow:hidden`
+   clipped the text away entirely. Regular messages only survived because the 32px
+   avatar propped them up. Nothing in this column may shrink. */
+#chatMsgs > *{flex:0 0 auto;}
+
+/* Rain/tip cards were far bulkier than a normal message — 12/13px padding vs 7/8,
+   a 36px icon vs the 32px avatar, plus a heavy shadow and a gloss overlay — so they
+   read as a different size sitting in the same column. Match the regular message
+   metrics exactly; the colour alone is what marks them out. */
+.cSys{
+  padding:7px 8px;gap:9px;border-radius:11px;margin:-3px -4px;
+  box-shadow:none;align-items:flex-start;
+}
+.cSys::before{content:none;}
+.cSysIco{
+  flex:0 0 32px;width:32px;height:32px;border-radius:10px;font-size:16px;
+  box-shadow:none;
+}
+.cSysTitle{font-size:10.5px;letter-spacing:.12em;}
+.cSysText{font-size:12.5px;font-weight:600;line-height:1.42;}
+
 /* ---------- avatar crop dialog ---------- */
 /* Opens on top of the profile modal, which is also z-index:999 and comes later
    in the DOM — without this it renders behind and swallows every click. */
@@ -3147,9 +3170,20 @@ body{background:var(--bg);}
    result is a near-identical, comfortable layout from ~1280 up to ultrawide.
    ============================================================ */
 
-/* Stop the content stretching indefinitely. Above ~1790 the extra width becomes
-   side margin instead of ever-wider cards, so 1920 and 2560 look nearly the same. */
-.main{max-width:1760px;margin-left:auto;margin-right:auto;width:100%;}
+/* `.main` must keep the grid's default stretch sizing. Capping it with
+   `max-width` + `margin-inline:auto` looked fine on a 2560 screen but broke
+   everything narrower: auto margins DISABLE stretch, so the item became
+   fit-content sized with a min-content floor of ~1043px (the topbar can't shrink).
+   It then refused to make room for the 332px chat offset and the content slid
+   under the chat panel. Stretch instead, and cap the content with padding.
+   `min-width:0` lets it shrink past its content's minimum. */
+.main{min-width:0;}
+
+/* The topbar is flex-wrap:nowrap, so its min-content width is what stopped .main
+   shrinking. Let it wrap once space is tight (chat open on a laptop). */
+@media(max-width:1500px){
+  .topbar{flex-wrap:wrap;row-gap:8px;}
+}
 
 /* sidebar breathes a little with the viewport */
 @media(min-width:1700px){ .app.show{grid-template-columns:262px minmax(0,1fr);} }
@@ -3182,6 +3216,15 @@ body{background:var(--bg);}
 @media(max-width:1350px){
   .main{--mainPad:12px;}
   .heroRow{gap:10px;}
+}
+
+/* Wide screens: turn the surplus into side padding rather than ever-wider cards,
+   so 1920 and 2560 stay close. The topbar still bleeds the full padding, so it
+   spans edge to edge while its contents line up with the page content.
+   MUST come after the base `--mainPad:16px` above — media queries add no
+   specificity, so a later plain rule would otherwise win. */
+@media(min-width:1800px){
+  .main{--mainPad:calc((100% - 1720px) / 2);}
 }
 
 </style>
