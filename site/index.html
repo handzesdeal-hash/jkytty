@@ -34,25 +34,31 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"HANDZES.BET","logo":"./assets/hz-logo.png"}</script>
 <style>
 :root{
-  --bg:#050508; --bg2:#070614;
-  --text:rgba(255,255,255,.92); --muted:rgba(255,255,255,.62);
-  --stroke:rgba(255,255,255,.10);
-  --purple:#7c3aed; --purple2:#a78bfa; --red:#ef4444; --green:#00e0a3; --amber:#f59e0b;
-  --shadow:0 18px 60px rgba(0,0,0,.62);
-  --shadow2:0 10px 40px rgba(0,0,0,.55);
+  --bg:#0d0c12; --bg2:#0d0c12;
+  --panel:#16151d; --panel2:#1d1b26; --panel3:#242130;
+  --nav:#131218;
+  --line:rgba(255,255,255,.065);
+  --text:#f2f1f7; --muted:#918da6;
+  --stroke:rgba(255,255,255,.08);
+  --purple:#7c3aed; --purple2:#a78bfa; --red:#ff4d5e; --green:#00e0a3; --amber:#ffb03a;
+  --grad-purple:linear-gradient(135deg,#8b5cf6 0%,#6d28d9 100%);
+  --shadow:0 12px 40px rgba(0,0,0,.45);
+  --shadow2:0 8px 28px rgba(0,0,0,.38);
+  --r:12px;
   --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-  --sans:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  --sans:"Inter",ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
+html{scrollbar-color:#2c2938 var(--bg);}
 body{
   margin:0;color:var(--text);font-family:var(--sans);
-  background:
-    radial-gradient(1200px 900px at 18% 12%, rgba(124,58,237,.22), transparent 60%),
-    radial-gradient(1200px 900px at 82% 12%, rgba(239,68,68,.14), transparent 60%),
-    linear-gradient(180deg, var(--bg), var(--bg2));
+  background:var(--bg);
   overflow-x:hidden;
 }
+body::-webkit-scrollbar{width:10px}
+body::-webkit-scrollbar-thumb{background:#2c2938;border-radius:99px}
+body::-webkit-scrollbar-track{background:var(--bg)}
 .glow{filter: drop-shadow(0 0 10px rgba(167,139,250,.35)) drop-shadow(0 0 22px rgba(124,58,237,.18));}
 .iconSvg{width:26px;height:26px;vertical-align:-3px;margin-left:0}
 .iconPoop{width:22px;height:22px;vertical-align:-5px;margin-left:6px;filter: drop-shadow(0 0 10px rgba(0,0,0,.6));}
@@ -2050,6 +2056,374 @@ tr:last-child td{border-bottom:none;}
 .rouHistDot.red{background:#c62828;}
 .rouHistDot.black{background:#1e1e2a;border:1px solid rgba(255,255,255,.12);}
 .rouHistDot.green{background:#16a34a;}
+
+/* ═══════════════════════════════════════════════════════════════
+   HANDZES.BET  •  2.0 REDESIGN  (Shuffle/Stake-style dark casino UI)
+   This layer intentionally sits last in the sheet so it overrides
+   every legacy style above it. Game logic/classes are untouched.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ---------- global type & controls ---------- */
+h1,h2,h3,h4{letter-spacing:.01em;}
+label{font-size:11px;color:var(--muted);font-weight:800;letter-spacing:.06em;text-transform:uppercase;}
+input,select,textarea{
+  width:100%;margin-top:6px;padding:11px 13px;border-radius:10px;border:1px solid var(--line);
+  background:var(--panel2);color:var(--text);outline:none;font-size:13px;font-family:var(--sans);
+  transition:border-color .12s ease, box-shadow .12s ease;
+}
+input:focus,select:focus,textarea:focus{border-color:rgba(139,92,246,.55);box-shadow:0 0 0 3px rgba(124,58,237,.18);}
+input::placeholder,textarea::placeholder{color:#5c5870;}
+select{cursor:pointer;}
+.btn{
+  border:1px solid var(--line);background:var(--panel2);color:var(--text);
+  padding:11px 14px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;user-select:none;
+  transition:background .12s ease, transform .06s ease, filter .12s ease;
+}
+.btn:hover{background:var(--panel3);}
+.btn:active{transform:translateY(1px);}
+.btn.purple{background:var(--grad-purple);border-color:transparent;box-shadow:0 6px 20px rgba(124,58,237,.35);}
+.btn.purple:hover{filter:brightness(1.12);background:var(--grad-purple);}
+.btn.red{background:linear-gradient(135deg,#f43f5e,#be123c);border-color:transparent;}
+.btn.green{background:linear-gradient(135deg,#10b981,#047857);border-color:transparent;}
+.small{font-size:12px;color:var(--muted);line-height:1.4;margin-top:10px;}
+.glow{filter:none;}
+
+/* ---------- auth ---------- */
+.authWrap{
+  background:
+    radial-gradient(900px 500px at 50% -10%, rgba(124,58,237,.22), transparent 65%),
+    var(--bg);
+}
+.authCard{
+  width:min(440px,100%);border-radius:16px;border:1px solid var(--line);
+  background:var(--panel);box-shadow:0 30px 90px rgba(0,0,0,.6);backdrop-filter:none;
+}
+.authTop{padding:22px 22px 0;border-bottom:none;flex-direction:column;align-items:center;gap:10px;}
+.authTop .mark{width:56px;height:56px;border-radius:16px;box-shadow:0 10px 30px rgba(124,58,237,.4);}
+.authTop b{letter-spacing:.26em;font-size:16px;font-weight:900;}
+.authBody{padding:20px 22px 24px;}
+.tabs{gap:6px;margin-bottom:16px;background:var(--panel2);padding:5px;border-radius:12px;border:1px solid var(--line);}
+.tab{padding:10px 12px;border-radius:9px;border:none;background:transparent;color:var(--muted);font-weight:800;}
+.tab.active{background:var(--grad-purple);color:#fff;box-shadow:0 4px 14px rgba(124,58,237,.35);}
+
+/* ---------- app shell ---------- */
+.app.show{display:grid;grid-template-columns:242px minmax(0,1fr);}
+.sidebar{
+  height:100vh;overflow:auto;padding:0 12px 18px;border-right:1px solid var(--line);
+  background:var(--nav);backdrop-filter:none;position:sticky;top:0;
+  scrollbar-width:thin;scrollbar-color:#2c2938 transparent;
+}
+.sidebar::-webkit-scrollbar{width:6px}
+.sidebar::-webkit-scrollbar-thumb{background:#2c2938;border-radius:99px}
+.sbBrand{
+  display:flex;align-items:center;gap:10px;padding:16px 8px 14px;position:sticky;top:0;z-index:2;
+  background:var(--nav);border-bottom:1px solid var(--line);margin:0 -12px 10px;padding-left:20px;
+}
+.sbBrand .logo{width:34px;height:34px;border-radius:10px;box-shadow:0 6px 18px rgba(124,58,237,.45);}
+.sbBrand b{font-size:15px;font-weight:900;letter-spacing:.08em;}
+.sbBrand b .accent{color:var(--purple2);}
+.sbSeg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:5px;margin:2px 2px 12px;}
+.sbSeg .navBtn{padding:9px 10px;border-radius:9px;justify-content:center;font-size:12.5px;letter-spacing:.04em;border:none;margin-top:0;}
+.sbSeg .navBtn span{flex:0 !important;text-align:center !important;}
+.sbSeg .navBtn.active{background:var(--grad-purple);color:#fff;box-shadow:0 4px 14px rgba(124,58,237,.35);}
+.sideTitle{margin-top:16px;padding:0 10px 8px;color:#5f5b73;font-size:10.5px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;}
+.navBtn{
+  width:100%;display:flex;align-items:center;justify-content:flex-start;gap:11px;padding:10px 12px;margin-top:2px;
+  border-radius:10px;border:1px solid transparent;background:transparent;color:#b6b2c9;cursor:pointer;
+  font-weight:700;font-size:13.5px;user-select:none;transition:background .1s ease,color .1s ease;
+}
+.navBtn:hover{background:rgba(255,255,255,.05);color:var(--text);}
+.navBtn.active{background:rgba(124,58,237,.16);border-color:rgba(139,92,246,.25);color:#fff;}
+.navBtn.active .nIco{color:var(--purple2);}
+.navBtn .nIco{width:19px;height:19px;flex:0 0 19px;display:inline-flex;align-items:center;justify-content:center;color:#726d8a;transition:color .1s ease;}
+.navBtn .nIco svg{width:18px;height:18px;}
+.navBtn:hover .nIco{color:var(--purple2);}
+.navBtn .nLbl{flex:1;text-align:left;}
+.navBtn .chip{margin-left:auto;}
+.chip{font-family:var(--mono);font-size:10.5px;padding:3px 8px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:#8f8ba1;white-space:nowrap;}
+.chip.ok{border-color:rgba(0,224,163,.3);background:rgba(0,224,163,.1);color:#7ef5cf;}
+.sideCard{margin:6px 2px 0;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:10px;box-shadow:none;}
+.pill{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 11px;border-radius:9px;
+  border:1px solid var(--line);background:var(--panel2);color:var(--muted);font-size:12px;margin-top:6px;
+}
+.pill:first-child{margin-top:0}
+
+/* ---------- topbar ---------- */
+.main{padding:0 20px 60px;overflow:visible;min-width:0;}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:nowrap;
+  border:none;border-bottom:1px solid var(--line);border-radius:0;
+  background:rgba(13,12,18,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:none;position:sticky;top:0;z-index:80;
+  margin:0 -20px 18px;padding:10px 20px;min-height:64px;
+}
+.tbLeft{display:flex;align-items:center;gap:12px;min-width:0;}
+.mark2{width:38px;height:38px;border-radius:10px;box-shadow:0 6px 18px rgba(124,58,237,.4);}
+.title{font-weight:900;letter-spacing:.14em;font-size:15px;white-space:nowrap;}
+/* sidebar already carries the brand on desktop — avoid doubling it */
+@media(min-width:901px){
+  .tbLeft .mark2,.tbLeft .title{display:none;}
+}
+.roleBadge{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-weight:800;font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;}
+.tbWallet{display:flex;align-items:center;margin:0 auto;}
+.balancePill{
+  display:flex;align-items:center;gap:9px;padding:10px 16px;border-radius:10px 0 0 10px;
+  border:1px solid var(--line);border-right:none;background:var(--panel2);
+  font-weight:900;font-size:14px;font-family:var(--mono);
+}
+.walletBtn{
+  padding:10px 18px;border-radius:0 10px 10px 0;border:none;background:var(--grad-purple);color:#fff;
+  font-weight:800;font-size:13px;cursor:pointer;letter-spacing:.02em;box-shadow:0 6px 20px rgba(124,58,237,.35);
+  transition:filter .12s ease;display:flex;align-items:center;gap:7px;font-family:var(--sans);
+}
+.walletBtn:hover{filter:brightness(1.12);}
+.walletMid{border:none;background:transparent;padding:0;font-weight:900;}
+.profileBtn{
+  display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:10px;
+  border:1px solid var(--line);background:var(--panel);cursor:pointer;user-select:none;
+  transition:background .12s ease;
+}
+.profileBtn:hover{background:var(--panel2);}
+.avatar{width:32px;height:32px;border-radius:9px;}
+#topUser{font-size:13.5px !important;color:#fff;-webkit-text-stroke:0 transparent;text-shadow:none;font-weight:900;}
+.levelWrap{margin-top:5px;width:150px}
+.levelBar{height:5px;border-radius:99px;border:none;background:var(--panel3);overflow:hidden}
+.levelFill{background:var(--grad-purple);box-shadow:none;}
+.levelText{font-size:10px;color:var(--muted);margin-top:3px;}
+
+/* ---------- mobile nav ---------- */
+.mobileNav{display:none;position:sticky;top:64px;z-index:70;margin:-6px -20px 14px;}
+.mobileNavInner{
+  display:flex;overflow-x:auto;gap:6px;border:none;border-bottom:1px solid var(--line);
+  background:var(--nav);border-radius:0;padding:10px 14px;box-shadow:none;
+  scrollbar-width:none;
+}
+.mobileNavInner::-webkit-scrollbar{display:none}
+.mobileNav .navBtn{flex:0 0 auto;width:auto;padding:8px 14px;font-size:12.5px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);margin-top:0;color:#b6b2c9;}
+.mobileNav .navBtn.active{background:var(--grad-purple);border-color:transparent;color:#fff;}
+@media(max-width:900px){
+  .sidebar{display:none;}
+  .app.show{grid-template-columns:1fr;}
+  .mobileNav{display:block;}
+  .main{padding-top:0;}
+  .topbar{position:sticky;}
+}
+
+/* ---------- sections / panels ---------- */
+.section{margin-top:16px;border:1px solid var(--line);background:var(--panel);border-radius:14px;overflow:hidden;box-shadow:none;}
+.section .section{background:var(--panel2);}
+.sectionHd{padding:14px 16px;border-bottom:1px solid var(--line);}
+.sectionHd h3{font-size:15px;font-weight:900;letter-spacing:.02em;}
+.sub{color:var(--muted);font-size:12px;}
+.sectionBd{padding:16px;}
+table{border-radius:10px;border:1px solid var(--line);background:var(--panel2);}
+th{color:#6f6b85;font-size:11px;letter-spacing:.08em;text-transform:uppercase;}
+th,td{border-bottom:1px solid var(--line);padding:10px 12px;}
+.tag{border:1px solid var(--line);background:var(--panel3);font-size:11px;font-weight:800;letter-spacing:.04em;}
+.miniPill{border:1px solid var(--line);background:var(--panel2);color:var(--muted);}
+.miniPill input{background:var(--panel3);border-color:var(--line);}
+.overlay{background:rgba(8,7,12,.72);backdrop-filter:blur(8px);}
+.modal{border-radius:16px;border:1px solid rgba(255,255,255,.09);background:var(--panel);box-shadow:0 40px 120px rgba(0,0,0,.7);}
+.modalHd{border-bottom:1px solid var(--line);padding:16px;}
+.modalBd{padding:16px;}
+.closeBtn{border:1px solid var(--line);background:var(--panel2);border-radius:10px;}
+.closeBtn:hover{background:var(--panel3);}
+.toast{border:1px solid rgba(139,92,246,.35);background:#191723;box-shadow:0 16px 50px rgba(0,0,0,.55);font-weight:700;}
+
+/* ---------- HOME: hero banners ---------- */
+.heroRow{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px;}
+@media(max-width:1100px){.heroRow{grid-template-columns:1fr 1fr;}}
+@media(max-width:680px){.heroRow{grid-template-columns:1fr;}}
+.heroCard{
+  position:relative;border-radius:14px;overflow:hidden;cursor:pointer;min-height:150px;
+  padding:20px 22px;display:flex;flex-direction:column;justify-content:center;gap:6px;
+  border:1px solid rgba(255,255,255,.09);transition:transform .14s ease, box-shadow .14s ease;
+  user-select:none;
+}
+.heroCard:hover{transform:translateY(-3px);box-shadow:0 18px 50px rgba(0,0,0,.5);}
+.heroCard .hKick{font-size:10.5px;font-weight:900;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.75);}
+.heroCard .hTitle{font-size:23px;font-weight:900;line-height:1.08;letter-spacing:.01em;color:#fff;max-width:75%;}
+.heroCard .hSub{font-size:12px;font-weight:600;color:rgba(255,255,255,.82);max-width:70%;}
+.heroCard .hCta{
+  margin-top:9px;display:inline-flex;align-items:center;gap:6px;align-self:flex-start;
+  padding:8px 15px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);
+  font-size:12px;font-weight:800;color:#fff;backdrop-filter:blur(4px);
+}
+.heroCard .hArt{position:absolute;right:-6px;bottom:-14px;font-size:96px;line-height:1;opacity:.9;filter:drop-shadow(0 14px 30px rgba(0,0,0,.4));transform:rotate(-8deg);pointer-events:none;}
+.heroCard::before{content:"";position:absolute;inset:0;background:radial-gradient(420px 210px at 85% 110%, rgba(255,255,255,.25), transparent 60%);pointer-events:none;}
+.heroA{background:linear-gradient(120deg,#6d28d9 0%,#4c1d95 55%,#2e1065 100%);}
+.heroB{background:linear-gradient(120deg,#059669 0%,#047857 55%,#064e3b 100%);}
+.heroC{background:linear-gradient(120deg,#d97706 0%,#b45309 55%,#78350f 100%);}
+
+/* ---------- HOME: category pills ---------- */
+.catRow{display:flex;gap:8px;overflow-x:auto;margin-top:16px;padding-bottom:2px;scrollbar-width:none;}
+.catRow::-webkit-scrollbar{display:none}
+.catPill{
+  flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;
+  border:1px solid var(--line);background:var(--panel);color:#b6b2c9;font-weight:800;font-size:13px;
+  cursor:pointer;user-select:none;transition:background .1s ease,color .1s ease;white-space:nowrap;
+}
+.catPill:hover{background:var(--panel2);color:#fff;}
+.catPill.active{background:var(--grad-purple);border-color:transparent;color:#fff;box-shadow:0 6px 20px rgba(124,58,237,.3);}
+
+/* ---------- section headers (icon rows) ---------- */
+.secHead{display:flex;align-items:center;gap:10px;margin:26px 2px 12px;}
+.secHead .sIco{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;color:var(--purple2);}
+.secHead .sIco svg{width:20px;height:20px;}
+.secHead h3{margin:0;font-size:16px;font-weight:900;letter-spacing:.02em;}
+.secHead .chip{margin-left:2px;}
+.secHead .secLink{
+  margin-left:auto;padding:7px 14px;border-radius:9px;border:1px solid var(--line);background:var(--panel);
+  color:#b6b2c9;font-weight:800;font-size:12px;cursor:pointer;transition:background .1s ease;
+}
+.secHead .secLink:hover{background:var(--panel2);color:#fff;}
+
+/* ---------- game cards (Shuffle-style full-art tiles) ---------- */
+.homeGamesGrid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;}
+#gamesGridHome{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;}
+#gamesGridLive,#gamesGridSoon{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;}
+.gTile{
+  position:relative;border-radius:12px;overflow:hidden;cursor:pointer;user-select:none;aspect-ratio:3/2;
+  border:1px solid rgba(255,255,255,.07);background:var(--panel2);
+  transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+.gTile:hover{transform:translateY(-5px);box-shadow:0 20px 45px rgba(0,0,0,.55), 0 0 0 1px rgba(139,92,246,.45);border-color:rgba(139,92,246,.45);}
+.gTile img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s ease;}
+.gTile:hover img{transform:scale(1.045);}
+.gTile .gPlay{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(10,9,14,.42);opacity:0;transition:opacity .16s ease;pointer-events:none;
+}
+.gTile:hover .gPlay{opacity:1;}
+.gTile .gPlay span{
+  width:52px;height:52px;border-radius:999px;background:var(--grad-purple);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 10px 30px rgba(124,58,237,.55);
+}
+.gTile .gPlay svg{width:20px;height:20px;fill:#fff;margin-left:3px;}
+.gBadge{
+  position:absolute;top:9px;right:9px;z-index:2;padding:4px 9px;border-radius:999px;
+  font-size:9.5px;font-weight:900;letter-spacing:.1em;color:#fff;
+}
+.gBadge.live{background:rgba(0,200,120,.92);box-shadow:0 4px 14px rgba(0,224,163,.4);}
+.gBadge.soon{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.75);backdrop-filter:blur(4px);}
+.gTile.gSoon img,.gTile.gSoon .gArtCss{filter:saturate(.35) brightness(.6);}
+.gTile.gSoon:hover{transform:none;box-shadow:none;border-color:var(--line);}
+.gTile.gSoon:hover img{transform:none;}
+/* CSS-built art for games without images */
+.gArtCss{
+  position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;
+}
+.gArtCss .gBrand{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  padding:5px 16px;border-radius:0 0 10px 10px;background:rgba(255,255,255,.18);
+  font-size:9px;font-weight:900;letter-spacing:.18em;color:#fff;white-space:nowrap;
+}
+.gArtCss .gEmoji{font-size:64px;line-height:1;filter:drop-shadow(0 12px 22px rgba(0,0,0,.45));margin-top:-4px;}
+.gArtCss .gName{
+  position:absolute;bottom:10px;left:0;right:0;text-align:center;
+  font-size:26px;font-weight:900;letter-spacing:.04em;color:#fff;
+  text-shadow:0 3px 14px rgba(0,0,0,.55);
+}
+.gArtCss::after{content:"";position:absolute;inset:0;background:radial-gradient(300px 160px at 50% 0%, rgba(255,255,255,.16), transparent 65%);pointer-events:none;}
+.gToneGold{background:linear-gradient(160deg,#b45309 0%,#78350f 60%,#451a03 100%);}
+.gTonePink{background:linear-gradient(160deg,#db2777 0%,#9d174d 60%,#500724 100%);}
+.gToneBlue{background:linear-gradient(160deg,#2563eb 0%,#1e40af 60%,#172554 100%);}
+.gToneTeal{background:linear-gradient(160deg,#0d9488 0%,#115e59 60%,#042f2e 100%);}
+.gToneOrange{background:linear-gradient(160deg,#ea580c 0%,#9a3412 60%,#431407 100%);}
+.gTonePurple{background:linear-gradient(160deg,#7c3aed 0%,#5b21b6 60%,#2e1065 100%);}
+
+/* ---------- sports event tiles ---------- */
+.tile{border:1px solid var(--line);background:var(--panel);border-radius:12px;box-shadow:none;}
+.tile:hover{transform:translateY(-3px);border-color:rgba(139,92,246,.4);background:var(--panel2);box-shadow:0 14px 36px rgba(0,0,0,.4);}
+.tileArt{height:96px;border-bottom:1px solid var(--line);background:linear-gradient(140deg,#221f30 0%,#181622 100%);}
+.tileArt::before{content:none;}
+.tileArt span{font-size:38px;filter:drop-shadow(0 8px 16px rgba(0,0,0,.4));}
+.tileBody{padding:12px 13px 13px;}
+.tileTitle{font-size:13.5px;font-weight:800;}
+
+/* ---------- leaderboard ---------- */
+#view-leaderboard .lbCard{border:1px solid var(--line);background:var(--panel2);border-radius:12px;box-shadow:none;}
+#view-leaderboard .lbTable{border:none;background:transparent;}
+
+/* ---------- dice ---------- */
+.diceSide,.dicePanel{background:var(--panel2);border-color:var(--line);}
+.diceBoard{background:var(--panel2);border-color:var(--line);}
+.diceTab{background:transparent;color:var(--muted);}
+.diceTab.active{background:var(--panel3);color:#fff;}
+.diceInput{background:var(--panel3);border-color:var(--line);color:var(--text);}
+.diceTinyBtn{background:var(--panel3);border-color:var(--line);}
+.diceBetBtn{background:linear-gradient(135deg,#10b981,#059669);border:none;box-shadow:0 8px 24px rgba(16,185,129,.35);color:#04150e;font-weight:900;}
+.diceBetBtn:hover{filter:brightness(1.1);}
+
+/* ---------- mines ---------- */
+.minesRight{background:var(--panel2);border-color:var(--line);box-shadow:none;}
+.minesRight::before{content:none;}
+.minesStep{background:var(--panel);border-color:var(--line);backdrop-filter:none;}
+.minesStep.active{background:rgba(124,58,237,.14);border-color:rgba(139,92,246,.4);box-shadow:none;}
+.minesXFloat{top:auto;bottom:14px;background:var(--panel3);border-color:rgba(139,92,246,.35);box-shadow:0 10px 30px rgba(0,0,0,.45);}
+
+/* ---------- roulette ---------- */
+.rouWheelPanel,.rouTablePanel{background:var(--panel2);border-color:var(--line);}
+.rouChipBtn{border-color:var(--line);}
+
+/* ---------- blackjack ---------- */
+.bjLeft{background:var(--panel2);border-color:var(--line);box-shadow:none;}
+.bjLeft::before{content:none;}
+.bjBlock{background:var(--panel);border-color:var(--line);}
+.bjStage{background:var(--panel2);border-color:var(--line);box-shadow:none;}
+.bjStage::before{
+  content:"";position:absolute;inset:0;filter:none;
+  background:radial-gradient(680px 340px at 50% 18%, rgba(124,58,237,.14), transparent 65%);
+}
+.bjBtn{background:var(--panel3);border-color:var(--line);box-shadow:none;border-radius:10px;}
+.bjChip{background:var(--panel);border-color:var(--line);box-shadow:none;}
+
+/* ---------- daily case / cases ---------- */
+.caseBox{background:var(--panel2);border-color:var(--line);box-shadow:none;}
+.casesFilterBtn{background:var(--panel2);border-color:var(--line);}
+.casesFilterBtn.active{background:var(--grad-purple);border-color:transparent;color:#fff;}
+.caseCard{background:var(--panel2);border-color:var(--line);border-radius:12px;}
+.caseCard:hover{border-color:rgba(139,92,246,.4);transform:translateY(-4px);box-shadow:0 14px 36px rgba(0,0,0,.4);}
+.prob{background:var(--panel2);border-color:var(--line);}
+.coQtyBtn{background:var(--panel2);}
+.coQtyBtn.active{background:var(--grad-purple);color:#fff;}
+.coOpenBtn{background:var(--grad-purple);border-radius:10px;}
+.coBackBtn{background:var(--panel2);border-color:var(--line);border-radius:10px;}
+
+/* ---------- trading ---------- */
+.tradingTab{background:var(--panel2);border-color:var(--line);}
+.tradingTab.active{background:var(--grad-purple);border-color:transparent;color:#fff;}
+.coinSearch{display:flex;gap:10px;align-items:center;margin-bottom:14px;}
+.coinSearch input{flex:1;min-width:0;margin-top:0;}
+.coinSearch select{flex:0 0 170px;width:170px;margin-top:0;}
+.createCoinCard,.statsPanel,.tradePanel,.posBox{background:var(--panel2);border-color:var(--line);}
+.launchBtn{background:var(--grad-purple);}
+.txTable{background:transparent;}
+.tradeBack{background:var(--panel2);border:1px solid var(--line);border-radius:10px;}
+
+/* ---------- admin ---------- */
+#view-admin .section{background:var(--panel);}
+#view-admin .section .sectionBd{background:transparent;}
+
+/* ---------- default grids ---------- */
+.grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;}
+
+/* ---------- misc responsive ---------- */
+@media(max-width:640px){
+  .main{padding:0 12px 40px;}
+  .topbar{margin:0 -12px 14px;padding:8px 12px;position:sticky;border-radius:0;}
+  .mobileNav{margin:-4px -12px 12px;top:56px;}
+  .title{display:none;}
+  .roleBadge{display:none;}
+  .levelWrap{display:none;}
+  #topLevel{display:none;}
+  .balancePill{padding:9px 12px;font-size:12.5px;}
+  .walletBtn{padding:9px 13px;font-size:12px;}
+  .heroCard .hTitle{font-size:19px;}
+  .grid,.homeGamesGrid,#gamesGridHome,#gamesGridLive,#gamesGridSoon{grid-template-columns:1fr 1fr !important;gap:10px;}
+  .secHead{margin-top:20px;}
+}
 </style>
 </head>
 <body>
@@ -2117,64 +2491,128 @@ tr:last-child td{border-bottom:none;}
 
 <div class="app" id="app">
   <aside class="sidebar">
-    <div class="brand">
+    <div class="sbBrand">
       <div class="logo"></div>
-      <div>
-        <b>HANDZES.BET</b>
-        <small>games • sports • leaderboard</small>
-      </div>
+      <b>HANDZES<span class="accent">.BET</span></b>
+    </div>
+
+    <div class="sbSeg">
+      <button class="navBtn active" data-view="home"><span>Casino</span></button>
+      <button class="navBtn" data-view="sports"><span>Sports</span></button>
     </div>
 
     <div class="sideTitle">Menu</div>
-    <button class="navBtn active" data-view="home"><span>Home</span><span class="chip" id="chipEvents">0</span></button>
-    <button class="navBtn" data-view="games"><span>Games</span><span class="chip" id="chipGames">8</span></button>
-    <button class="navBtn" data-view="sports"><span>Sports</span><span class="chip" id="chipSports">0</span></button>
-    <button class="navBtn" data-view="leaderboard"><span>Leaderboard</span><span class="chip" id="chipLb">0</span></button>
-    <button class="navBtn" data-view="bets"><span>My Bets</span><span class="chip" id="chipMyBets">0</span></button>
-    <button class="navBtn" data-view="case"><span>Daily Case</span><span class="chip">🎁</span></button>
-    <button class="navBtn" data-view="cases"><span>Cases</span><span class="chip">📦</span></button>
-    <button class="navBtn" data-view="trading"><span>Trading</span><span class="chip">📈</span></button>
+    <button class="navBtn" data-view="home">
+      <span class="nIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+      <span class="nLbl">Home</span><span class="chip" id="chipEvents">0</span>
+    </button>
+    <button class="navBtn" data-view="games">
+      <span class="nIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg></span>
+      <span class="nLbl">All Games</span><span class="chip" id="chipGames">8</span>
+    </button>
+    <button class="navBtn" data-view="leaderboard">
+      <span class="nIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M6 3h12v5a6 6 0 0 1-12 0z"/><path d="M6 5H3v2a4 4 0 0 0 4 4"/><path d="M18 5h3v2a4 4 0 0 1-4 4"/></svg></span>
+      <span class="nLbl">Leaderboard</span><span class="chip" id="chipLb">0</span>
+    </button>
+    <button class="navBtn" data-view="bets">
+      <span class="nIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h16v18l-2.5-1.5L15 21l-2.5-1.5L10 21l-2.5-1.5L5 21l-1-0.6z"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span>
+      <span class="nLbl">My Bets</span><span class="chip" id="chipMyBets">0</span>
+    </button>
+
+    <div class="sideTitle">Originals</div>
+    <button class="navBtn" data-view="dice">
+      <span class="nIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></span>
+      <span class="nLbl">Dice</span>
+    </button>
+    <button class="navBtn" data-view="mines">
+      <span class="nIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="13" r="7"/><path d="M15.5 8.5L19 5"/><path d="M18 2l1 2 2 1-2 1-1 2-1-2-2-1 2-1z" fill="currentColor" stroke="none"/></svg></span>
+      <span class="nLbl">Mines</span>
+    </button>
+    <button class="navBtn" data-view="plinko">
+      <span class="nIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="5" r="1.4" fill="currentColor" stroke="none"/><circle cx="8" cy="11" r="1.4" fill="currentColor" stroke="none"/><circle cx="16" cy="11" r="1.4" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="17" r="1.4" fill="currentColor" stroke="none"/><circle cx="20" cy="17" r="1.4" fill="currentColor" stroke="none"/></svg></span>
+      <span class="nLbl">Plinko</span>
+    </button>
+    <button class="navBtn" data-view="blackjack">
+      <span class="nIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="10" height="14" rx="2"/><path d="M15 5h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-4"/><path d="M8 10c-1.2 0-1.8 1-1.8 1.8 0 1.2 1.8 2.7 1.8 2.7s1.8-1.5 1.8-2.7C9.8 11 9.2 10 8 10z" fill="currentColor" stroke="none"/></svg></span>
+      <span class="nLbl">Blackjack</span>
+    </button>
+    <button class="navBtn" data-view="roulette">
+      <span class="nIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v5M12 16v5M3 12h5M16 12h5"/></svg></span>
+      <span class="nLbl">Roulette</span>
+    </button>
+
+    <div class="sideTitle">Rewards</div>
+    <button class="navBtn" data-view="case">
+      <span class="nIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4"/><path d="M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8"/><line x1="12" y1="8" x2="12" y2="21"/><path d="M12 8s-1.5-4-4-4a2 2 0 0 0 0 4"/><path d="M12 8s1.5-4 4-4a2 2 0 0 1 0 4"/></svg></span>
+      <span class="nLbl">Daily Case</span>
+    </button>
+    <button class="navBtn" data-view="cases">
+      <span class="nIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5"/><line x1="12" y1="13" x2="12" y2="21"/></svg></span>
+      <span class="nLbl">Cases</span>
+    </button>
+
+    <div class="sideTitle">Markets</div>
+    <button class="navBtn" data-view="sports">
+      <span class="nIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a14 14 0 0 0 0 18M12 3a14 14 0 0 1 0 18M3.5 9h17M3.5 15h17"/></svg></span>
+      <span class="nLbl">Sports</span><span class="chip" id="chipSports">0</span>
+    </button>
+    <button class="navBtn" data-view="trading">
+      <span class="nIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span>
+      <span class="nLbl">Trading</span>
+    </button>
 
     <div id="adminNavWrap" style="display:none;">
       <div class="sideTitle">Admin</div>
-      <button class="navBtn" data-view="admin"><span>Admin Panel</span><span class="chip ok">ADMIN</span></button>
+      <button class="navBtn" data-view="admin">
+        <span class="nIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+        <span class="nLbl">Admin Panel</span><span class="chip ok">ADMIN</span>
+      </button>
     </div>
 
     <div class="sideTitle">Account</div>
     <div class="sideCard">
       <div class="pill"><span class="muted">User</span><span class="mono" id="meName">—</span></div>
       <div class="pill"><span class="muted">Balance</span><span><span class="mono" id="mePts">0.00</span> <span id="gemSmall"></span></span></div>
-      <div class="pill"><span class="muted">Default stake</span>
+      <div class="pill"><span class="muted">Stake</span>
         <span>
           <input id="defaultStake" type="number" min="0.01" step="0.01" value="0.10"
-            style="width:110px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.26);color:rgba(255,255,255,.92);outline:none;font-size:12px;margin:0;"
+            style="width:90px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel3);color:var(--text);outline:none;font-size:12px;margin:0;"
             />
         </span>
       </div>
     </div>
 
-    <div class="sideTitle">Actions</div>
-    <button class="navBtn" id="signOutBtn"><span>Sign out</span><span class="chip">↩</span></button>
-    <button class="navBtn" id="refreshBtn"><span>Refresh</span><span class="chip">R</span></button>
+    <button class="navBtn" id="refreshBtn" style="margin-top:10px;">
+      <span class="nIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></span>
+      <span class="nLbl">Refresh</span>
+    </button>
+    <button class="navBtn" id="signOutBtn">
+      <span class="nIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+      <span class="nLbl">Sign out</span>
+    </button>
   </aside>
 
   <main class="main">
     <div class="topbar">
-      <div class="walletMid"><span class="dot" id="adminDot"></span><span id="adminText">User</span></div>
-
-      <div class="centerBrand">
+      <div class="tbLeft">
         <div class="mark2"></div>
         <div class="title">HANDZES.BET</div>
-        <div class="walletMid" title="Your balance">
-          <span class="mono" id="topPts">0.00</span><span id="gemTop"></span>
-        </div>
+        <div class="roleBadge"><span class="dot" id="adminDot"></span><span id="adminText">User</span></div>
+      </div>
+
+      <div class="tbWallet" title="Your balance">
+        <div class="balancePill"><span class="mono" id="topPts">0.00</span><span id="gemTop"></span></div>
+        <button class="walletBtn" id="walletBtn">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>
+          Wallet
+        </button>
       </div>
 
       <div>
         <button class="profileBtn" id="profileBtn">
           <div class="avatar"></div>
           <div style="display:flex;flex-direction:column;line-height:1.1;align-items:flex-start;">
-            <span style="font-weight:950;font-size:12.5px;" id="topUser">—</span>
+            <span id="topUser">—</span>
             <span class="muted" style="font-size:11px;" id="topLevel">Level 1</span>
             <div class="levelWrap">
               <div class="levelBar"><div class="levelFill" id="lvlFill"></div></div>
@@ -2193,6 +2631,7 @@ tr:last-child td{border-bottom:none;}
         <button class="navBtn" data-view="dice"><span>Dice</span></button>
         <button class="navBtn" data-view="roulette"><span>Roulette</span></button>
         <button class="navBtn" data-view="mines"><span>Mines</span></button>
+        <button class="navBtn" data-view="plinko"><span>Plinko</span></button>
         <button class="navBtn" data-view="sports"><span>Sports</span></button>
         <button class="navBtn" data-view="leaderboard"><span>Leaderboard</span></button>
         <button class="navBtn" data-view="bets"><span>My Bets</span></button>
@@ -2204,23 +2643,53 @@ tr:last-child td{border-bottom:none;}
     </div>
 
     <section id="view-home">
-      <div class="section">
-        <div class="sectionHd">
-          <div><h3>HANDZES.BET GAMES</h3><div class="sub">Glowing demo tiles (no stock images).</div></div>
-          <div class="chip">Games</div>
+      <div class="heroRow">
+        <div class="heroCard heroA" data-nav="games">
+          <span class="hKick">Handzes Originals</span>
+          <span class="hTitle">In-house games. Instant wins.</span>
+          <span class="hSub">Dice, Mines, Plinko, Blackjack, Roulette & more.</span>
+          <span class="hCta">Play now →</span>
+          <span class="hArt">🎲</span>
         </div>
-        <div class="sectionBd">
-          <div class="grid homeGamesGrid" id="gamesGridHome"></div>
+        <div class="heroCard heroB" data-nav="case">
+          <span class="hKick">Free Rewards</span>
+          <span class="hTitle">Open your Daily Case</span>
+          <span class="hSub">Wager 10 this month to unlock today's drop.</span>
+          <span class="hCta">Open case →</span>
+          <span class="hArt">🎁</span>
+        </div>
+        <div class="heroCard heroC" data-nav="leaderboard">
+          <span class="hKick">Monthly Race</span>
+          <span class="hTitle">Climb the Leaderboard</span>
+          <span class="hSub">The biggest wagers take the crown.</span>
+          <span class="hCta">View ranks →</span>
+          <span class="hArt">🏆</span>
         </div>
       </div>
 
-      <div class="section">
-        <div class="sectionHd">
-          <div><h3>Sports (your events)</h3><div class="sub">Click an event to bet.</div></div>
-          <div class="chip"><span class="mono" id="sportsCountHome">0</span></div>
-        </div>
-        <div class="sectionBd"><div class="grid" id="sportsGridHome"></div></div>
+      <div class="catRow">
+        <button class="catPill active">🏠 Lobby</button>
+        <button class="catPill" data-nav="games">🎮 Originals</button>
+        <button class="catPill" data-nav="sports">⚽ Sports</button>
+        <button class="catPill" data-nav="cases">📦 Cases</button>
+        <button class="catPill" data-nav="trading">📈 Trading</button>
+        <button class="catPill" data-nav="leaderboard">🏆 Leaderboard</button>
       </div>
+
+      <div class="secHead">
+        <span class="sIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M7 12h4M9 10v4"/><circle cx="16" cy="11" r="1" fill="currentColor" stroke="none"/><circle cx="18" cy="13" r="1" fill="currentColor" stroke="none"/></svg></span>
+        <h3>HANDZES Originals</h3>
+        <button class="secLink" data-nav="games">View all</button>
+      </div>
+      <div class="grid homeGamesGrid" id="gamesGridHome"></div>
+
+      <div class="secHead">
+        <span class="sIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a14 14 0 0 0 0 18M12 3a14 14 0 0 1 0 18M3.5 9h17M3.5 15h17"/></svg></span>
+        <h3>Sports</h3>
+        <span class="chip"><span class="mono" id="sportsCountHome">0</span></span>
+        <button class="secLink" data-nav="sports">View all</button>
+      </div>
+      <div class="grid" id="sportsGridHome"></div>
     </section>
 
     <section id="view-games" style="display:none;">
@@ -2463,6 +2932,20 @@ tr:last-child td{border-bottom:none;}
               <table class="lbTable">
                 <thead><tr><th>#</th><th>User</th><th>Wager (this month)</th><th>Level</th></tr></thead>
                 <tbody id="lbBody"><tr><td colspan="4" class="muted">Loading…</td></tr></tbody>
+              </table>
+            </div>
+
+            <div class="lbCard" style="margin-top:14px;">
+              <div class="lbCardHd">
+                <div>
+                  <div class="lbLabel">Last 24 hours</div>
+                  <div class="lbSub">Wagered in the past 24h</div>
+                </div>
+                <div class="chip"><span class="mono" id="lbCountDay">0</span></div>
+              </div>
+              <table class="lbTable">
+                <thead><tr><th>#</th><th>User</th><th>Wager (24h)</th><th>Level</th></tr></thead>
+                <tbody id="lbBodyDay"><tr><td colspan="4" class="muted">Loading…</td></tr></tbody>
               </table>
             </div>
           </div>
@@ -3732,7 +4215,7 @@ function updateMeUI(){
   if(mobileAdmin) mobileAdmin.style.display = isAdmin ? "" : "none";
 }
 
-function setView(v){
+function applyView(v){
   const prevView = document.querySelector(".navBtn[data-view].active")?.dataset?.view || "";
   try{ sessionStorage.setItem(LAST_VIEW_KEY, String(v||"home")); }catch(_){ }
   document.querySelectorAll(".navBtn[data-view]").forEach(b=>b.classList.toggle("active", b.dataset.view===v));
@@ -3951,6 +4434,91 @@ function setView(v){
   }
 }
 document.querySelectorAll(".navBtn[data-view]").forEach(b=>b.onclick=()=>setView(b.dataset.view));
+
+/* =========================================================
+   URL ROUTER — every tab/game/profile gets its own address
+   (#/home, #/dice, #/cases/starter, #/trading/coin/x, …)
+   so the browser Back / Forward buttons navigate the site.
+   ========================================================= */
+const ROUTE_VIEWS = new Set(["home","games","dice","roulette","mines","blackjack","plinko","sports","leaderboard","bets","case","cases","trading","admin"]);
+let __routeSuppress = 0;      // ignore hashchange events we triggered ourselves
+let __routeApplying = false;  // true while the router itself is calling app functions
+let __lastMainHash = "#/home";
+let __profilePushed = false;
+
+function setHash(h){
+  if((location.hash||"") === h) return;
+  __routeSuppress++;
+  location.hash = h;
+}
+/* Called from app functions AFTER they did their UI work: records the address. */
+function routePush(h){
+  if(__routeApplying) return; // router triggered this call — don't push again
+  setHash(h);
+  if(h !== "#/profile") __lastMainHash = h;
+}
+/* setView keeps its old name so every existing call site works unchanged.
+   It switches the view immediately, then records the URL. */
+function setView(v){
+  applyView(v);
+  routePush("#/"+v);
+}
+function currentRouteParts(){
+  const h = location.hash || "";
+  if(!h.startsWith("#/")) return null;
+  return h.slice(2).split("/").map(s=>{ try{ return decodeURIComponent(s); }catch(_){ return s; } });
+}
+function routeFromHash(){
+  const parts = currentRouteParts();
+  if(!parts || !parts.length || !parts[0]) return;
+  const root = parts[0], a = parts[1], b = parts[2];
+  __routeApplying = true;
+  try{
+    if(root === "profile"){
+      try{ if(typeof openProfile === "function") openProfile(); }catch(_){ }
+      return;
+    }
+    // any non-profile route closes the profile overlay if it was open
+    try{ $("profileOverlay").classList.remove("show"); }catch(_){ }
+
+    let v = ROUTE_VIEWS.has(root) ? root : "home";
+    if(v === "admin" && !isAdmin) v = "home";
+    applyView(v);
+    __lastMainHash = "#/" + parts.map(encodeURIComponent).join("/");
+
+    if(v === "cases"){
+      if(a){
+        const c = (typeof CASES_DATA !== "undefined" ? CASES_DATA : []).find(x=>String(x.id)===String(a));
+        if(c){ openCaseView(c); } else { casesOpenCase=null; renderCasesLobby(); }
+      }else{
+        casesOpenCase = null;
+        renderCasesLobby();
+      }
+    }
+    if(v === "trading"){
+      if(a === "create") switchTradingTab("Create");
+      else if(a === "portfolio") switchTradingTab("Portfolio");
+      else if(a === "coin" && b){ switchTradingTab("Market"); openTradeView(b); }
+      else switchTradingTab("Market");
+    }
+  } finally {
+    __routeApplying = false;
+  }
+}
+window.addEventListener("hashchange", ()=>{
+  if(__routeSuppress > 0){ __routeSuppress--; return; }
+  routeFromHash();
+});
+
+/* data-nav helpers (hero banners, category pills, "View all" buttons) */
+document.querySelectorAll("[data-nav]").forEach(el=>{
+  el.addEventListener("click", ()=>setView(el.getAttribute("data-nav")));
+});
+/* Wallet button opens the profile (balance & stats live there) */
+(function(){
+  const wb = $("walletBtn");
+  if(wb) wb.onclick = ()=>{ if(typeof openProfile==="function"){ openProfile(); __profilePushed = true; setHash("#/profile"); } };
+})();
 
 async function ensureProfile(){
   const user=session?.user; if(!user) return;
@@ -4208,30 +4776,31 @@ function renderSports(){
 
 function renderGames(){
   const G=[
-    {icon:"🎲",name:"Dice",desc:"Over/Under + live odds",live:true,art:"games/dice/tile.jpg",artOnly:true},
-    {icon:"💣",name:"Mines",desc:"Pick safe tiles",live:true,art:"games/mines/tile.jpg",artOnly:true},
-    {icon:"🪙",name:"Plinko",desc:"Drop & win",live:true,art:"assets/plinko-tile.jpg",artOnly:true},
-    {icon:"🃏",name:"Blackjack",desc:"Classic 21",live:true,art:"assets/blackjack-tile.jpg",artOnly:true},
-    {icon:"🎡",name:"Roulette",desc:"Red / black",live:true,art:"assets/roulette-tile.jpg",artOnly:true},
-    {icon:"�",name:"Cases",desc:"Open cases, win big",live:true},
-    {icon:"🚀",name:"Crash",desc:"Cash out",live:false},
-    {icon:"🎰",name:"Slots",desc:"Spin reels",live:false},
-    {icon:"🎯",name:"Keno",desc:"Pick numbers",live:false},
-    {icon:"📈",name:"Trading",desc:"Meme coin market",live:true},
+    {icon:"🎲",name:"Dice",desc:"Over/Under + live odds",live:true,art:"games/dice/tile.jpg"},
+    {icon:"💣",name:"Mines",desc:"Pick safe tiles",live:true,art:"games/mines/tile.jpg"},
+    {icon:"🪙",name:"Plinko",desc:"Drop & win",live:true,art:"assets/plinko-tile.jpg"},
+    {icon:"🃏",name:"Blackjack",desc:"Classic 21",live:true,art:"assets/blackjack-tile.jpg"},
+    {icon:"🎡",name:"Roulette",desc:"Red / black",live:true,art:"assets/roulette-tile.jpg"},
+    {icon:"📦",name:"Cases",desc:"Open cases, win big",live:true,tone:"gToneGold"},
+    {icon:"🚀",name:"Crash",desc:"Cash out",live:false,tone:"gToneOrange"},
+    {icon:"🎰",name:"Slots",desc:"Spin reels",live:false,tone:"gTonePink"},
+    {icon:"🎯",name:"Keno",desc:"Pick numbers",live:false,tone:"gToneBlue"},
+    {icon:"📈",name:"Trading",desc:"Meme coin market",live:true,tone:"gToneTeal"},
   ];
   const mk=(g)=>{
-    const el=document.createElement("div"); el.className=`tile ${g.live?"liveGame":"soonGame"}${g.artOnly?" artOnly":""}`;
-    if(g.artOnly){
-      el.innerHTML = `<div class="tileArt"><img src="${g.art}" alt="${esc(g.name)}"/></div>`;
-    }else{
-      el.innerHTML = `
-        <div class="tileArt">${g.art?`<img src="${g.art}" alt="${esc(g.name)}"/>`:`<span>${g.icon}</span>`}</div>
-        <div class="tileBody">
-          <p class="tileTitle">${esc(g.name)}</p>
-          <div class="tileDesc">${esc(g.desc)}</div>
-          <div class="tileMeta"><span class="tag ${g.live?"open":""}">${g.live?"LIVE":"SOON"}</span><span class="oddsMini">${g.live?"Live now":"Coming soon"}</span></div>
-        </div>`;
-    }
+    const el=document.createElement("div");
+    el.className=`gTile${g.live?"":" gSoon"}`;
+    const art = g.art
+      ? `<img src="${g.art}" alt="${esc(g.name)}" loading="lazy"/>`
+      : `<div class="gArtCss ${g.tone||"gTonePurple"}">
+           <span class="gBrand">HANDZES.BET</span>
+           <span class="gEmoji">${g.icon}</span>
+           <span class="gName">${esc(g.name).toUpperCase()}</span>
+         </div>`;
+    el.innerHTML = `
+      ${art}
+      <span class="gBadge ${g.live?"live":"soon"}">${g.live?"LIVE":"SOON"}</span>
+      <div class="gPlay"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></div>`;
     el.onclick=()=>{
       if(g.name==="Dice") setView("dice");
       else if(g.name==="Roulette") setView("roulette");
@@ -4397,8 +4966,14 @@ function openProfile(){
   $("pBets").textContent = String(myBets.length);
   $("profileOverlay").classList.add("show");
 }
-function closeProfile(){ $("profileOverlay").classList.remove("show"); }
-$("profileBtn").onclick=openProfile;
+function closeProfile(){
+  $("profileOverlay").classList.remove("show");
+  if((location.hash||"") === "#/profile"){
+    if(__profilePushed){ __profilePushed = false; history.back(); }
+    else setHash(__lastMainHash || "#/home");
+  }
+}
+$("profileBtn").onclick=()=>{ openProfile(); __profilePushed = true; setHash("#/profile"); };
 $("closeProfile").onclick=closeProfile;
 $("pCloseBtn").onclick=closeProfile;
 
@@ -4457,7 +5032,7 @@ async function refreshLeaderboard(){
     .limit(5000);
 
   if(betsErr){
-    $("lbBodyDay").innerHTML = `<tr><td colspan="4" class="muted">24h board failed.</td></tr>`;
+    const el=$("lbBodyDay"); if(el) el.innerHTML = `<tr><td colspan="4" class="muted">24h board failed.</td></tr>`;
     console.error(betsErr);
     return;
   }
@@ -4472,7 +5047,7 @@ async function refreshLeaderboard(){
   // Map user info
   const { data: profs, error: profErr } = await supabase.from("profiles").select("id, display_name, level");
   if(profErr){
-    $("lbBodyDay").innerHTML = `<tr><td colspan="4" class="muted">24h profiles failed.</td></tr>`;
+    const el=$("lbBodyDay"); if(el) el.innerHTML = `<tr><td colspan="4" class="muted">24h profiles failed.</td></tr>`;
     console.error(profErr);
     return;
   }
@@ -4483,8 +5058,9 @@ async function refreshLeaderboard(){
     .sort((a,b)=>b.amt - a.amt)
     .slice(0,50);
 
-  $("lbCountDay").textContent = String(dayRows.length);
-  $("lbBodyDay").innerHTML = dayRows.length ? dayRows.map((r,i)=>{
+  const lbCountDayEl=$("lbCountDay"); if(lbCountDayEl) lbCountDayEl.textContent = String(dayRows.length);
+  const lbBodyDayEl=$("lbBodyDay"); if(!lbBodyDayEl) return;
+  lbBodyDayEl.innerHTML = dayRows.length ? dayRows.map((r,i)=>{
     const prof=profMap.get(r.uid)||{};
     return `
       <tr>
@@ -4863,6 +5439,8 @@ function openCaseView(c) {
 
   const strip = buildCaseStrip2(c.items, c.items[0], false);
   renderCaseTrack2(strip);
+
+  routePush("#/cases/"+encodeURIComponent(c.id));
 }
 
 function renderItemStrip(c) {
@@ -4926,6 +5504,7 @@ function renderCaseQtyBar() {
 $("caseOpenBack").onclick = () => {
   casesOpenCase = null;
   renderCasesLobby();
+  routePush("#/cases");
 };
 
 $("coFairBtn").onclick = () => {
@@ -8756,12 +9335,26 @@ async function showApp(){
   await loadMyBets();
   refreshCaseUI();
   if(isAdmin){ await loadAdminPlayers(); await loadAdminEvents(); }
-  let savedView = "home";
-  try{ savedView = sessionStorage.getItem(LAST_VIEW_KEY) || "home"; }catch(_){ }
-  const allowedViews = new Set(["home","games","dice","roulette","mines","blackjack","plinko","sports","leaderboard","bets","case","trading","admin"]);
-  let targetView = allowedViews.has(savedView) ? savedView : "home";
-  if(targetView === "admin" && !isAdmin) targetView = "home";
-  setView(targetView);
+  // Restore location: URL hash wins (deep link / reload / back into the app),
+  // then the last view saved in this browser tab, then home.
+  const parts = currentRouteParts();
+  if(parts && parts.length && parts[0]){
+    if(parts[0] === "profile"){
+      applyView("home");
+      __lastMainHash = "#/home";
+      routeFromHash(); // opens the profile overlay on top
+    }else{
+      routeFromHash();
+    }
+  }else{
+    let savedView = "home";
+    try{ savedView = sessionStorage.getItem(LAST_VIEW_KEY) || "home"; }catch(_){ }
+    let targetView = ROUTE_VIEWS.has(savedView) ? savedView : "home";
+    if(targetView === "admin" && !isAdmin) targetView = "home";
+    applyView(targetView);
+    // replaceState: give this first page its address without adding a history entry
+    try{ history.replaceState(null, "", "#/"+targetView); __lastMainHash = "#/"+targetView; }catch(_){ setHash("#/"+targetView); }
+  }
 }
 function showAuth(){
   stopPresenceHeartbeat();
@@ -9172,6 +9765,7 @@ function switchTradingTab(tab){
   $("tradingTradeView").style.display="none";
   if(tab==="Market") renderMarketGrid();
   if(tab==="Portfolio") renderPortfolio();
+  routePush(tab==="Create" ? "#/trading/create" : tab==="Portfolio" ? "#/trading/portfolio" : "#/trading");
 }
 $("tradingTabMarket").onclick=()=>switchTradingTab("Market");
 $("tradingTabCreate").onclick=()=>switchTradingTab("Create");
@@ -9640,6 +10234,8 @@ function openTradeView(coinId){
   tradeSide="buy";
   updateTradeSideUI();
   if(meProfile) $("tradeBalDisplay").textContent=to2(meProfile.pts||0);
+
+  routePush("#/trading/coin/"+encodeURIComponent(coinId));
 }
 
 function updateTradeStats(coin){
@@ -9686,6 +10282,7 @@ $("tradeBackBtn").onclick=()=>{
   $("tradingMarketView").style.display="";
   currentTradeCoinId=null;
   renderMarketGrid();
+  routePush("#/trading");
 };
 
 /* ---- TX tabs ---- */
