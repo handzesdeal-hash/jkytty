@@ -3200,6 +3200,83 @@ body{background:var(--bg);}
 .heroCard{min-height:150px;}
 .heroCard .hTitle{font-size:22px;}
 
+/* Dice was hard-capped at 1280px (wrap) / 1320px (section) from an older layout.
+   Now that the rest of the site fills the column, that left it using only 55% of
+   the width on a 2560 screen vs 94% on a 1366 — it looked broken and its size
+   changed wildly between monitors. Let it fill like every other game. */
+#view-dice .sectionBd{max-width:none;}
+.diceWrap{max-width:none;}
+
+/* ---------- dice board, matched to the reference ----------
+   The board still carried an old blue palette (rgba(11,31,49), rgba(56,80,103),
+   rgba(44,62,82)) that clashed with the black/purple site. The reference shows a
+   flat dark board with a thin two-tone bar — lose #D74446 / win #76CE81, sampled
+   from the screenshot; the split percentage stays dynamic in diceUpdateTrack(). */
+/* DARK BOARD, close to the reference's #131418 (kept faintly purple to match the
+   site). The `surfaces go black` rule earlier in this layer paints every panel
+   with a translucent white overlay that lifts it several shades — dice has to
+   beat that with !important or it stays washed out. */
+.diceWrap{background:#0b0910 !important;border:1px solid rgba(255,255,255,.06) !important;}
+.diceSide,.dicePanel{
+  background:#0f0d15 !important;
+  border-color:rgba(255,255,255,.06) !important;
+  box-shadow:none !important;
+}
+.diceBoard{
+  background:#0a0810 !important;
+  border-color:rgba(255,255,255,.06) !important;
+  box-shadow:none !important;
+}
+.diceTabs{background:#16121e;border:1px solid rgba(255,255,255,.06);}
+.diceInput,.diceInputWrap,.diceModeWrap{background:#16121e;border-color:rgba(255,255,255,.07);}
+.diceStakeRow,.diceBottomField{background:transparent;}
+.diceTab.active{background:var(--purple);color:#fff;}
+
+/* The reference puts the 0/25/50/75/100 scale BELOW the bar, not above it, and
+   uses a slim groove rather than a 54px slab. .diceScaleWrap is a flex column, so
+   reordering is enough — the markup order stays as-is. */
+.diceTrackWrap{order:1;height:52px;}
+.diceTickRow{order:2;margin-top:18px;margin-bottom:0;font-size:15px;}
+.diceMainResult{order:3;}
+/* the tick pointer now sits above the label, aiming up at the bar */
+.diceTickRow span::after{
+  bottom:auto;top:-13px;
+  border-bottom:none;
+  border-top:7px solid rgba(255,255,255,.34);
+}
+/* Let the scale absorb the board's spare height so the bar sits centred in the
+   dark area instead of hugging the recent-results row at the top.
+   justify-content centres the whole group (bar + ticks + result), which leaves the
+   BAR high by half the 60px sitting under it — the padding-top puts that back so
+   the bar itself lands on the centre line. */
+.diceScaleWrap{min-height:0;padding:60px 0 0;flex:1;justify-content:center;}
+
+/* slim groove behind the bar instead of the blue-grey slab */
+.diceTrackWrap::before{
+  height:22px;
+  background:#16121e;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);
+}
+.diceTrack{background:#D74446;height:9px;}   /* pre-paint before the first update */
+
+/* full-width purple Bet button, as in the reference (it was green) */
+.diceBetBtn{
+  width:100%;background:var(--purple);color:#fff;border:none;
+  padding:17px 16px;border-radius:12px;font-size:15px;font-weight:900;
+}
+.diceBetBtn:hover{background:#7c4df0;}
+
+/* games row under the board */
+.diceGamesSection{margin-top:14px;}
+.diceGamesSection .sectionHd{align-items:center;}
+#gamesGridDice{display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(158px,11.5vw,196px),1fr));gap:16px;}
+
+/* the three fields below the bar */
+.diceBottom{background:#0f0d15;border:1px solid rgba(255,255,255,.06);}
+.diceRecentPill{background:#16121e;border:1px solid rgba(255,255,255,.06);color:#ddd8e6;}
+.diceRecentPill.win{background:#76CE81;border-color:#76CE81;color:#0a1906;}
+.diceRecentPill.lose{background:#D74446;border-color:#D74446;color:#fff;}
+
 /* The topbar bleeds to the edges of .main using negative margins. Those must match
    the main padding exactly or it overhangs and gets clipped — it was 20px against
    16px of padding, so it hung 4px past the edge at every width. Drive both from a
@@ -3589,6 +3666,17 @@ body{background:var(--bg);}
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- games row under the board, like the reference -->
+      <div class="section diceGamesSection">
+        <div class="sectionHd">
+          <div><h3>🎮 Suggested games</h3></div>
+          <button class="btn" type="button" data-nav="games">View all</button>
+        </div>
+        <div class="sectionBd">
+          <div class="homeGamesGrid" id="gamesGridDice"></div>
         </div>
       </div>
     </section>
@@ -6505,6 +6593,8 @@ function renderGames(){
   const homeSoon=$("gamesGridHomeSoon");
   const gamesLive=$("gamesGridLive");
   const gamesSoon=$("gamesGridSoon");
+  const diceGrid=$("gamesGridDice");   // row shown under the dice board
+  if(diceGrid) diceGrid.innerHTML="";
   if(homeGrid) homeGrid.innerHTML="";
   if(homeLive) homeLive.innerHTML="";
   if(homeSoon) homeSoon.innerHTML="";
@@ -6512,6 +6602,10 @@ function renderGames(){
   if(gamesSoon) gamesSoon.innerHTML="";
 
   const homeList = new Set(["Dice","Mines","Plinko","Blackjack","Roulette","Crash","Keno"]);
+  // A short suggested set under the dice board, not the whole catalogue.
+  // mk() builds a fresh element each call, so this grid gets its own working tiles.
+  const suggested = ["Mines","Plinko","Blackjack","Roulette","Cases"];
+  if(diceGrid) suggested.forEach(n=>{ const g = G.find(x=>x.name===n); if(g) diceGrid.appendChild(mk(g)); });
   G.forEach(g=>{
     if(g.live){
       if(gamesLive) gamesLive.appendChild(mk(g));
@@ -9589,10 +9683,13 @@ function diceUpdateTrack(){
   const pct = Math.max(0, Math.min(100, threshold));
   const track = $("diceTrack");
   if(track){
+    // Colours sampled straight from the reference screenshot: lose #D74446,
+    // win #76CE81 — softer than the old #EF4444 / #22C55E.
+    const LOSE = "#D74446", WIN = "#76CE81";
     if(diceMode === "over"){
-      track.style.background = `linear-gradient(90deg, rgba(239,68,68,.95) 0%, rgba(239,68,68,.95) ${pct}%, rgba(34,197,94,.95) ${pct}%, rgba(34,197,94,.95) 100%)`;
+      track.style.background = `linear-gradient(90deg, ${LOSE} 0%, ${LOSE} ${pct}%, ${WIN} ${pct}%, ${WIN} 100%)`;
     }else{
-      track.style.background = `linear-gradient(90deg, rgba(34,197,94,.95) 0%, rgba(34,197,94,.95) ${pct}%, rgba(239,68,68,.95) ${pct}%, rgba(239,68,68,.95) 100%)`;
+      track.style.background = `linear-gradient(90deg, ${WIN} 0%, ${WIN} ${pct}%, ${LOSE} ${pct}%, ${LOSE} 100%)`;
     }
   }
   if($("diceTargetSlider")){
