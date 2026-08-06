@@ -5644,6 +5644,10 @@ async function chatPoll(initial){
       return;
     }
     const rows = (data||[]).slice().reverse();
+    // An initial poll repaints from scratch, so forget what we already drew.
+    // Without this, a second boot (showApp runs again on auth state change) or a
+    // close/reopen wipes the box and then finds nothing "new" to put back.
+    if(initial) chatLastId = 0;
     const fresh = rows.filter(r => Number(r.id) > chatLastId);
     if(initial) $("chatMsgs").innerHTML = "";
     if(!fresh.length && !initial) return;
@@ -5861,6 +5865,7 @@ function hzBetMax(){ const b = Number(meProfile?.pts); return Number.isFinite(b)
 
 /* restore chat state from last visit (called once the app is shown) */
 function chatRestoreState(){
+  if(document.body.classList.contains("chatOpen")) return; // showApp() can run twice
   try{ if(localStorage.getItem("hz_chat_open") === "1") chatOpenPanel(); }catch(_){ }
 }
 
