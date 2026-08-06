@@ -3082,7 +3082,15 @@ body{background:var(--bg);}
 .tile,.gTile,.caseCard{background:var(--panel2);border:1px solid var(--line);}
 .modal,.authCard,.gameStatsPanel{background:var(--panel);border:1px solid var(--line);}
 .gspCard{background:var(--panel2);}
-.toast{background:var(--panel3);border:1px solid var(--line);}
+/* Toasts were a single nowrap line with an ellipsis, so longer messages
+   ("Session expired — sign in again, then re-save") got cut off mid-sentence.
+   Let them wrap onto as many lines as they need. */
+.toast{
+  background:var(--panel3);border:1px solid var(--line);
+  white-space:normal;text-overflow:clip;overflow:visible;
+  max-width:min(560px, calc(100% - 32px));
+  border-radius:14px;padding:11px 16px;line-height:1.4;text-align:center;
+}
 
 /* controls: quiet by default, purple only when it means something */
 .btn,.catPill,.casesFilterBtn{background:var(--panel2);border:1px solid var(--line);color:#ddd8e6;box-shadow:none;}
@@ -3131,46 +3139,52 @@ body{background:var(--bg);}
 .cropZoomRow{display:flex;align-items:center;gap:10px;margin-top:14px;}
 .cropZoomRow input[type=range]{flex:1;margin-top:0;accent-color:var(--purple);}
 
-/* Full-height rules must use the zoom-corrected height, not raw vh — see the
-   layout-scaling script below. Falls back to 100vh when no zoom is applied. */
-.sidebar{height:var(--vhFull,100vh);}
-.app{min-height:var(--vhFull,100vh);}
-.authWrap{min-height:var(--vhFull,100vh);}
-.tradeViewLayout{min-height:calc(var(--vhFull,100vh) - 200px);}
+/* ============================================================
+   2.6 — RESPONSIVE ACROSS RESOLUTIONS
+   No global zoom: scaling the whole UI made 1080p uncomfortably small. Instead
+   the content is capped so it doesn't stretch forever on wide monitors, and the
+   pieces that matter (sidebar, tiles, hero text) size themselves per band. The
+   result is a near-identical, comfortable layout from ~1280 up to ultrawide.
+   ============================================================ */
+
+/* Stop the content stretching indefinitely. Above ~1790 the extra width becomes
+   side margin instead of ever-wider cards, so 1920 and 2560 look nearly the same. */
+.main{max-width:1760px;margin-left:auto;margin-right:auto;width:100%;}
+
+/* sidebar breathes a little with the viewport */
+@media(min-width:1700px){ .app.show{grid-template-columns:262px minmax(0,1fr);} }
+@media(max-width:1400px){ .app.show{grid-template-columns:224px minmax(0,1fr);} }
+@media(max-width:1150px){ .app.show{grid-template-columns:208px minmax(0,1fr);} }
+
+/* game tiles stay in a comfortable size band instead of stretching */
+#gamesGridHome{grid-template-columns:repeat(auto-fit,minmax(clamp(168px,13.5vw,228px),1fr));}
+.grid,.casesGrid{grid-template-columns:repeat(auto-fit,minmax(clamp(168px,13.5vw,228px),1fr));}
+
+/* hero banners scale their text rather than only their box */
+.heroCard{min-height:clamp(134px,9.6vw,164px);}
+.heroCard .hTitle{font-size:clamp(17px,1.12vw,24px);}
+.heroCard .hSub{font-size:clamp(11px,.62vw,13px);}
+.heroCard .hKick{font-size:clamp(9.5px,.52vw,11px);}
+
+/* The topbar bleeds to the edges of .main using negative margins. Those must match
+   the main padding exactly or it overhangs and gets clipped — it was 20px against
+   16px of padding, so it hung 4px past the edge at every width. Drive both from a
+   single variable so they can never disagree. */
+.main{--mainPad:16px;padding-left:var(--mainPad);padding-right:var(--mainPad);}
+.topbar{
+  margin-left:calc(var(--mainPad) * -1);
+  margin-right:calc(var(--mainPad) * -1);
+  padding-left:var(--mainPad);
+  padding-right:var(--mainPad);
+}
+
+/* narrow laptops: give the content its width back */
+@media(max-width:1350px){
+  .main{--mainPad:12px;}
+  .heroRow{gap:10px;}
+}
 
 </style>
-<script>
-/* ============================================================
-   Consistent layout across monitor sizes.
-   The page is authored for a 2560-wide screen. `zoom` changes the size of a CSS
-   pixel, so at 1920 we set zoom 0.75 and the page LAYS OUT at 2560 CSS px — same
-   columns, same wrapping, same proportions — then renders scaled to fit. Without
-   it everything stretches to fill, so hero banners and text land differently on
-   every machine. Skipped below 1000px so phones keep the responsive layout.
-   ============================================================ */
-(function(){
-  var DESIGN_W = 2560, MIN_Z = 0.60, MAX_Z = 1.30, MIN_W = 1000;
-  function applyZoom(){
-    var el = document.documentElement;
-    // Measure unzoomed. innerWidth is reported in CSS px, which zoom itself
-    // changes, so reading it while zoomed would feed back on every resize.
-    el.style.zoom = "";
-    var w = window.innerWidth || DESIGN_W;
-    var h = window.innerHeight || 0;
-    if(w < MIN_W){                           // leave the responsive layout alone
-      el.style.removeProperty("--vhFull");
-      return;
-    }
-    var z = Math.max(MIN_Z, Math.min(MAX_Z, w / DESIGN_W));
-    el.style.zoom = String(Math.round(z * 1000) / 1000);
-    // `vh` is NOT zoom-aware: a 100vh sidebar renders at 100vh * zoom and leaves a
-    // gap at the bottom. Publish a corrected full-height value for those rules.
-    el.style.setProperty("--vhFull", (h / z) + "px");
-  }
-  applyZoom();
-  window.addEventListener("resize", applyZoom);
-})();
-</script>
 </head>
 <body>
 
@@ -6352,9 +6366,11 @@ async function addWagerAndPayout(stake, payout){
   const newLife = clamp2(Number(meProfile.lifetime_wager||0) + stake);
   const newMonth = clamp2(Number(meProfile.month_wager||0) + stake);
   const newLvl = computeLevel(newLife);
-  const { error } = await supabase.from("profiles").update({
+  // Every game places its bet through here. Without a timeout a stalled request
+  // hangs the caller forever, which leaves game state mid-action and the UI dead.
+  const { error } = await withTimeout(supabase.from("profiles").update({
     pts:newPts, lifetime_wager:newLife, month_wager:newMonth, month_key:monthKey(), level:newLvl
-  }).eq("id", session.user.id);
+  }).eq("id", session.user.id), 12000);
   if(error) throw error;
   // Update host balance only after DB confirmed
   meProfile.lifetime_wager=newLife; meProfile.month_wager=newMonth; meProfile.level=newLvl;
@@ -10476,6 +10492,16 @@ let mines = {
   ended: false
 };
 let minesActionBusy = false;
+let minesBusyWatchdog = 0;
+/* minesActionBusy blocks BOTH picking a tile and cashing out. If anything between
+   setting it and the finally block stalls, the board goes permanently dead and the
+   only way out is a page reload — which is exactly what happened after switching
+   tabs mid-round. Always release it, even if the request never comes back. */
+function setMinesBusy(v){
+  minesActionBusy = !!v;
+  clearTimeout(minesBusyWatchdog);
+  if(v) minesBusyWatchdog = setTimeout(()=>{ minesActionBusy = false; }, 15000);
+}
 
 function persistMinesState(){
   try{
@@ -10793,11 +10819,11 @@ function spawnExplosionOn(btn){
 async function doMinesCashout({ auto=false } = {}){
   if(minesActionBusy) return;
   if(!mines.active || mines.ended) return;
-  minesActionBusy = true;
+  setMinesBusy(true);
 
   const safePicks = mines.revealed.size;
   if(safePicks === 0){
-    minesActionBusy = false;
+    setMinesBusy(false);
     return toast("Pick at least 1 tile");
   }
 
@@ -10805,10 +10831,10 @@ async function doMinesCashout({ auto=false } = {}){
 
   try{
     const newPts = clamp2(Number(meProfile.pts) + payout);
-    const { error } = await supabase
+    const { error } = await withTimeout(supabase
       .from("profiles")
       .update({ pts:newPts })
-      .eq("id", session.user.id);
+      .eq("id", session.user.id), 12000);
     if(error) throw error;
 
     setHostBalance(newPts);
@@ -10824,15 +10850,17 @@ async function doMinesCashout({ auto=false } = {}){
     toast(auto ? `Auto cashout +${to2(payout)}` : `Cashout +${to2(payout)}`);
     endMinesRound("CASHED");
   }catch(e){
-    toast("Cashout failed (DB/RLS)");
+    toast(/timeout/i.test(String(e?.message||"")) ? "Cashout timed out — check your connection and try again"
+                                                  : "Cashout failed (DB/RLS)");
     console.error(e);
   } finally {
-    minesActionBusy = false;
+    setMinesBusy(false);
   }
 }
 
 async function minesPick(i, btn){
-  if(minesActionBusy) return;
+  // say something rather than dying silently — a stuck flag used to look like a frozen board
+  if(minesActionBusy) return toast("Finishing the last action…");
   if(!session || !meProfile){
     await recoverAfterTabSwitch("mines-pick");
     if(!session || !meProfile) return toast("Session/Profile not ready");
