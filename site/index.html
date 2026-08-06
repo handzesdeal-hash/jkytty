@@ -613,6 +613,9 @@ input:focus,select:focus{border-color: rgba(167,139,250,.38);box-shadow:0 0 0 4p
 .sub{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.35;}
 .sectionBd{padding:14px;}
 .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;}
+#gamesGridHome{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;}
+#gamesGridHome .tile{min-height:260px;}
+#gamesGridHome .tileArt{height:180px;}
 @media(max-width:1300px){.grid{grid-template-columns:repeat(4,1fr);}}
 @media(max-width:980px){.grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:520px){.grid{grid-template-columns:1fr;}}
@@ -783,6 +786,114 @@ tr:last-child td{border-bottom:none;}
 .probList{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
 @media(max-width:760px){.probList{grid-template-columns:1fr;}}
 .prob{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background: rgba(0,0,0,.22);font-size:12px;}
+
+/* ========= CASES LOBBY ========= */
+.casesFilterBar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.casesFilterBtn{padding:8px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);color:rgba(255,255,255,.65);font-weight:900;font-size:12px;cursor:pointer;letter-spacing:.04em;user-select:none;transition:all .12s ease;}
+.casesFilterBtn:hover{background:rgba(255,255,255,.08);color:rgba(255,255,255,.85);}
+.casesFilterBtn.active{background:rgba(124,58,237,.18);border-color:rgba(167,139,250,.28);color:rgba(255,255,255,.95);}
+.casesGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+@media(max-width:560px){.casesGrid{grid-template-columns:1fr 1fr;gap:10px;}}
+.caseCard{border:1px solid rgba(255,255,255,.08);background:rgba(8,11,22,.85);border-radius:14px;overflow:hidden;cursor:pointer;user-select:none;transition:transform .1s ease,border-color .15s ease;position:relative;}
+.caseCard:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.16);}
+.caseCardArt{height:120px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.caseCardArt::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 60%,rgba(124,58,237,.18),transparent 70%);pointer-events:none;}
+.caseCardArt .caseEmoji{position:relative;font-size:48px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5));}
+.caseCardBody{padding:10px 12px;border-top:1px solid rgba(255,255,255,.06);}
+.caseCardName{font-weight:950;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:rgba(255,255,255,.92);}
+.caseCardMeta{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:6px;}
+.caseCardPrice{font-family:var(--mono);font-weight:950;font-size:14px;color:rgba(255,255,255,.92);}
+.caseCardRisk{padding:3px 8px;border-radius:999px;font-size:9px;font-weight:1000;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);color:rgba(255,255,255,.58);}
+.caseCardItems{font-size:10px;color:rgba(255,255,255,.40);margin-top:4px;}
+
+/* ========= CASE OPEN VIEW (G4Skins style) ========= */
+.caseOpenView{display:none;}
+.caseOpenView.show{display:block;}
+
+/* top item preview strip */
+.coItemStrip{display:flex;gap:4px;overflow-x:auto;padding:6px 0 10px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.12) transparent;}
+.coItemStrip::-webkit-scrollbar{height:6px;}
+.coItemStrip::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:99px;}
+.coItemCard{flex:0 0 auto;width:110px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(8,11,22,.9);overflow:hidden;position:relative;text-align:center;transition:border-color .12s ease;}
+.coItemCard:hover{border-color:rgba(255,255,255,.16);}
+.coItemCard .ciArt{height:68px;display:flex;align-items:center;justify-content:center;position:relative;}
+.coItemCard .ciArt .iconSvg{width:30px;height:30px;margin:0;vertical-align:0;}
+.coItemCard .ciArt .iconPoop{width:26px;height:26px;margin:0;vertical-align:0;}
+.coItemCard .ciName{font-size:10px;font-weight:900;color:rgba(255,255,255,.78);padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.coItemCard .ciSkin{font-size:9px;color:rgba(255,255,255,.45);padding:0 6px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.coItemCard .ciPrice{font-family:var(--mono);font-size:10px;font-weight:950;color:rgba(255,255,255,.70);padding:2px 6px 6px;}
+.coItemCard .ciChance{position:absolute;top:4px;right:4px;font-size:8px;font-weight:900;color:rgba(255,255,255,.45);background:rgba(0,0,0,.45);padding:1px 5px;border-radius:999px;}
+.coItemCard::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;}
+.coItemCard.toneBlue::after{background:rgba(120,169,255,.7);}
+.coItemCard.tonePurple::after{background:rgba(196,143,255,.7);}
+.coItemCard.toneGold::after{background:rgba(255,213,119,.8);}
+.coItemCard.toneSilver::after{background:rgba(180,190,210,.5);}
+@media(max-width:600px){.coItemCard{width:90px;}.coItemCard .ciArt{height:55px;}}
+
+/* header bar */
+.coHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;flex-wrap:wrap;}
+.coHeaderLeft{display:flex;align-items:center;gap:10px;}
+.coBackBtn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:rgba(255,255,255,.82);font-weight:900;font-size:12px;cursor:pointer;}
+.coBackBtn:hover{background:rgba(255,255,255,.08);}
+.coCaseName{font-weight:1000;font-size:17px;letter-spacing:.04em;color:rgba(255,255,255,.95);}
+.coHeaderRight{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.55);}
+.coOpenedCount{font-family:var(--mono);font-weight:900;}
+
+/* spinner area */
+.coSpinnerWrap{position:relative;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:
+  radial-gradient(700px 260px at 18% 30%,rgba(43,76,255,.14),transparent 65%),
+  radial-gradient(650px 240px at 82% 30%,rgba(173,63,255,.10),transparent 65%),
+  linear-gradient(180deg,rgba(10,14,26,.96),rgba(6,9,18,.96));
+  overflow:hidden;height:210px;}
+.coSpinnerWrap .caseLine{position:absolute;top:12px;bottom:12px;left:50%;width:2px;transform:translateX(-1px);background:linear-gradient(180deg,transparent,rgba(225,233,255,.75),transparent);filter:drop-shadow(0 0 10px rgba(213,223,255,.22));pointer-events:none;z-index:3;}
+.coSpinnerWrap .caseTrack{position:absolute;top:50%;left:0;transform:translateY(-50%);display:flex;gap:4px;align-items:center;will-change:transform;padding:0 28px;}
+/* reuse existing .caseItem styles */
+
+/* pointer triangles */
+.coSpinnerWrap::before,.coSpinnerWrap::after{content:"";position:absolute;left:50%;transform:translateX(-50%);width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;z-index:4;pointer-events:none;}
+.coSpinnerWrap::before{top:6px;border-top:10px solid rgba(205,219,255,.85);filter:drop-shadow(0 0 6px rgba(202,214,255,.35));}
+.coSpinnerWrap::after{bottom:6px;border-bottom:10px solid rgba(205,219,255,.85);filter:drop-shadow(0 0 6px rgba(202,214,255,.35));}
+
+/* bottom controls */
+.coControls{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;flex-wrap:wrap;}
+.coQtyBar{display:flex;gap:0;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.10);}
+.coQtyBtn{width:38px;height:38px;border:none;border-right:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:rgba(255,255,255,.65);font-weight:1000;font-size:13px;cursor:pointer;transition:all .1s ease;}
+.coQtyBtn:last-child{border-right:none;}
+.coQtyBtn:hover{background:rgba(255,255,255,.08);}
+.coQtyBtn.active{background:rgba(124,58,237,.22);color:rgba(255,255,255,.96);}
+.coOpenBtn{padding:10px 24px;border-radius:10px;border:none;background:linear-gradient(135deg,rgba(124,58,237,.95),rgba(167,139,250,.80));color:#fff;font-weight:1000;font-size:13px;cursor:pointer;letter-spacing:.02em;transition:filter .1s ease;box-shadow:0 4px 16px rgba(124,58,237,.30);}
+.coOpenBtn:hover{filter:brightness(1.1);}
+.coOpenBtn:disabled{opacity:.5;cursor:not-allowed;filter:none;}
+.coFairBtn{padding:8px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);color:rgba(255,255,255,.60);font-weight:900;font-size:11px;cursor:pointer;letter-spacing:.04em;transition:all .1s ease;}
+.coFairBtn:hover{background:rgba(255,255,255,.08);}
+.coFairBtn.active{background:rgba(34,197,94,.14);border-color:rgba(34,197,94,.25);color:rgba(134,239,172,.95);}
+
+/* multi results */
+.caseMultiResults{display:none;margin-top:14px;}
+.caseMultiResults.show{display:block;}
+.caseMultiHd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
+.caseMultiHd .mTitle{font-weight:1000;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.55);}
+.caseMultiHd .mSummary{font-family:var(--mono);font-size:13px;font-weight:950;}
+.caseMultiHd .mSummary.profit{color:rgba(34,197,94,.95);}
+.caseMultiHd .mSummary.loss{color:rgba(239,68,68,.95);}
+.caseMultiGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;}
+@media(max-width:560px){.caseMultiGrid{grid-template-columns:1fr 1fr;}}
+.caseMultiCard{border-radius:12px;border:1px solid rgba(255,255,255,.08);overflow:hidden;position:relative;background:rgba(8,11,22,.9);}
+.caseMultiCard .mcArt{height:70px;display:flex;align-items:center;justify-content:center;}
+.caseMultiCard .mcArt .iconSvg{width:34px;height:34px;margin:0;vertical-align:0;}
+.caseMultiCard .mcArt .iconPoop{width:28px;height:28px;margin:0;vertical-align:0;}
+.caseMultiCard .mcMeta{padding:6px 8px 8px;text-align:center;}
+.caseMultiCard .mcName{font-size:11px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:rgba(255,255,255,.70);}
+.caseMultiCard .mcVal{font-family:var(--mono);font-size:13px;font-weight:1000;margin-top:3px;}
+.caseMultiCard.win .mcVal{color:rgba(134,239,172,.95);}
+.caseMultiCard.loss .mcVal{color:rgba(252,165,165,.95);}
+.caseMultiCard::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;}
+.caseMultiCard.toneBlue::after{background:rgba(120,169,255,.7);}
+.caseMultiCard.tonePurple::after{background:rgba(196,143,255,.7);}
+.caseMultiCard.toneGold::after{background:rgba(255,213,119,.8);}
+.caseMultiCard.toneSilver::after{background:rgba(180,190,210,.5);}
+@keyframes mcPop{0%{transform:scale(.88);opacity:0}60%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+.caseMultiCard{animation:mcPop .25s ease forwards;}
 
 .adminPlayersTools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
 .adminPlayersTools .search{flex:1;min-width:260px;margin-top:0;}
@@ -2021,6 +2132,7 @@ tr:last-child td{border-bottom:none;}
     <button class="navBtn" data-view="leaderboard"><span>Leaderboard</span><span class="chip" id="chipLb">0</span></button>
     <button class="navBtn" data-view="bets"><span>My Bets</span><span class="chip" id="chipMyBets">0</span></button>
     <button class="navBtn" data-view="case"><span>Daily Case</span><span class="chip">🎁</span></button>
+    <button class="navBtn" data-view="cases"><span>Cases</span><span class="chip">📦</span></button>
     <button class="navBtn" data-view="trading"><span>Trading</span><span class="chip">📈</span></button>
 
     <div id="adminNavWrap" style="display:none;">
@@ -2085,6 +2197,7 @@ tr:last-child td{border-bottom:none;}
         <button class="navBtn" data-view="leaderboard"><span>Leaderboard</span></button>
         <button class="navBtn" data-view="bets"><span>My Bets</span></button>
         <button class="navBtn" data-view="case"><span>Daily Case</span></button>
+        <button class="navBtn" data-view="cases"><span>Cases</span></button>
         <button class="navBtn" data-view="trading"><span>Trading</span></button>
         <button class="navBtn" data-view="admin" id="mobileAdminNav" style="display:none;"><span>Admin</span></button>
       </div>
@@ -2097,16 +2210,7 @@ tr:last-child td{border-bottom:none;}
           <div class="chip">Games</div>
         </div>
         <div class="sectionBd">
-          <div class="gamesSplit">
-            <div class="gamesBlock">
-              <div class="gamesBlockHd">Live Games</div>
-              <div class="grid" id="gamesGridHomeLive"></div>
-            </div>
-            <div class="gamesBlock">
-              <div class="gamesBlockHd">Coming Soon</div>
-              <div class="grid" id="gamesGridHomeSoon"></div>
-            </div>
-          </div>
+          <div class="grid homeGamesGrid" id="gamesGridHome"></div>
         </div>
       </div>
 
@@ -2405,6 +2509,54 @@ tr:last-child td{border-bottom:none;}
                 <div class="prob"><span>2.5% → win 1000</span><span class="mono">1000</span></div>
                 <div class="prob"><span>9% → win nothing</span><span class="mono">0.00</span></div>
                 <div class="prob"><span>1% → win 10000</span><span class="mono">10000</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-cases" style="display:none;">
+        <div class="section">
+          <div class="sectionHd">
+            <div><h3>Cases</h3><div class="sub">Open cases to win items. Price auto-calculated from EV.</div></div>
+            <div class="chip" id="chipCasesCount">4</div>
+          </div>
+          <div class="sectionBd">
+            <!-- lobby -->
+            <div id="casesLobby">
+              <div class="casesFilterBar" id="casesFilterBar"></div>
+              <div class="casesGrid" id="casesGrid"></div>
+            </div>
+            <!-- open view -->
+            <div class="caseOpenView" id="caseOpenView">
+              <!-- item preview strip -->
+              <div class="coItemStrip" id="coItemStrip"></div>
+              <!-- header -->
+              <div class="coHeader">
+                <div class="coHeaderLeft">
+                  <button class="coBackBtn" id="caseOpenBack">‹ BACK</button>
+                  <span class="coCaseName" id="caseOpenName">Case</span>
+                </div>
+                <div class="coHeaderRight">
+                  <span>OPENED:</span>
+                  <span class="coOpenedCount" id="coOpenedCount">0</span>
+                </div>
+              </div>
+              <!-- spinner -->
+              <div class="coSpinnerWrap">
+                <div class="caseLine"></div>
+                <div class="caseTrack" id="caseTrack2"></div>
+              </div>
+              <!-- controls -->
+              <div class="coControls">
+                <div class="coQtyBar" id="caseQtyBar"></div>
+                <button class="coOpenBtn" id="openCaseBtn2">OPEN FOR 0.00</button>
+                <button class="coFairBtn" id="coFairBtn">⚖ FAIR MODE</button>
+              </div>
+              <!-- multi results -->
+              <div class="caseMultiResults" id="caseMultiResults">
+                <div class="caseMultiHd"><span class="mTitle">Results</span><span class="mSummary" id="caseMultiSummary"></span></div>
+                <div class="caseMultiGrid" id="caseMultiGrid"></div>
               </div>
             </div>
           </div>
@@ -3584,7 +3736,7 @@ function setView(v){
   const prevView = document.querySelector(".navBtn[data-view].active")?.dataset?.view || "";
   try{ sessionStorage.setItem(LAST_VIEW_KEY, String(v||"home")); }catch(_){ }
   document.querySelectorAll(".navBtn[data-view]").forEach(b=>b.classList.toggle("active", b.dataset.view===v));
-  ["home","games","dice","roulette","mines","blackjack","plinko","sports","leaderboard","bets","case","trading","admin"].forEach(id=>{
+  ["home","games","dice","roulette","mines","blackjack","plinko","sports","leaderboard","bets","case","cases","trading","admin"].forEach(id=>{
     const el=$("view-"+id); if(el) el.style.display=(id===v)?"":"none";
   });
   if(prevView === "dice" && v !== "dice") diceResetState();
@@ -3608,6 +3760,7 @@ function setView(v){
     stopAdminPlayersRealtime();
   }
   if(v==="case") refreshCaseUI();
+  if(v==="cases") renderCasesLobby();
   if(v==="trading") tradingOnViewEnter();
   if(v==="blackjack") bjOnViewEnter();
   if(v==="roulette"){ try{ if(window._rouDrawWheel) window._rouDrawWheel(); }catch(e){} }
@@ -4060,6 +4213,7 @@ function renderGames(){
     {icon:"🪙",name:"Plinko",desc:"Drop & win",live:true,art:"assets/plinko-tile.jpg",artOnly:true},
     {icon:"🃏",name:"Blackjack",desc:"Classic 21",live:true,art:"assets/blackjack-tile.jpg",artOnly:true},
     {icon:"🎡",name:"Roulette",desc:"Red / black",live:true,art:"assets/roulette-tile.jpg",artOnly:true},
+    {icon:"�",name:"Cases",desc:"Open cases, win big",live:true},
     {icon:"🚀",name:"Crash",desc:"Cash out",live:false},
     {icon:"🎰",name:"Slots",desc:"Spin reels",live:false},
     {icon:"🎯",name:"Keno",desc:"Pick numbers",live:false},
@@ -4085,25 +4239,31 @@ function renderGames(){
       else if(g.name==="Blackjack") setView("blackjack");
       else if(g.name==="Plinko") setView("plinko");
       else if(g.name==="Trading") setView("trading");
+      else if(g.name==="Cases") setView("cases");
       else toast("Coming soon");
     };
     return el;
   };
+  const homeGrid=$("gamesGridHome");
   const homeLive=$("gamesGridHomeLive");
   const homeSoon=$("gamesGridHomeSoon");
   const gamesLive=$("gamesGridLive");
   const gamesSoon=$("gamesGridSoon");
+  if(homeGrid) homeGrid.innerHTML="";
   if(homeLive) homeLive.innerHTML="";
   if(homeSoon) homeSoon.innerHTML="";
   if(gamesLive) gamesLive.innerHTML="";
   if(gamesSoon) gamesSoon.innerHTML="";
 
+  const homeList = new Set(["Dice","Mines","Plinko","Blackjack","Roulette","Crash","Keno"]);
   G.forEach(g=>{
     if(g.live){
       if(gamesLive) gamesLive.appendChild(mk(g));
+      if(homeGrid && homeList.has(g.name)) homeGrid.appendChild(mk(g));
       if(homeLive) homeLive.appendChild(mk(g));
     }else{
       if(gamesSoon) gamesSoon.appendChild(mk(g));
+      if(homeGrid && homeList.has(g.name)) homeGrid.appendChild(mk(g));
       if(homeSoon) homeSoon.appendChild(mk(g));
     }
   });
@@ -4540,6 +4700,396 @@ $("openCaseBtn").onclick=async ()=>{
   }, settleAfterMs);
 };
 renderCaseTrack(buildCaseStrip(CASE_ITEMS[0]));
+
+/* ========= CASES SYSTEM (CS:GO-style EV pricing) ========= */
+/*
+  Normal mode:  Case Price = EV / (1 - houseEdge)
+                EV = Σ (item_value × probability)
+  Fair mode:    Every item has equal chance (1/N).
+                EV_fair = Σ(item_values) / N
+                Fair Price = EV_fair / (1 - houseEdge)
+                Fair price is higher because rare items get higher chance.
+*/
+const HOUSE_EDGE = 0.10;
+
+function calcCasePrice(items) {
+  const ev = items.reduce((sum, it) => sum + it.amount * (it.p / 100), 0);
+  return Math.round((ev / (1 - HOUSE_EDGE)) * 100) / 100;
+}
+
+function calcFairPrice(items) {
+  const nonEmpty = items.filter(it => it.amount > 0);
+  const all = items.length;
+  const ev = items.reduce((sum, it) => sum + it.amount, 0) / all;
+  return Math.round((ev / (1 - HOUSE_EDGE)) * 100) / 100;
+}
+
+const CASES_DATA = [
+  {
+    id: "starter", name: "Starter Case", emoji: "📦", risk: "low", opened: 0,
+    items: [
+      { amount:0.50,  skin:"Worn Grip",    variant:"Consumer Grade", tone:"toneSilver", iconType:"poop",   p:40 },
+      { amount:1.00,  skin:"Field Wrap",   variant:"Consumer Grade", tone:"toneBlue",   iconType:"poop",   p:30 },
+      { amount:2.00,  skin:"Patrol Camo",  variant:"Industrial",     tone:"toneBlue",   iconType:"yellow", p:15 },
+      { amount:5.00,  skin:"Blue Flare",   variant:"Mil-Spec",       tone:"tonePurple", iconType:"yellow", p:8 },
+      { amount:10.00, skin:"Night Fade",   variant:"Restricted",     tone:"tonePurple", iconType:"yellow", p:4 },
+      { amount:25.00, skin:"Neon Rush",    variant:"Classified",     tone:"toneGold",   iconType:"blue",   p:2.2 },
+      { amount:0.00,  skin:"Empty",        variant:"Unlucky",        tone:"toneSilver", iconType:"poop",   p:0.5 },
+      { amount:50.00, skin:"Dragon Mint",  variant:"Covert",         tone:"toneGold",   iconType:"blue",   p:0.3 },
+    ],
+  },
+  {
+    id: "hunter", name: "Hunter Case", emoji: "🎯", risk: "medium", opened: 0,
+    items: [
+      { amount:2.00,   skin:"Forest Mesh",  variant:"Consumer Grade", tone:"toneSilver", iconType:"poop",   p:38 },
+      { amount:5.00,   skin:"Sand Dune",    variant:"Consumer Grade", tone:"toneBlue",   iconType:"poop",   p:28 },
+      { amount:10.00,  skin:"Urban DDPAT",  variant:"Industrial",     tone:"toneBlue",   iconType:"yellow", p:16 },
+      { amount:25.00,  skin:"Crimson Web",  variant:"Mil-Spec",       tone:"tonePurple", iconType:"yellow", p:10 },
+      { amount:50.00,  skin:"Asiimov",      variant:"Restricted",     tone:"tonePurple", iconType:"yellow", p:4.5 },
+      { amount:100.00, skin:"Hyper Beast",  variant:"Classified",     tone:"toneGold",   iconType:"blue",   p:2.2 },
+      { amount:0.00,   skin:"Empty",        variant:"Unlucky",        tone:"toneSilver", iconType:"poop",   p:0.8 },
+      { amount:250.00, skin:"Fire Serpent", variant:"Covert",         tone:"toneGold",   iconType:"blue",   p:0.5 },
+    ],
+  },
+  {
+    id: "phantom", name: "Phantom Case", emoji: "👻", risk: "high", opened: 0,
+    items: [
+      { amount:5.00,    skin:"Rust Coat",    variant:"Consumer Grade", tone:"toneSilver", iconType:"poop",   p:35 },
+      { amount:15.00,   skin:"Bullet Rain",  variant:"Consumer Grade", tone:"toneBlue",   iconType:"poop",   p:25 },
+      { amount:40.00,   skin:"Vulcan",       variant:"Industrial",     tone:"toneBlue",   iconType:"yellow", p:18 },
+      { amount:100.00,  skin:"Fade",         variant:"Mil-Spec",       tone:"tonePurple", iconType:"yellow", p:12 },
+      { amount:250.00,  skin:"Doppler",      variant:"Restricted",     tone:"tonePurple", iconType:"yellow", p:5.5 },
+      { amount:500.00,  skin:"Howl",         variant:"Classified",     tone:"toneGold",   iconType:"blue",   p:2.8 },
+      { amount:0.00,    skin:"Empty",        variant:"Unlucky",        tone:"toneSilver", iconType:"poop",   p:1.0 },
+      { amount:1500.00, skin:"Dragon Lore",  variant:"Covert",         tone:"toneGold",   iconType:"blue",   p:0.7 },
+    ],
+  },
+  {
+    id: "godtier", name: "God Tier Case", emoji: "💎", risk: "ultra", opened: 0,
+    items: [
+      { amount:25.00,    skin:"Battle-Worn",   variant:"Consumer Grade", tone:"toneSilver", iconType:"poop",   p:32 },
+      { amount:75.00,    skin:"Neon Rider",    variant:"Consumer Grade", tone:"toneBlue",   iconType:"poop",   p:24 },
+      { amount:200.00,   skin:"Printstream",   variant:"Industrial",     tone:"toneBlue",   iconType:"yellow", p:18 },
+      { amount:500.00,   skin:"Pandora",       variant:"Mil-Spec",       tone:"tonePurple", iconType:"yellow", p:13 },
+      { amount:1000.00,  skin:"Skeleton Fade", variant:"Restricted",     tone:"tonePurple", iconType:"yellow", p:7 },
+      { amount:2500.00,  skin:"Sapphire",      variant:"Classified",     tone:"toneGold",   iconType:"blue",   p:3.5 },
+      { amount:0.00,     skin:"Empty",         variant:"Unlucky",        tone:"toneSilver", iconType:"poop",   p:1.5 },
+      { amount:10000.00, skin:"Souvenir Lore", variant:"Covert",         tone:"toneGold",   iconType:"blue",   p:1.0 },
+    ],
+  },
+];
+
+CASES_DATA.forEach(c => {
+  c.price = calcCasePrice(c.items);
+  c.fairPrice = calcFairPrice(c.items);
+});
+
+let casesActiveFilter = "all";
+let casesOpenCase = null;
+let caseSpinning2 = false;
+let caseQty = 1;
+let caseFairMode = false;
+
+/* ---------- LOBBY ---------- */
+function renderCasesLobby() {
+  const bar = $("casesFilterBar");
+  const grid = $("casesGrid");
+  if (!bar || !grid) return;
+
+  const lobby = $("casesLobby");
+  const openView = $("caseOpenView");
+  if (lobby) lobby.style.display = "";
+  if (openView) openView.classList.remove("show");
+
+  const filters = [
+    { key:"all", label:"All" },
+    { key:"low", label:"Low" },
+    { key:"medium", label:"Medium" },
+    { key:"high", label:"High" },
+    { key:"ultra", label:"Ultra" },
+  ];
+  bar.innerHTML = "";
+  filters.forEach(f => {
+    const btn = document.createElement("button");
+    btn.className = `casesFilterBtn ${casesActiveFilter === f.key ? "active" : ""}`;
+    btn.textContent = f.label;
+    btn.onclick = () => { casesActiveFilter = f.key; renderCasesLobby(); };
+    bar.appendChild(btn);
+  });
+
+  const filtered = casesActiveFilter === "all" ? CASES_DATA : CASES_DATA.filter(c => c.risk === casesActiveFilter);
+  grid.innerHTML = "";
+  filtered.forEach(c => {
+    const card = document.createElement("div");
+    card.className = `caseCard`;
+    card.innerHTML = `
+      <div class="caseCardArt"><span class="caseEmoji">${c.emoji}</span></div>
+      <div class="caseCardBody">
+        <div class="caseCardName">${esc(c.name)}</div>
+        <div class="caseCardMeta">
+          <span class="caseCardPrice">${to2(c.price)}</span>
+          <span class="caseCardRisk">${c.risk}</span>
+        </div>
+        <div class="caseCardItems">${c.items.length} items</div>
+      </div>
+    `;
+    card.onclick = () => openCaseView(c);
+    grid.appendChild(card);
+  });
+
+  $("chipCasesCount").textContent = String(filtered.length);
+}
+
+/* ---------- OPEN VIEW ---------- */
+function openCaseView(c) {
+  casesOpenCase = c;
+  caseQty = 1;
+  caseFairMode = false;
+  const lobby = $("casesLobby");
+  const openView = $("caseOpenView");
+  if (lobby) lobby.style.display = "none";
+  if (openView) openView.classList.add("show");
+
+  $("caseOpenName").textContent = c.name.toUpperCase();
+  $("coOpenedCount").textContent = String(c.opened);
+
+  const mr = $("caseMultiResults");
+  if (mr) mr.classList.remove("show");
+
+  renderItemStrip(c);
+  renderCaseQtyBar();
+  updateCaseOpenBtn();
+  updateFairBtn();
+
+  const strip = buildCaseStrip2(c.items, c.items[0], false);
+  renderCaseTrack2(strip);
+}
+
+function renderItemStrip(c) {
+  const el = $("coItemStrip");
+  if (!el) return;
+  el.innerHTML = "";
+  const items = c.items.filter(it => it.amount > 0);
+  items.sort((a, b) => a.amount - b.amount);
+  const n = c.items.length;
+  items.forEach(it => {
+    const fairChance = (100 / n).toFixed(1);
+    const chance = caseFairMode ? fairChance : it.p;
+    const card = document.createElement("div");
+    card.className = `coItemCard ${it.tone || "toneBlue"}`;
+    card.innerHTML = `
+      <span class="ciChance">${chance}%</span>
+      <div class="ciArt">${caseIcon(it.iconType)}</div>
+      <div class="ciName">${esc(it.skin)}</div>
+      <div class="ciSkin">${esc(it.variant)}</div>
+      <div class="ciPrice">${to2(it.amount)}</div>
+    `;
+    el.appendChild(card);
+  });
+}
+
+function updateCaseOpenBtn() {
+  if (!casesOpenCase) return;
+  const price = caseFairMode ? casesOpenCase.fairPrice : casesOpenCase.price;
+  const total = price * caseQty;
+  const label = caseQty > 1
+    ? `OPEN ${caseQty} FOR ${to2(total)}`
+    : `OPEN FOR ${to2(total)}`;
+  $("openCaseBtn2").textContent = label;
+}
+
+function updateFairBtn() {
+  const btn = $("coFairBtn");
+  if (!btn) return;
+  btn.classList.toggle("active", caseFairMode);
+  btn.textContent = caseFairMode ? "⚖ FAIR MODE ON" : "⚖ FAIR MODE";
+}
+
+function renderCaseQtyBar() {
+  const bar = $("caseQtyBar");
+  if (!bar) return;
+  bar.innerHTML = "";
+  for (let i = 1; i <= 5; i++) {
+    const btn = document.createElement("button");
+    btn.className = `coQtyBtn${i === caseQty ? " active" : ""}`;
+    btn.textContent = i;
+    btn.onclick = () => {
+      if (caseSpinning2) return;
+      caseQty = i;
+      renderCaseQtyBar();
+      updateCaseOpenBtn();
+    };
+    bar.appendChild(btn);
+  }
+}
+
+$("caseOpenBack").onclick = () => {
+  casesOpenCase = null;
+  renderCasesLobby();
+};
+
+$("coFairBtn").onclick = () => {
+  if (caseSpinning2) return;
+  caseFairMode = !caseFairMode;
+  updateFairBtn();
+  updateCaseOpenBtn();
+  if (casesOpenCase) renderItemStrip(casesOpenCase);
+};
+
+/* ---------- SPIN HELPERS ---------- */
+function weightedPick2(items, fair) {
+  if (fair) {
+    return items[Math.floor(Math.random() * items.length)];
+  }
+  const r = Math.random() * 100;
+  let a = 0;
+  for (const it of items) { a += it.p; if (r <= a) return it; }
+  return items[0];
+}
+
+function buildCaseStrip2(items, target, fair) {
+  const arr = [];
+  const pre = 56, post = 24;
+  for (let i = 0; i < pre; i++) {
+    arr.push({ ...(fair ? items[Math.floor(Math.random() * items.length)] : weightedPick2(items, false)) });
+  }
+  arr.push({ ...target, __win: true });
+  for (let i = 0; i < post; i++) {
+    arr.push({ ...(fair ? items[Math.floor(Math.random() * items.length)] : weightedPick2(items, false)) });
+  }
+  return arr;
+}
+
+function renderCaseTrack2(items) {
+  const track = $("caseTrack2");
+  if (!track) return;
+  track.innerHTML = "";
+  items.forEach(it => {
+    const el = document.createElement("div");
+    el.className = `caseItem ${it.tone || "toneBlue"}`;
+    el.innerHTML = `
+      <div class="skinArt">${caseIcon(it.iconType)}</div>
+      <div class="skinMeta">
+        <div class="skinName">${esc(it.skin || "Skin")}</div>
+        <div class="skinVariant">${esc(it.variant || "Pattern")}</div>
+      </div>
+      <div class="skinValue">${to2(it.amount)}</div>
+    `;
+    track.appendChild(el);
+  });
+}
+
+/* ---------- OPEN CASE ---------- */
+$("openCaseBtn2").onclick = async () => {
+  if (!(await ensureActionReady())) return;
+  if (caseSpinning2) return;
+  if (!meProfile) return toast("Profile not loaded");
+  if (!casesOpenCase) return toast("No case selected");
+
+  const c = casesOpenCase;
+  const qty = caseQty;
+  const fair = caseFairMode;
+  const unitPrice = fair ? c.fairPrice : c.price;
+  const totalCost = unitPrice * qty;
+  const bal = Number(meProfile.pts || 0);
+  if (bal < totalCost) return toast(`Need ${to2(totalCost)} (have ${to2(bal)})`);
+
+  caseSpinning2 = true;
+
+  const mr = $("caseMultiResults");
+  if (mr) mr.classList.remove("show");
+
+  const rewards = [];
+  for (let i = 0; i < qty; i++) rewards.push(weightedPick2(c.items, fair));
+
+  const lastReward = rewards[rewards.length - 1];
+  const strip = buildCaseStrip2(c.items, lastReward, fair);
+  renderCaseTrack2(strip);
+
+  const track = $("caseTrack2");
+  track.style.transition = "none";
+  track.style.transform = "translateY(-50%) translateX(0px)";
+  const stage = track.parentElement;
+  const firstCard = track.firstElementChild;
+  const itemW = firstCard ? firstCard.getBoundingClientRect().width : 120;
+  const computed = getComputedStyle(track);
+  const gapVal = parseFloat(computed.columnGap || computed.gap || "4") || 4;
+  const sidePad = parseFloat(computed.paddingLeft || "28") || 28;
+  const stageW = stage.clientWidth;
+  const winIndex = Math.max(0, strip.findIndex(it => it.__win));
+  const randomOffset = (itemW * (0.16 + Math.random() * 0.68)) + ((Math.random() - 0.5) * gapVal * 0.55);
+  const winPoint = sidePad + winIndex * (itemW + gapVal) + randomOffset;
+  const targetX = (stageW / 2) - winPoint;
+  const spinDurationMs = 6000;
+  const settleAfterMs = spinDurationMs + 140;
+
+  animateCaseTrackDecel(track, targetX, spinDurationMs);
+
+  const stepW = itemW + gapVal;
+  let lastSlot = null;
+  const tm = setInterval(() => {
+    const tx = getTranslateX(track);
+    const pointerX = (stageW / 2) - tx;
+    const slot = Math.floor((pointerX - sidePad) / stepW);
+    if (slot !== lastSlot) {
+      sfx(900, 0.015, "square", 0.05);
+      lastSlot = slot;
+    }
+  }, 22);
+
+  setTimeout(async () => {
+    clearInterval(tm);
+    const totalPrize = rewards.reduce((s, r) => s + Number(r.amount), 0);
+    const newPts = clamp2(bal - totalCost + totalPrize);
+    const { error } = await supabase.from("profiles").update({ pts: newPts }).eq("id", session.user.id);
+    if (error) { toast("Case payout failed (DB/RLS)."); console.error(error); caseSpinning2 = false; return; }
+    meProfile.pts = newPts;
+    setHostBalance(newPts);
+    c.opened += qty;
+    $("coOpenedCount").textContent = String(c.opened);
+
+    if (qty === 1) {
+      showCaseDropPopup(lastReward);
+      const net = totalPrize - totalCost;
+      toast(totalPrize > 0 ? `Won ${to2(totalPrize)} (${net >= 0 ? "+" : ""}${to2(net)})` : `Lost ${to2(totalCost)}`);
+    } else {
+      renderMultiCaseResults(rewards, totalCost, totalPrize);
+      const net = totalPrize - totalCost;
+      toast(`${qty}x: won ${to2(totalPrize)} (${net >= 0 ? "+" : ""}${to2(net)})`);
+    }
+    caseSpinning2 = false;
+  }, settleAfterMs);
+};
+
+function renderMultiCaseResults(rewards, totalCost, totalPrize) {
+  const mr = $("caseMultiResults");
+  const grid = $("caseMultiGrid");
+  const summary = $("caseMultiSummary");
+  if (!mr || !grid) return;
+
+  const net = totalPrize - totalCost;
+  summary.textContent = `${net >= 0 ? "+" : ""}${to2(net)}`;
+  summary.className = `mSummary ${net >= 0 ? "profit" : "loss"}`;
+
+  grid.innerHTML = "";
+  rewards.forEach((r, i) => {
+    const card = document.createElement("div");
+    const won = Number(r.amount) > 0;
+    card.className = `caseMultiCard ${r.tone || "toneBlue"} ${won ? "win" : "loss"}`;
+    card.style.animationDelay = `${i * 0.08}s`;
+    card.innerHTML = `
+      <div class="mcArt">${caseDropIcon(r.iconType)}</div>
+      <div class="mcMeta">
+        <div class="mcName">${esc(r.skin)}</div>
+        <div class="mcVal">${to2(r.amount)}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  mr.classList.add("show");
+  mr.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
 
 /* ADMIN: USERS */
 async function loadUsersList(){
@@ -6508,7 +7058,7 @@ function bjOnViewEnter(){
 }
 
 /* GAMES: Dice / Roulette / Mines */
-["diceRollBtn","rouSpinBtn2","minesStartBtn","minesCashBtn","openCaseBtn","mConfirm"].forEach(id=>{
+["diceRollBtn","rouSpinBtn2","minesStartBtn","minesCashBtn","openCaseBtn","openCaseBtn2","mConfirm"].forEach(id=>{
   const el=$(id); if(el) el.addEventListener("click", ()=>sfx(520,0.05,"sine",0.03));
 });
 
