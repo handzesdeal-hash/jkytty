@@ -3185,26 +3185,34 @@ body{background:var(--bg);}
   .topbar{flex-wrap:wrap;row-gap:8px;}
 }
 
-/* sidebar breathes a little with the viewport */
-@media(min-width:1700px){ .app.show{grid-template-columns:262px minmax(0,1fr);} }
+/* Sidebar keeps its 242px default on every desktop size — widening it above 1700
+   made 1080p feel zoomed in for no benefit. Only narrow laptops shrink it. */
 @media(max-width:1400px){ .app.show{grid-template-columns:224px minmax(0,1fr);} }
 @media(max-width:1150px){ .app.show{grid-template-columns:208px minmax(0,1fr);} }
 
-/* game tiles stay in a comfortable size band instead of stretching */
-#gamesGridHome{grid-template-columns:repeat(auto-fit,minmax(clamp(168px,13.5vw,228px),1fr));}
-.grid,.casesGrid{grid-template-columns:repeat(auto-fit,minmax(clamp(168px,13.5vw,228px),1fr));}
+/* Tile density close to the original ~180px minimum. The earlier 228px floor
+   pushed 1920 down to 6 tiles per row at 265px each, which read as zoomed in. */
+#gamesGridHome{grid-template-columns:repeat(auto-fit,minmax(clamp(158px,11.5vw,196px),1fr));}
+.grid,.casesGrid{grid-template-columns:repeat(auto-fit,minmax(clamp(158px,11.5vw,196px),1fr));}
 
-/* hero banners scale their text rather than only their box */
-.heroCard{min-height:clamp(134px,9.6vw,164px);}
-.heroCard .hTitle{font-size:clamp(17px,1.12vw,24px);}
-.heroCard .hSub{font-size:clamp(11px,.62vw,13px);}
-.heroCard .hKick{font-size:clamp(9.5px,.52vw,11px);}
+/* Fixed hero text: with the content width capped, viewport-based clamps would
+   still differ between monitors for no reason. */
+.heroCard{min-height:150px;}
+.heroCard .hTitle{font-size:22px;}
 
 /* The topbar bleeds to the edges of .main using negative margins. Those must match
    the main padding exactly or it overhangs and gets clipped — it was 20px against
    16px of padding, so it hung 4px past the edge at every width. Drive both from a
    single variable so they can never disagree. */
-.main{--mainPad:16px;padding-left:var(--mainPad);padding-right:var(--mainPad);}
+/* No content cap — the games grid uses the full screen width. Capping it left
+   ~330px of dead space either side on a 2560 monitor. Consistency between
+   monitors comes from the TILE SIZE being the same (~215-225px everywhere);
+   a wider screen simply shows more of them per row, which is what it's for. */
+.main{
+  --padMin:16px;
+  --mainPad:var(--padMin);
+  padding-left:var(--mainPad);padding-right:var(--mainPad);
+}
 .topbar{
   margin-left:calc(var(--mainPad) * -1);
   margin-right:calc(var(--mainPad) * -1);
@@ -3214,17 +3222,8 @@ body{background:var(--bg);}
 
 /* narrow laptops: give the content its width back */
 @media(max-width:1350px){
-  .main{--mainPad:12px;}
+  .main{--padMin:12px;}
   .heroRow{gap:10px;}
-}
-
-/* Wide screens: turn the surplus into side padding rather than ever-wider cards,
-   so 1920 and 2560 stay close. The topbar still bleeds the full padding, so it
-   spans edge to edge while its contents line up with the page content.
-   MUST come after the base `--mainPad:16px` above — media queries add no
-   specificity, so a later plain rule would otherwise win. */
-@media(min-width:1800px){
-  .main{--mainPad:calc((100% - 1720px) / 2);}
 }
 
 </style>
