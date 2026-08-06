@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -3131,7 +3131,46 @@ body{background:var(--bg);}
 .cropZoomRow{display:flex;align-items:center;gap:10px;margin-top:14px;}
 .cropZoomRow input[type=range]{flex:1;margin-top:0;accent-color:var(--purple);}
 
+/* Full-height rules must use the zoom-corrected height, not raw vh — see the
+   layout-scaling script below. Falls back to 100vh when no zoom is applied. */
+.sidebar{height:var(--vhFull,100vh);}
+.app{min-height:var(--vhFull,100vh);}
+.authWrap{min-height:var(--vhFull,100vh);}
+.tradeViewLayout{min-height:calc(var(--vhFull,100vh) - 200px);}
+
 </style>
+<script>
+/* ============================================================
+   Consistent layout across monitor sizes.
+   The page is authored for a 2560-wide screen. `zoom` changes the size of a CSS
+   pixel, so at 1920 we set zoom 0.75 and the page LAYS OUT at 2560 CSS px — same
+   columns, same wrapping, same proportions — then renders scaled to fit. Without
+   it everything stretches to fill, so hero banners and text land differently on
+   every machine. Skipped below 1000px so phones keep the responsive layout.
+   ============================================================ */
+(function(){
+  var DESIGN_W = 2560, MIN_Z = 0.60, MAX_Z = 1.30, MIN_W = 1000;
+  function applyZoom(){
+    var el = document.documentElement;
+    // Measure unzoomed. innerWidth is reported in CSS px, which zoom itself
+    // changes, so reading it while zoomed would feed back on every resize.
+    el.style.zoom = "";
+    var w = window.innerWidth || DESIGN_W;
+    var h = window.innerHeight || 0;
+    if(w < MIN_W){                           // leave the responsive layout alone
+      el.style.removeProperty("--vhFull");
+      return;
+    }
+    var z = Math.max(MIN_Z, Math.min(MAX_Z, w / DESIGN_W));
+    el.style.zoom = String(Math.round(z * 1000) / 1000);
+    // `vh` is NOT zoom-aware: a 100vh sidebar renders at 100vh * zoom and leaves a
+    // gap at the bottom. Publish a corrected full-height value for those rules.
+    el.style.setProperty("--vhFull", (h / z) + "px");
+  }
+  applyZoom();
+  window.addEventListener("resize", applyZoom);
+})();
+</script>
 </head>
 <body>
 
@@ -4780,7 +4819,20 @@ if (typeof window.plinkoSetBalance !== 'function') {
 const keysOk = !SUPABASE_URL.includes("PASTE_") && !SUPABASE_ANON_KEY.includes("PASTE_");
 $("setupHint").style.display = keysOk ? "none" : "";
 
-const supabase = keysOk ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+const supabase = keysOk ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    // supabase-js serialises all auth work through navigator.locks by default.
+    // When a tab is backgrounded (switching to Discord, etc.) and then resumed,
+    // the lock holder can stall — and because EVERY PostgREST request awaits the
+    // session to attach its JWT, the entire app freezes until a manual reload:
+    // "Saving…" never finishes, bets stop registering. Pass straight through
+    // instead; a duplicate token refresh is far cheaper than a deadlock.
+    lock: (_name, _acquireTimeout, fn) => fn(),
+  },
+}) : null;
 if(!keysOk){ $("authWrap").classList.add("show"); toast("Paste Supabase keys in index.html"); }
 
 function setAuthTab(which){
@@ -5941,6 +5993,11 @@ if($("pTipSendBtn")) $("pTipSendBtn").onclick = async ()=>{
   await doTip(target, amt);
 };
 
+/* Set while the OS file dialog is open so the blur/focus it causes doesn't trigger
+   a session recovery. Declared here because the upload handler runs before
+   recoverAfterTabSwitch is defined further down. */
+let suppressTabRecoverUntil = 0;
+
 /* ---------- avatar upload + crop ----------
    Picking a file used to be cropped blindly to the centre. Now it opens a stage
    you can drag and zoom, and only the visible square is saved. */
@@ -6004,10 +6061,18 @@ function cropConfirm(){
   toast("Photo ready — press Save profile");
 }
 
-if($("pAvaUploadBtn")) $("pAvaUploadBtn").onclick = ()=>$("pAvaFile").click();
+if($("pAvaUploadBtn")) $("pAvaUploadBtn").onclick = ()=>{
+  // Opening the OS file dialog blurs the window, which fires focus/visibility and
+  // kicks off a full session recovery — refreshSession plus a reload of events and
+  // bets — at the exact moment we're about to save. Nothing there is needed to pick
+  // a file, so hold recovery off until shortly after the dialog closes.
+  suppressTabRecoverUntil = Date.now() + 180000;   // hard cap if the dialog is abandoned
+  $("pAvaFile").click();
+};
 if($("pAvaFile")) $("pAvaFile").addEventListener("change", async (e)=>{
   const f = e.target.files && e.target.files[0];
   e.target.value = "";
+  suppressTabRecoverUntil = Date.now() + 1500;     // let the window settle, then resume
   if(!f) return;
   if(!/^image\//.test(f.type)) return toast("Pick an image file");
   try{
@@ -6588,11 +6653,11 @@ $("pSaveBtn").onclick=async ()=>{
     if(window.__pendingAvatarUrl !== undefined) patch.avatar_url = window.__pendingAvatarUrl; // string or null
     if(window.__pendingPrivacy !== undefined) patch.is_public = !!window.__pendingPrivacy;
 
-    let { error } = await withTimeout(supabase.from("profiles").update(patch).eq("id", uid), 20000);
+    let { error } = await withTimeout(supabase.from("profiles").update(patch).eq("id", uid), 12000);
     if(error && /avatar_url|is_public|column|schema cache/i.test(String(error.message||""))){
       // columns not added yet (admin hasn't run the v2.1 SQL) — save what we can
       const fallback = { display_name:newName, avatar_seed: (typeof window.__pendingAvatarUrl === "string" ? window.__pendingAvatarUrl : seed) };
-      ({ error } = await withTimeout(supabase.from("profiles").update(fallback).eq("id", uid), 20000));
+      ({ error } = await withTimeout(supabase.from("profiles").update(fallback).eq("id", uid), 12000));
       if(!error){
         meProfile.display_name=newName;
         meProfile.avatar_seed=fallback.avatar_seed;
@@ -11118,6 +11183,8 @@ async function ensureActionReady(showToast=true){
 async function recoverAfterTabSwitch(reason="focus"){
   if(!supabase) return;
   const now = Date.now();
+  // a file dialog is open (or just closed) — its blur/focus isn't a real tab switch
+  if(now < suppressTabRecoverUntil) return;
   if(now - tabRecoverLastAt < 800) return;
   if(tabRecoverInFlight){
     tabRecoverQueued = true;
@@ -11126,18 +11193,30 @@ async function recoverAfterTabSwitch(reason="focus"){
 
   tabRecoverInFlight = true;
   tabRecoverLastAt = now;
+  // Hard safety net. While tabRecoverInFlight is true the capture-phase click
+  // guard swallows every button press inside #app, so if anything below ever
+  // hangs the app becomes completely unclickable until a reload. This guarantees
+  // the flag is released no matter what.
+  const recoverWatchdog = setTimeout(()=>{ tabRecoverInFlight = false; }, 12000);
   try{
     const viewBefore = getActiveView();
     let liveSession = null;
+    // Both calls need timeouts: an un-timed-out auth call is exactly how the
+    // recovery used to wedge itself permanently.
     try{
-      const refreshed = await supabase.auth.refreshSession();
+      const refreshed = await withTimeout(supabase.auth.refreshSession(), 8000);
       liveSession = refreshed?.data?.session || null;
     }catch(_){ }
     if(!liveSession){
-      const { data } = await supabase.auth.getSession();
-      liveSession = data?.session || null;
+      try{
+        const { data } = await withTimeout(supabase.auth.getSession(), 8000);
+        liveSession = data?.session || null;
+      }catch(_){ }
     }
-    session = liveSession;
+    // Only trust a *positive* answer. If both calls timed out we know nothing
+    // about the session, so keep the one we already had — dropping it here
+    // would bounce a signed-in player to the login screen mid-game.
+    session = liveSession || session;
 
     if(!session){
       showAuth();
@@ -11194,6 +11273,7 @@ async function recoverAfterTabSwitch(reason="focus"){
   } catch(err){
     console.error("tab recover failed", reason, err);
   } finally {
+    clearTimeout(recoverWatchdog);
     tabRecoverInFlight = false;
     if(tabRecoverQueued){
       tabRecoverQueued = false;
@@ -11231,7 +11311,9 @@ function shouldGuardActionTarget(el){
 }
 
 async function recoverAndReplayAction(el){
-  if(globalClickRecoverBusy) return;
+  // The guard already called preventDefault + stopImmediatePropagation, so
+  // returning quietly here means the click vanishes with no feedback at all.
+  if(globalClickRecoverBusy){ toast("Reconnecting… try that again in a second"); return; }
   globalClickRecoverBusy = true;
   try{
     await withTimeout(recoverAfterTabSwitch("global-click"), 6500);
