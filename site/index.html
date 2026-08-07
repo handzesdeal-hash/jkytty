@@ -2765,6 +2765,11 @@ th{color:#8a8199;}
 .navBtn[data-view="trading"] .nIco{color:#00e58a;}
 .navBtn[data-view="leaderboard"] .nIco{color:#ffc53d;}
 .navBtn[data-view="admin"] .nIco{color:#ff6b7a;}
+/* the last two that were still plain grey */
+.navBtn[data-view="games"] .nIco{color:#8b5cf6;}
+.navBtn[data-view="bets"] .nIco{color:#38bdf8;}
+.navBtn[data-view="home"] .nIco{color:#c4b5fd;}
+.navBtn[data-view="stats"] .nIco{color:#00e58a;}
 #navStatsBtn .nIco{color:#22d3ee;}
 .sideTitle{color:#7a7189;}
 
@@ -3226,6 +3231,78 @@ body{background:var(--bg);}
 /* the ladder panel sits under the board instead of stealing a column */
 .minesRight{margin-top:14px;}
 
+/* ---------- rain pool bar + deposit modal ---------- */
+.rainBar{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;margin:0 12px 10px;
+  border-radius:12px;background:linear-gradient(180deg,rgba(255,197,61,.16),rgba(249,115,22,.07));
+  border:1px solid rgba(255,197,61,.3);
+}
+.rainIco{font-size:17px;line-height:1;}
+.rainInfo,.rainClock{display:flex;flex-direction:column;line-height:1.15;}
+.rainClock{margin-left:auto;text-align:right;}
+.rainInfo b,.rainClock b{font-size:14px;font-weight:900;color:#ffe6a8;font-family:var(--mono);}
+.rainLbl{font-size:9.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,230,168,.6);}
+.rainBar.due{border-color:rgba(0,229,138,.45);background:linear-gradient(180deg,rgba(0,229,138,.16),rgba(34,211,238,.07));}
+.rainBar.due b{color:#a8ffdc;}
+
+.depBalance{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:12px;background:#16121e;border:1px solid rgba(255,255,255,.06);}
+.depBalance .mono{font-size:18px;font-weight:900;}
+.depMethods{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
+.depMethod{padding:12px 8px;border-radius:11px;border:1px solid var(--line);background:var(--panel2);color:#ddd8e6;font-weight:900;cursor:pointer;}
+.depMethod.active{background:var(--purple);border-color:transparent;color:#fff;}
+.depNote{margin-top:12px;font-size:11.5px;line-height:1.45;color:var(--muted);padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.12);}
+
+/* big-win chat card */
+.cSys.win{border-color:rgba(255,197,61,.45);background:linear-gradient(135deg,rgba(255,197,61,.2),rgba(168,85,247,.1));}
+.cSys.win .cSysTitle{color:#ffe6a8;}
+.cSys.win .cSysText{color:#fff6e0;}
+
+/* ---------- VIP rank badges ---------- */
+.vipBadge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 8px 3px 6px;border-radius:999px;
+  background:linear-gradient(180deg, color-mix(in srgb, var(--v1) 26%, transparent), color-mix(in srgb, var(--v2) 22%, transparent));
+  border:1px solid color-mix(in srgb, var(--v1) 45%, transparent);
+  line-height:1;white-space:nowrap;
+}
+.vipBadge svg{width:12px;height:12px;fill:var(--v1);flex:0 0 12px;
+  filter:drop-shadow(0 0 4px color-mix(in srgb, var(--v1) 55%, transparent));}
+.vipBadge b{font-size:10.5px;font-weight:900;letter-spacing:.02em;
+  background:linear-gradient(180deg,var(--v1),var(--v2));
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
+/* fallback where color-mix isn't supported */
+@supports not (color: color-mix(in srgb, red 50%, blue)){
+  .vipBadge{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.18);}
+  .vipBadge b{color:var(--v1);-webkit-text-fill-color:var(--v1);}
+}
+.vipBadge.vipPrivate{--v1:#9a93a6;--v2:#5d5768;}
+/* crest-only: chat and the topbar show just the icon, hover reveals the name */
+.vipBadge.vipIcon{padding:4px;border-radius:50%;}
+.vipBadge.vipIcon b{display:none;}
+.vipBadge.vipIcon svg{width:13px;height:13px;flex:0 0 13px;}
+.vipBadge.vipSm.vipIcon{padding:3px;}
+.vipBadge.vipSm.vipIcon svg{width:11px;height:11px;flex:0 0 11px;}
+.vipBadge.vipSm{padding:2px 7px 2px 5px;}
+.vipBadge.vipSm b{font-size:9.5px;}
+.vipBadge.vipSm svg{width:10px;height:10px;flex:0 0 10px;}
+#topLevel{display:inline-flex !important;}
+
+/* profile level card */
+.pLvlCard{
+  margin-top:12px;padding:13px 14px;border-radius:12px;
+  background:#16121e;border:1px solid rgba(255,255,255,.06);
+}
+/* rank crest sits beside the username, not buried under the bar */
+.pNameRow{display:flex;align-items:center;gap:9px;}
+.pNameRow input{width:220px;margin-top:0;}
+.pNameRow .vipBadge{flex:0 0 auto;}
+
+.pLvlTop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px;}
+.pLvlNext{font-size:11.5px;color:var(--muted);font-weight:800;}
+.pLvlBar{height:9px;border-radius:99px;background:#0d0b12;border:1px solid rgba(255,255,255,.06);overflow:hidden;}
+.pLvlBar > i{display:block;height:100%;width:0%;border-radius:99px;}
+.pLvlXp{margin-top:7px;font-size:11.5px;color:var(--muted);font-family:var(--mono);}
+
 /* ---------- Live Stats: drag by the header, resize from the corner ---------- */
 .gspHd{cursor:grab;user-select:none;}
 .gspHd.dragging{cursor:grabbing;}
@@ -3297,8 +3374,12 @@ body{background:var(--bg);}
 
 /* Sidebar keeps its 242px default on every desktop size — widening it above 1700
    made 1080p feel zoomed in for no benefit. Only narrow laptops shrink it. */
-@media(max-width:1400px){ .app.show{grid-template-columns:224px minmax(0,1fr);} }
-@media(max-width:1150px){ .app.show{grid-template-columns:208px minmax(0,1fr);} }
+/* Lower bound is essential. Without it these matched on phones too and beat the
+   `@media(max-width:900px){.app.show{grid-template-columns:1fr}}` rule above
+   (same specificity, later wins) — so a 390px phone still handed 208px to a
+   hidden sidebar and only about half the page was usable. */
+@media(min-width:901px) and (max-width:1400px){ .app.show{grid-template-columns:224px minmax(0,1fr);} }
+@media(min-width:901px) and (max-width:1150px){ .app.show{grid-template-columns:208px minmax(0,1fr);} }
 
 /* Tile density close to the original ~180px minimum. The earlier 228px floor
    pushed 1920 down to 6 tiles per row at 265px each, which read as zoomed in. */
@@ -3406,6 +3487,13 @@ body{background:var(--bg);}
   padding-left:var(--mainPad);
   padding-right:var(--mainPad);
 }
+/* the mobile nav bleeds the same way and had the same mismatch (-20px against
+   16px of padding), which pushed a horizontal scrollbar onto tablets */
+.mobileNav{
+  margin-left:calc(var(--mainPad,16px) * -1);
+  margin-right:calc(var(--mainPad,16px) * -1);
+}
+.mobileNavInner{margin-left:var(--mainPad,16px);margin-right:var(--mainPad,16px);}
 
 /* narrow laptops: give the content its width back */
 @media(max-width:1350px){
@@ -3602,6 +3690,10 @@ body{background:var(--bg);}
       </div>
 
       <div style="display:flex;align-items:center;gap:9px;">
+        <!-- session stats for every game, same panel/chart as the per-game ones -->
+        <button class="chatIconBtn" id="sessionStatsBtn" data-gstats="all" type="button" title="Session stats — all games">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
+        </button>
         <button class="profileBtn" id="profileBtn">
           <div class="avatar"></div>
           <div style="display:flex;flex-direction:column;line-height:1.1;align-items:flex-start;">
@@ -4512,6 +4604,59 @@ create table if not exists public.tips (
   created_at timestamptz default now()
 );
 alter table public.tips disable row level security;
+
+-- ===== v2.2: shared rain pool + deposits =====
+
+create table if not exists public.rain_pool (
+  id int primary key default 1,
+  amount numeric(14,2) not null default 0,
+  next_at timestamptz not null default now() + interval '30 minutes',
+  updated_at timestamptz default now()
+);
+insert into public.rain_pool (id, amount, next_at)
+values (1, 0, now() + interval '30 minutes')
+on conflict (id) do nothing;
+alter table public.rain_pool disable row level security;
+
+-- atomic top-up, so simultaneous bets can't overwrite each other
+create or replace function public.rain_add(delta numeric)
+returns void language sql security definer as $$
+  update public.rain_pool
+     set amount = amount + greatest(delta, 0), updated_at = now()
+   where id = 1;
+$$;
+
+-- atomic claim: locks the row and only succeeds if the timer has run out, so
+-- exactly one client can win the drop. Returns the pot, or null to everyone else.
+create or replace function public.rain_claim(mins int)
+returns numeric language plpgsql security definer as $$
+declare pot numeric;
+begin
+  select amount into pot
+    from public.rain_pool
+   where id = 1 and next_at <= now()
+   for update;
+  if pot is null then return null; end if;
+  update public.rain_pool
+     set amount = 0,
+         next_at = now() + make_interval(mins => mins),
+         updated_at = now()
+   where id = 1;
+  return pot;
+end $$;
+
+grant execute on function public.rain_add(numeric)  to anon, authenticated;
+grant execute on function public.rain_claim(int)    to anon, authenticated;
+
+create table if not exists public.deposits (
+  id bigint generated by default as identity primary key,
+  user_id uuid references auth.users(id) on delete cascade,
+  amount numeric(14,2) not null,
+  method text default 'crypto',
+  status text default 'pending',
+  created_at timestamptz default now()
+);
+alter table public.deposits disable row level security;
 </pre>
             </div>
           </div>
@@ -4729,6 +4874,48 @@ alter table public.tips disable row level security;
   </div>
 </div>
 
+<!-- Deposit modal (opened by the Wallet button) -->
+<div class="overlay" id="depositOverlay">
+  <div class="modal" style="width:min(520px,100%);">
+    <div class="modalHd">
+      <div><h4>Deposit</h4><p class="muted">Add points to your balance</p></div>
+      <button class="closeBtn" id="depCloseBtn">✕</button>
+    </div>
+    <div class="modalBd">
+      <div class="depBalance">
+        <span class="muted">Current balance</span>
+        <span class="mono" id="depBalance">0.00</span>
+      </div>
+
+      <label style="margin-top:12px;display:block;">Amount</label>
+      <input id="depAmount" type="number" min="1" step="1" value="50" placeholder="0.00"/>
+      <div class="betQuick" id="depQuick">
+        <button type="button" data-dep="10">10</button>
+        <button type="button" data-dep="50">50</button>
+        <button type="button" data-dep="100">100</button>
+        <button type="button" data-dep="500">500</button>
+      </div>
+
+      <label style="margin-top:14px;display:block;">Method</label>
+      <div class="depMethods" id="depMethods">
+        <button type="button" class="depMethod active" data-method="crypto">₿ Crypto</button>
+        <button type="button" class="depMethod" data-method="card">💳 Card</button>
+        <button type="button" class="depMethod" data-method="skins">🔫 Skins</button>
+      </div>
+
+      <div class="depNote">
+        Deposits are reviewed by an admin before the points land in your balance.
+        You'll see a confirmation in chat once it's approved.
+      </div>
+
+      <div class="row" style="justify-content:flex-end;gap:8px;margin-top:14px;">
+        <button class="btn" id="depCancelBtn" type="button">Cancel</button>
+        <button class="btn purple" id="depSubmitBtn" type="button">Request deposit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Avatar crop modal -->
 <div class="overlay" id="cropOverlay">
   <div class="modal" style="width:min(420px,100%);">
@@ -4766,12 +4953,23 @@ alter table public.tips disable row level security;
           <div class="avatar" id="pAvatar" style="width:44px;height:44px;border-radius:50%;"></div>
           <div style="display:flex;flex-direction:column;gap:6px;">
             <label>Username</label>
-            <input id="pUserEdit" placeholder="Username" style="width:220px"/>
+            <div class="pNameRow">
+              <input id="pUserEdit" placeholder="Username"/>
+              <span id="pVipBadge"></span>
+            </div>
           </div>
         </div>
 
         <div class="miniPill"><span class="muted">Balance</span><span class="mono" id="pBal">0.00</span><span id="gemProf"></span></div>
-        <div class="miniPill"><span class="muted">Level</span><span class="mono" id="pLevel">1</span></div>
+        <div class="miniPill"><span class="muted">Rank</span><span class="mono" id="pLevel">—</span></div>
+      </div>
+
+      <div class="pLvlCard">
+        <div class="pLvlTop">
+          <span class="pLvlNext" id="pLvlNext">—</span>
+          <span class="pLvlXp" id="pLvlXp" style="margin:0;">—</span>
+        </div>
+        <div class="pLvlBar"><i id="pLvlFill"></i></div>
       </div>
 
       <div style="margin-top:12px;">
@@ -4843,6 +5041,18 @@ alter table public.tips disable row level security;
     <button class="chatIconBtn" id="chatCloseBtn" title="Close chat">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
     </button>
+  </div>
+  <!-- shared rain pool: same pot and timer for everyone, straight from the DB -->
+  <div class="rainBar" id="rainBar">
+    <span class="rainIco">☔</span>
+    <div class="rainInfo">
+      <b id="rainPoolAmt">0.00</b>
+      <span class="rainLbl">prize pool</span>
+    </div>
+    <div class="rainClock">
+      <b id="rainCountdown">--:--</b>
+      <span class="rainLbl">next drop</span>
+    </div>
   </div>
   <div class="chatMsgs" id="chatMsgs"></div>
   <div class="chatInputRow">
@@ -5479,18 +5689,125 @@ function monthKey(d=new Date()){
 function todayISO(){
   const d=new Date(); const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0"); return `${y}-${m}-${day}`;
 }
-function computeLevel(lifeW){ return 1 + Math.floor(Number(lifeW||0)/10); }
+/* ============================================================
+   VIP LEVELS
+   XP is lifetime wager. Tiers and thresholds as supplied; each entry is the XP
+   needed to REACH that level. Level 1 = Wood, then Bronze 1-5 … Diamond 5.
+   ============================================================ */
+const VIP_TIERS = [
+  { name:"Wood",      xp:500,      tier:"wood"     },
+  { name:"Bronze 1",  xp:1000,     tier:"bronze"   },
+  { name:"Bronze 2",  xp:2000,     tier:"bronze"   },
+  { name:"Bronze 3",  xp:3000,     tier:"bronze"   },
+  { name:"Bronze 4",  xp:4000,     tier:"bronze"   },
+  { name:"Bronze 5",  xp:5000,     tier:"bronze"   },
+  { name:"Silver 1",  xp:10000,    tier:"silver"   },
+  { name:"Silver 2",  xp:20000,    tier:"silver"   },
+  { name:"Silver 3",  xp:30000,    tier:"silver"   },
+  { name:"Silver 4",  xp:40000,    tier:"silver"   },
+  { name:"Silver 5",  xp:50000,    tier:"silver"   },
+  { name:"Gold 1",    xp:100000,   tier:"gold"     },
+  { name:"Gold 2",    xp:150000,   tier:"gold"     },
+  { name:"Gold 3",    xp:200000,   tier:"gold"     },
+  { name:"Gold 4",    xp:250000,   tier:"gold"     },
+  { name:"Gold 5",    xp:300000,   tier:"gold"     },
+  { name:"Platinum 1",xp:450000,   tier:"platinum" },
+  { name:"Platinum 2",xp:600000,   tier:"platinum" },
+  { name:"Platinum 3",xp:750000,   tier:"platinum" },
+  { name:"Platinum 4",xp:900000,   tier:"platinum" },
+  { name:"Platinum 5",xp:1050000,  tier:"platinum" },
+  { name:"Jade 1",    xp:1200000,  tier:"jade"     },
+  { name:"Jade 2",    xp:1350000,  tier:"jade"     },
+  { name:"Jade 3",    xp:1500000,  tier:"jade"     },
+  { name:"Jade 4",    xp:1650000,  tier:"jade"     },
+  { name:"Jade 5",    xp:1800000,  tier:"jade"     },
+  { name:"Sapphire 1",xp:2300000,  tier:"sapphire" },
+  { name:"Sapphire 2",xp:2800000,  tier:"sapphire" },
+  { name:"Sapphire 3",xp:3300000,  tier:"sapphire" },
+  { name:"Sapphire 4",xp:3800000,  tier:"sapphire" },
+  { name:"Sapphire 5",xp:4300000,  tier:"sapphire" },
+  { name:"Ruby 1",    xp:5800000,  tier:"ruby"     },
+  { name:"Ruby 2",    xp:7300000,  tier:"ruby"     },
+  { name:"Ruby 3",    xp:8800000,  tier:"ruby"     },
+  { name:"Ruby 4",    xp:10300000, tier:"ruby"     },
+  { name:"Ruby 5",    xp:11800000, tier:"ruby"     },
+  { name:"Diamond 1", xp:17000000, tier:"diamond"  },
+  { name:"Diamond 2", xp:22000000, tier:"diamond"  },
+  { name:"Diamond 3", xp:27000000, tier:"diamond"  },
+  { name:"Diamond 4", xp:32000000, tier:"diamond"  },
+  { name:"Diamond 5", xp:37000000, tier:"diamond"  },
+];
+const VIP_TIER_META = {
+  none:     { label:"Unranked", c1:"#8a8296", c2:"#5d5768" },
+  wood:     { label:"Wood",     c1:"#c08457", c2:"#7c4a26" },
+  bronze:   { label:"Bronze",   c1:"#e8a56a", c2:"#a45f22" },
+  silver:   { label:"Silver",   c1:"#dfe7f0", c2:"#8f9bab" },
+  gold:     { label:"Gold",     c1:"#ffd25e", c2:"#e8940f" },
+  platinum: { label:"Platinum", c1:"#d8f2ff", c2:"#7aa7c7" },
+  jade:     { label:"Jade",     c1:"#6ee7b7", c2:"#0f9b6c" },
+  sapphire: { label:"Sapphire", c1:"#7dd3fc", c2:"#1d6fd0" },
+  ruby:     { label:"Ruby",     c1:"#ff8fa3", c2:"#c81e42" },
+  diamond:  { label:"Diamond",  c1:"#c9f2ff", c2:"#3aa8e0" },
+};
+
+/* XP -> { idx, name, tier, xp, nextXp, into, span, pct } */
+function vipFromXp(xp){
+  const x = Math.max(0, Number(xp)||0);
+  let idx = -1;
+  for(let i=0;i<VIP_TIERS.length;i++){ if(x >= VIP_TIERS[i].xp) idx = i; else break; }
+  const cur  = idx >= 0 ? VIP_TIERS[idx] : null;
+  const next = VIP_TIERS[idx+1] || null;
+  const base = cur ? cur.xp : 0;
+  const span = next ? (next.xp - base) : 0;
+  const into = x - base;
+  return {
+    idx, xp:x,
+    name: cur ? cur.name : "Unranked",
+    tier: cur ? cur.tier : "none",
+    level: idx + 1,                          // 0 = unranked, 1 = Wood, …
+    nextName: next ? next.name : null,
+    nextXp: next ? next.xp : null,
+    into, span,
+    pct: next ? Math.max(0, Math.min(100, (into/span)*100)) : 100,
+  };
+}
+/* extraCls "vipIcon" renders the crest alone — used in chat and the topbar.
+   The rank NAME only appears in the expanded profile views. */
+function vipBadgeHTML(tier, text, extraCls){
+  const m = VIP_TIER_META[tier] || VIP_TIER_META.none;
+  return `<span class="vipBadge ${extraCls||""}" style="--v1:${m.c1};--v2:${m.c2}" title="${esc(text)}">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6 15 9l6.6.6-5 4.4 1.5 6.4L12 17l-6.1 3.4L7.4 14l-5-4.4L9 9z"/></svg>
+    <b>${esc(text)}</b></span>`;
+}
+const vipPrivateBadge = (extraCls) => `<span class="vipBadge vipPrivate ${extraCls||""}" title="Private profile">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10V8a6 6 0 1 1 12 0v2h1v11H5V10z"/></svg><b>Private</b></span>`;
+
+// legacy numeric level, kept so existing profiles.level rows still mean something
+function computeLevel(lifeW){ return Math.max(1, vipFromXp(lifeW).level || 1); }
 
 function updateLevelUI(){
   const life = Number(meProfile?.lifetime_wager||0);
-  const storedLevel = Math.floor(Number(meProfile?.level || 0));
-  const lvl = storedLevel > 0 ? storedLevel : computeLevel(life);
-  const prog = life % 10;
-  const pct = Math.max(0, Math.min(100, (prog/10)*100));
-  $("topLevel").textContent = `Level ${lvl}`;
-  $("lvlFill").style.width = pct.toFixed(1)+"%";
-  $("lvlProg").textContent = `${prog.toFixed(1)}/10.0 wager`;
-  $("lvlPct").textContent = `${pct.toFixed(0)}%`;
+  const v = vipFromXp(life);
+  const m = VIP_TIER_META[v.tier] || VIP_TIER_META.none;
+  const top = $("topLevel");
+  if(top){
+    // crest only in the topbar — the name lives in the profile modal
+    top.innerHTML = vipBadgeHTML(v.tier, v.name, "vipIcon");
+    top.style.display = "";
+  }
+  $("lvlFill").style.width = v.pct.toFixed(1)+"%";
+  $("lvlFill").style.background = `linear-gradient(90deg, ${m.c1}, ${m.c2})`;
+  $("lvlProg").textContent = v.nextXp
+    ? `${Math.round(v.into).toLocaleString()} / ${Math.round(v.span).toLocaleString()} XP`
+    : "Max level";
+  $("lvlPct").textContent = `${v.pct.toFixed(0)}%`;
+  // profile modal mirror
+  const pv = $("pVipBadge"); if(pv) pv.innerHTML = vipBadgeHTML(v.tier, v.name);
+  const pf = $("pLvlFill"); if(pf){ pf.style.width = v.pct.toFixed(1)+"%"; pf.style.background = `linear-gradient(90deg, ${m.c1}, ${m.c2})`; }
+  const pn = $("pLvlNext"); if(pn) pn.textContent = v.nextName ? `Next: ${v.nextName}` : "Highest tier reached";
+  const px = $("pLvlXp");   if(px) px.textContent = v.nextXp
+    ? `${Math.round(v.xp).toLocaleString()} / ${Math.round(v.nextXp).toLocaleString()} XP  (${v.pct.toFixed(0)}%)`
+    : `${Math.round(v.xp).toLocaleString()} XP`;
 }
 
 function updateMeUI(){
@@ -5816,10 +6133,64 @@ window.addEventListener("hashchange", ()=>{
 document.querySelectorAll("[data-nav]").forEach(el=>{
   el.addEventListener("click", ()=>setView(el.getAttribute("data-nav")));
 });
-/* Wallet button opens the profile (balance & stats live there) */
+/* ---------- Wallet button -> Deposit ----------
+   It used to just open the profile. Deposits are recorded as a PENDING request
+   rather than credited on the spot: the balance is client-authoritative here, so
+   self-crediting would be free money. An admin approves it. */
+let depMethod = "crypto";
+function openDeposit(){
+  const o = $("depositOverlay"); if(!o) return;
+  $("depBalance").textContent = to2(meProfile?.pts || 0);
+  o.classList.add("show");
+}
+function closeDeposit(){ $("depositOverlay")?.classList.remove("show"); }
 (function(){
   const wb = $("walletBtn");
-  if(wb) wb.onclick = ()=>{ if(typeof openProfile==="function"){ openProfile(); __profilePushed = true; setHash("#/profile"); } };
+  if(wb) wb.onclick = openDeposit;
+  $("depCloseBtn") && ($("depCloseBtn").onclick = closeDeposit);
+  $("depCancelBtn") && ($("depCancelBtn").onclick = closeDeposit);
+  $("depositOverlay") && ($("depositOverlay").onclick = (e)=>{ if(e.target === $("depositOverlay")) closeDeposit(); });
+
+  document.querySelectorAll("#depQuick [data-dep]").forEach(b=>{
+    b.onclick = ()=>{ $("depAmount").value = b.getAttribute("data-dep"); };
+  });
+  document.querySelectorAll("#depMethods .depMethod").forEach(b=>{
+    b.onclick = ()=>{
+      depMethod = b.getAttribute("data-method") || "crypto";
+      document.querySelectorAll("#depMethods .depMethod").forEach(x=>x.classList.toggle("active", x===b));
+    };
+  });
+
+  const sub = $("depSubmitBtn");
+  if(sub) sub.onclick = async ()=>{
+    if(sub.disabled) return;
+    const amt = Number($("depAmount").value);
+    if(!(amt > 0)) return toast("Enter an amount above 0");
+    if(!meProfile) return toast("Profile not loaded");
+    const uid = session?.user?.id;
+    if(!uid) return toast("Session expired — sign in again");
+    const label = sub.textContent;
+    sub.disabled = true; sub.textContent = "Sending…";
+    try{
+      const { error } = await withTimeout(supabase.from("deposits").insert({
+        user_id: uid, amount: hzR2(amt), method: depMethod, status: "pending",
+      }), 12000);
+      if(error){
+        console.error("deposit", error);
+        toast(/relation|does not exist|schema cache|42P01/i.test(String(error.message||""))
+          ? "Deposits need the new SQL — Admin Panel → SQL"
+          : "Deposit failed: " + (error.message || "database error"));
+        return;
+      }
+      toast(`Deposit request sent — ${to2(amt)} via ${depMethod}`);
+      closeDeposit();
+    }catch(err){
+      console.error("deposit", err);
+      toast(/timeout/i.test(String(err?.message||"")) ? "Deposit timed out — check your connection" : "Deposit failed");
+    }finally{
+      sub.disabled = false; sub.textContent = label;
+    }
+  };
 })();
 
 /* =========================================================
@@ -5862,6 +6233,10 @@ function hzRecord(game, stake, payout){
   if(!HZ_GAMES[game]) return;
   stake = Number(stake)||0; payout = Number(payout)||0;
   const net = hzR2(payout - stake);
+  // rare wins get announced in chat (see hzMaybeAnnounceWin for the thresholds)
+  try{ hzMaybeAnnounceWin(game, stake, payout); }catch(_){ }
+  // every wager feeds the shared rain pool
+  try{ rainContribute(stake); }catch(_){ }
   const apply = (st)=>{
     const g = st[game] = Object.assign(hzBlank(), st[game]||{});
     g.wager = hzR2(g.wager + stake);
@@ -6110,8 +6485,12 @@ function chatStart(){
   if(chatPollTimer) clearInterval(chatPollTimer);
   chatPoll(true);
   chatPollTimer = setInterval(()=>chatPoll(false), 4000);
+  try{ rainStart(); }catch(_){ }
 }
-function chatStop(){ if(chatPollTimer){ clearInterval(chatPollTimer); chatPollTimer = null; } }
+function chatStop(){
+  if(chatPollTimer){ clearInterval(chatPollTimer); chatPollTimer = null; }
+  try{ rainStop(); }catch(_){ }
+}
 
 function showChatLocked(){
   const box = $("chatMsgs");
@@ -6129,23 +6508,23 @@ async function chatEnsureProfiles(ids){
 
 function chatRenderMsg(r){
   const kind = String(r.kind||"msg");
-  if(kind === "rain" || kind === "tip"){
+  if(kind === "rain" || kind === "tip" || kind === "win"){
     const d = document.createElement("div");
-    d.className = "cSys" + (kind==="tip" ? " tip" : "");
+    d.className = "cSys" + (kind==="tip" ? " tip" : kind==="win" ? " win" : "");
     const ico = document.createElement("div");
     ico.className = "cSysIco";
-    ico.textContent = kind === "tip" ? "💸" : "☔";
+    ico.textContent = kind === "tip" ? "💸" : kind === "win" ? "🏆" : "☔";
     const body = document.createElement("div");
     body.className = "cSysBody";
     const title = document.createElement("div");
     title.className = "cSysTitle";
-    title.textContent = kind === "tip" ? "Tip sent" : "Rain!";
+    title.textContent = kind === "tip" ? "Tip sent" : kind === "win" ? "Big win" : "Rain!";
     const txt = document.createElement("div");
     txt.className = "cSysText";
     // Strip the leading emoji the message was stored with — the icon shows it now.
     // Alternation, not a character class: 💸 is a surrogate pair and a class would
     // only strip half of it, leaving a stray glyph.
-    txt.textContent = String(r.text||"").replace(/^(?:☔|💸)\s*/, "");
+    txt.textContent = String(r.text||"").replace(/^(?:☔|💸|🏆)\s*/, "");
     body.appendChild(title); body.appendChild(txt);
     d.appendChild(ico); d.appendChild(body);
     return d;
@@ -6161,8 +6540,14 @@ function chatRenderMsg(r){
   body.className = "cBody";
   const nameRow = document.createElement("span");
   nameRow.className = "cName";
-  const lvl = Number(r.level||1);
-  nameRow.innerHTML = `${esc(r.name||"Player")} <span class="cLvl${lvl>=25?" hi":""}">${lvl}</span>`;
+  // Chat shows the RANK, never the raw level number. A private profile shows a
+  // padlock instead, so their tier isn't exposed either.
+  const isPub = !prof || prof.is_public !== false;
+  const xp = Number((prof && prof.lifetime_wager) ?? 0);
+  const badge = isPub
+    ? vipBadgeHTML(vipFromXp(xp).tier, vipFromXp(xp).name, "vipSm vipIcon")
+    : vipPrivateBadge("vipSm vipIcon");
+  nameRow.innerHTML = `${esc(r.name||"Player")} ${badge}`;
   const text = document.createElement("div");
   text.className = "cText";
   text.textContent = r.text;
@@ -6223,6 +6608,133 @@ if($("chatSendBtn")) $("chatSendBtn").onclick = chatSend;
 if($("chatInput")) $("chatInput").addEventListener("keydown", (e)=>{ if(e.key==="Enter") chatSend(); });
 
 /* ---------- rain ---------- */
+/* ============================================================
+   REAL RAIN POOL
+   One row in public.rain_pool holds the pot and the next drop time, so every
+   player sees the same numbers. Wagers feed it through rain_add(); when the
+   clock runs out rain_claim() empties it atomically (SELECT … FOR UPDATE with
+   `next_at <= now()`), so only ONE client can ever win the race and pay out.
+   ============================================================ */
+const RAIN_CUT = 0.01;          // 1% of every wager goes to the pool
+const RAIN_INTERVAL_MIN = 30;   // minutes between drops
+let rainPool = { amount:0, nextAt:null };
+let rainBroken = false, rainClaiming = false, rainTicker = null;
+
+function rainContribute(stake){
+  const s = Number(stake)||0;
+  if(!supabase || rainBroken || s <= 0) return;
+  const delta = hzR2(s * RAIN_CUT);
+  if(delta <= 0) return;
+  // fire and forget: a bet must never wait on the pool
+  try{ supabase.rpc("rain_add", { delta }).then(({error})=>{ if(error) rainBroken = true; }); }catch(_){ }
+}
+
+async function rainFetch(){
+  if(!supabase || rainBroken) return;
+  try{
+    const { data, error } = await withTimeout(
+      supabase.from("rain_pool").select("amount,next_at").eq("id",1).maybeSingle(), 8000);
+    if(error){ if(/relation|does not exist|schema cache|42P01/i.test(String(error.message||""))) rainBroken = true; return; }
+    if(data){ rainPool.amount = Number(data.amount)||0; rainPool.nextAt = data.next_at ? new Date(data.next_at).getTime() : null; }
+  }catch(_){ }
+}
+
+function rainRender(){
+  const amtEl = $("rainPoolAmt"), cdEl = $("rainCountdown"), bar = $("rainBar");
+  if(!amtEl || !cdEl) return;
+  if(rainBroken){ amtEl.textContent = "—"; cdEl.textContent = "SQL"; return; }
+  amtEl.textContent = to2(rainPool.amount);
+  if(!rainPool.nextAt){ cdEl.textContent = "--:--"; return; }
+  const left = rainPool.nextAt - Date.now();
+  if(left <= 0){
+    cdEl.textContent = "dropping…";
+    bar && bar.classList.add("due");
+    rainTryClaim();
+  }else{
+    bar && bar.classList.remove("due");
+    const m = Math.floor(left/60000), s = Math.floor((left%60000)/1000);
+    cdEl.textContent = `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+  }
+}
+
+/* Only one client wins this — rain_claim() is atomic and returns null to losers. */
+async function rainTryClaim(){
+  if(rainClaiming || rainBroken || !session?.user?.id) return;
+  rainClaiming = true;
+  try{
+    const { data, error } = await withTimeout(
+      supabase.rpc("rain_claim", { mins: RAIN_INTERVAL_MIN }), 12000);
+    if(error){ rainBroken = true; return; }
+    const pot = Number(data);
+    await rainFetch();                       // refresh timer either way
+    if(!Number.isFinite(pot) || pot <= 0) return;   // someone else claimed it
+
+    // split between people who actually chatted in the last 15 minutes
+    const since = new Date(Date.now() - 15*60*1000).toISOString();
+    const { data: rows } = await supabase.from("chat_messages")
+      .select("user_id").gte("created_at", since).eq("kind","msg").limit(300);
+    const ids = [...new Set((rows||[]).map(r=>r.user_id).filter(Boolean))];
+    if(!ids.length){
+      await supabase.from("chat_messages").insert({
+        user_id: session.user.id, name:"Rain", level:1, kind:"rain",
+        text:`☔ Rain of ${to2(pot)} found no active chatters — it rolls into the next drop.`,
+      });
+      try{ await supabase.rpc("rain_add", { delta: pot }); }catch(_){ }
+      return;
+    }
+    const share = Math.floor((pot/ids.length)*100)/100;
+    if(share < 0.01){ try{ await supabase.rpc("rain_add", { delta: pot }); }catch(_){ } return; }
+
+    const { data: profs } = await supabase.from("profiles").select("id,pts,display_name").in("id", ids);
+    for(const p of (profs||[])){
+      await supabase.from("profiles").update({ pts: clamp2(Number(p.pts||0) + share) }).eq("id", p.id);
+    }
+    const names = (profs||[]).map(p=>p.display_name||"Player").slice(0,6).join(", ");
+    await supabase.from("chat_messages").insert({
+      user_id: session.user.id, name:"Rain", level:1, kind:"rain",
+      text:`☔ Rain dropped! ${to2(pot)} split between ${ids.length} player${ids.length>1?"s":""} — ${to2(share)} each. Winners: ${names}${ids.length>6?" +more":""}`,
+    });
+    if(ids.includes(session.user.id) && meProfile){
+      setHostBalance(clamp2(Number(meProfile.pts||0) + share));
+      toast(`You caught the rain! +${to2(share)}`);
+    }
+    chatPoll(false);
+  }catch(_){ }
+  finally{ rainClaiming = false; }
+}
+
+function rainStart(){
+  if(rainTicker) clearInterval(rainTicker);
+  rainFetch().then(rainRender);
+  rainTicker = setInterval(()=>{
+    rainRender();
+    if(Date.now() % 15000 < 1100) rainFetch();   // re-sync the pot a few times a minute
+  }, 1000);
+}
+function rainStop(){ if(rainTicker){ clearInterval(rainTicker); rainTicker = null; } }
+
+/* ---------- rare big wins ----------
+   Only genuinely rare hits get posted, otherwise chat becomes noise. */
+const BIGWIN_MULT = 10, BIGWIN_MIN = 25;
+let lastBigWinAt = 0;
+function hzMaybeAnnounceWin(game, stake, payout){
+  if(!supabase || !session?.user?.id || !meProfile) return;
+  const s = Number(stake)||0, p = Number(payout)||0;
+  if(s <= 0 || p <= 0) return;
+  const mult = p / s;
+  if(mult < BIGWIN_MULT || p < BIGWIN_MIN) return;
+  if(Date.now() - lastBigWinAt < 20000) return;    // never spam
+  lastBigWinAt = Date.now();
+  const label = (HZ_GAMES[game] && HZ_GAMES[game].label) || game;
+  supabase.from("chat_messages").insert({
+    user_id: session.user.id,
+    name: meProfile.display_name || "Player",
+    level: Number(meProfile.level||1),
+    kind: "win",
+    text: `🏆 ${meProfile.display_name||"Player"} hit ${mult.toFixed(2)}× on ${label} and won ${to2(p)}!`,
+  }).then(()=>chatPoll(false)).catch(()=>{});
+}
+
 if($("chatRainBtn")) $("chatRainBtn").onclick = ()=>{ if(!meProfile) return toast("Profile not loaded"); $("rainOverlay").classList.add("show"); };
 if($("rainCloseBtn")) $("rainCloseBtn").onclick = ()=>$("rainOverlay").classList.remove("show");
 if($("rainOverlay")) $("rainOverlay").onclick = (e)=>{ if(e.target===$("rainOverlay")) $("rainOverlay").classList.remove("show"); };
@@ -6296,8 +6808,12 @@ async function openPlayerPopup(userId){
   $("ppPublicBox").style.display = "";
   applyAvatar($("ppAva"), prof.avatar_url || prof.avatar_seed || "p1");
   $("ppName").textContent = prof.display_name || "Player";
-  $("ppSubline").textContent = "Level " + Number(prof.level||1) + (isPublic ? "" : " · private (admin view)");
-  $("ppLevel").textContent = String(Number(prof.level||1));
+  // public profiles show the exact tier; the popup only opens for a private
+  // profile in the admin view, which is labelled as such
+  const vp = vipFromXp(prof.lifetime_wager);
+  $("ppSubline").innerHTML = vipBadgeHTML(vp.tier, vp.name, "vipSm")
+    + (isPublic ? "" : ` <span class="muted" style="font-size:11px;">· private (admin view)</span>`);
+  $("ppLevel").innerHTML = vipBadgeHTML(vp.tier, vp.name, "vipSm");
   $("ppMonthW").textContent = to2(prof.month_wager||0);
   $("ppLifeW").textContent = to2(prof.lifetime_wager||0);
   const seen = prof.last_seen ? (Date.now() - new Date(prof.last_seen).getTime()) : Infinity;
@@ -6958,7 +7474,7 @@ function openProfile(){
   window.__selectedAvatar = meProfile.avatar_seed||"p1";
   window.__pendingAvatarUrl = undefined; // undefined = unchanged, null = cleared, string = new photo
   $("pBal").textContent = to2(meProfile.pts||0);
-  $("pLevel").textContent = String(meProfile.level||1);
+  $("pLevel").textContent = vipFromXp(meProfile.lifetime_wager).name;
   $("pMonthW").textContent = to2(meProfile.month_wager||0);
   $("pLifeW").textContent = to2(meProfile.lifetime_wager||0);
   $("pBets").textContent = String(myBets.length);
