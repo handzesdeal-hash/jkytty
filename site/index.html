@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -30,7 +30,9 @@
 <meta name="twitter:image" content="./assets/hz-logo.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<!-- three roles, not one face everywhere:
+     Inter = body/UI · Space Grotesk = headings & titles · JetBrains Mono = numbers -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet"/>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"HANDZES.BET","logo":"./assets/hz-logo.png"}</script>
 <style id="hzTheme">
 :root{
@@ -50,8 +52,9 @@
   --shadow:0 12px 40px rgba(0,0,0,.75);
   --shadow2:0 8px 28px rgba(0,0,0,.6);
   --r:12px;
-  --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
   --sans:"Inter",ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  --display:"Space Grotesk","Inter",ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -3231,6 +3234,56 @@ body{background:var(--bg);}
 /* the ladder panel sits under the board instead of stealing a column */
 .minesRight{margin-top:14px;}
 
+/* ============================================================
+   TYPOGRAPHY — three roles instead of Inter everywhere
+     Space Grotesk : headings, titles, brand, tile names, panel headers
+     Inter         : body copy, inputs, labels, buttons
+     JetBrains Mono: every number — balances, multipliers, stats, countdowns
+   ============================================================ */
+h1,h2,h3,h4,h5,
+.title,
+.sectionHd h3,
+.modalHd h4,
+.heroCard .hTitle,
+.tileTitle,.gName,
+.gspHd b,.chatHd b,
+.ppName,
+.diceTab,
+.secHead b,
+.pLvlNext{
+  font-family:var(--display);
+  letter-spacing:-.012em;
+}
+.title{letter-spacing:.01em;font-weight:700;}
+.heroCard .hTitle{font-weight:700;letter-spacing:-.02em;}
+.tileTitle,.gName{font-weight:700;}
+
+/* small uppercase labels read better with a little tracking */
+.hKick,.gspChartTitle,.rainLbl,.cSysTitle,.k,.sbSection,.secHead .secLink{
+  font-family:var(--display);
+  letter-spacing:.10em;
+}
+
+/* Numbers: tabular so digits don't jitter as balances tick, and slashed zero
+   so 0 and O can't be confused in an amount. */
+.mono,
+input[type=number],
+.gspProfit .v,.gspWL .v,
+.spVal,.pLvlXp,
+#rainPoolAmt,#rainCountdown,
+.diceRecentPill,.diceRollBubble,
+.levelText,#lvlProg,#lvlPct,
+.ppStat .v,.miniPill .mono,#depAmount,
+.cLvl,.depBalance .mono{
+  font-family:var(--mono);
+  /* tabular only — the slashed zero looked like a struck-through 0 on balances */
+  font-feature-settings:"tnum" 1;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-.02em;
+}
+/* the big headline numbers get a touch more weight */
+.gspProfit .v,.balancePill .mono,.depBalance .mono{font-weight:800;}
+
 /* ---------- session panel: its own identity, teal instead of purple ---------- */
 .sessionPanel{
   /* z-index must beat the chat panel (96) — at 95 it opened BEHIND the chat and
@@ -3359,7 +3412,9 @@ body{background:var(--bg);}
 .vipBadge.vipSm{padding:2px 7px 2px 5px;}
 .vipBadge.vipSm b{font-size:9.5px;}
 .vipBadge.vipSm svg{width:10px;height:10px;flex:0 0 10px;}
-#topLevel{display:inline-flex !important;}
+/* username and crest share a line; the crest used to sit under the name */
+.tbNameRow{display:inline-flex;align-items:center;gap:7px;}
+#topLevel{display:inline-flex !important;align-items:center;}
 
 /* profile level card */
 .pLvlCard{
@@ -3462,8 +3517,22 @@ body{background:var(--bg);}
 
 /* Fixed hero text: with the content width capped, viewport-based clamps would
    still differ between monitors for no reason. */
-.heroCard{min-height:150px;}
-.heroCard .hTitle{font-size:22px;}
+/* The card is a flex column with overflow:hidden, so its automatic minimum size
+   is 0 and the grid row obeys min-height rather than growing to fit — meaning a
+   title that's too big gets silently clipped instead of pushing the card taller.
+   min-height therefore has to cover the tallest case (2 wrapped lines). */
+.heroCard{min-height:236px;}
+@media(min-width:1500px){ .heroCard{min-height:230px;} }   /* headroom for a 2-line title around 1600 */
+.heroCard .hTitle{
+  font-size:27px;font-weight:700;
+  /* 1.06 was tighter than Space Grotesk's descender, so glyphs spilled the line
+     box by ~3px — invisible here but it clips on some systems */
+  letter-spacing:-.03em;line-height:1.16;
+  max-width:88%;
+  text-shadow:0 2px 14px rgba(0,0,0,.28);
+}
+@media(max-width:1350px){ .heroCard .hTitle{font-size:23px;} }
+@media(max-width:900px){  .heroCard .hTitle{font-size:21px;} }
 
 /* Dice was hard-capped at 1280px (wrap) / 1320px (section) from an older layout.
    Now that the rest of the site fills the column, that left it using only 55% of
@@ -3771,8 +3840,7 @@ body{background:var(--bg);}
         <button class="profileBtn" id="profileBtn">
           <div class="avatar"></div>
           <div style="display:flex;flex-direction:column;line-height:1.1;align-items:flex-start;">
-            <span id="topUser">—</span>
-            <span class="muted" style="font-size:11px;" id="topLevel">Level 1</span>
+            <span class="tbNameRow"><span id="topUser">—</span><span id="topLevel"></span></span>
             <div class="levelWrap">
               <div class="levelBar"><div class="levelFill" id="lvlFill"></div></div>
               <div class="levelText"><span id="lvlProg">0.0/10.0 wager</span><span id="lvlPct">0%</span></div>
@@ -5339,6 +5407,19 @@ function isAdminEmail(email){
 const $ = (id)=>document.getElementById(id);
 const esc = (s)=>String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const to2 = (n)=> (Math.round((Number(n)+Number.EPSILON)*100)/100).toFixed(2);
+/* Display-only: groups thousands as "15 000.00".
+   Deliberately NOT folded into to2 — that value also gets written into number
+   inputs, and Number("15 000.00") is NaN. Use fmtN for text, to2 for values.
+   The separator is a narrow no-break space so an amount can't wrap mid-number. */
+const NBSP_THIN = " ";
+const fmtN = (n)=>{
+  const [i, d] = to2(n).split(".");
+  const neg = i.startsWith("-");
+  const digits = neg ? i.slice(1) : i;
+  return (neg ? "-" : "") + digits.replace(/\B(?=(\d{3})+(?!\d))/g, NBSP_THIN) + "." + d;
+};
+/* same grouping for whole numbers (XP, counts) */
+const fmtInt = (n)=> String(Math.round(Number(n)||0)).replace(/\B(?=(\d{3})+(?!\d))/g, NBSP_THIN);
 const clamp2 = (n)=> Math.max(0, Math.round(Number(n)*100)/100);
 
 const toastEl = $("toast");
@@ -5911,7 +5992,7 @@ function updateLevelUI(){
   $("lvlFill").style.width = v.pct.toFixed(1)+"%";
   $("lvlFill").style.background = `linear-gradient(90deg, ${m.c1}, ${m.c2})`;
   $("lvlProg").textContent = v.nextXp
-    ? `${Math.round(v.into).toLocaleString()} / ${Math.round(v.span).toLocaleString()} XP`
+    ? `${fmtInt(v.into)} / ${fmtInt(v.span)} XP`
     : "Max level";
   $("lvlPct").textContent = `${v.pct.toFixed(0)}%`;
   // profile modal mirror
@@ -5919,15 +6000,15 @@ function updateLevelUI(){
   const pf = $("pLvlFill"); if(pf){ pf.style.width = v.pct.toFixed(1)+"%"; pf.style.background = `linear-gradient(90deg, ${m.c1}, ${m.c2})`; }
   const pn = $("pLvlNext"); if(pn) pn.textContent = v.nextName ? `Next: ${v.nextName}` : "Highest tier reached";
   const px = $("pLvlXp");   if(px) px.textContent = v.nextXp
-    ? `${Math.round(v.xp).toLocaleString()} / ${Math.round(v.nextXp).toLocaleString()} XP  (${v.pct.toFixed(0)}%)`
-    : `${Math.round(v.xp).toLocaleString()} XP`;
+    ? `${fmtInt(v.xp)} / ${fmtInt(v.nextXp)} XP  (${v.pct.toFixed(0)}%)`
+    : `${fmtInt(v.xp)} XP`;
 }
 
 function updateMeUI(){
   $("meName").textContent = meProfile?.display_name || "—";
   $("topUser").textContent = meProfile?.display_name || "—";
-  $("mePts").textContent = to2(meProfile?.pts||0);
-  $("topPts").textContent = to2(meProfile?.pts||0);
+  $("mePts").textContent = fmtN(meProfile?.pts||0);
+  $("topPts").textContent = fmtN(meProfile?.pts||0);
   updateLevelUI();
   applyAvatar(document.querySelector(".avatar"), meProfile?.avatar_url || meProfile?.avatar_seed || "p1");
   $("adminDot").style.background = isAdmin ? "var(--green)" : "var(--purple2)";
@@ -6253,7 +6334,7 @@ document.querySelectorAll("[data-nav]").forEach(el=>{
 let depMethod = "crypto";
 function openDeposit(){
   const o = $("depositOverlay"); if(!o) return;
-  $("depBalance").textContent = to2(meProfile?.pts || 0);
+  $("depBalance").textContent = fmtN(meProfile?.pts || 0);
   o.classList.add("show");
 }
 function closeDeposit(){ $("depositOverlay")?.classList.remove("show"); }
@@ -6436,7 +6517,7 @@ function hzRenderGamePanel(){
   const net = hzR2((s.ret||0) - (s.wager||0));
   $("gspTitle").textContent = "Live Stats";
   const pEl = $("gspProfit");
-  pEl.textContent = (net >= 0 ? "+" : "-") + to2(Math.abs(net));
+  pEl.textContent = (net >= 0 ? "+" : "-") + fmtN(Math.abs(net));
   pEl.className = "v " + (net >= 0 ? "pos" : "neg");
   $("gspWins").textContent = String(s.wins||0);
   $("gspLosses").textContent = String(s.losses||0);
@@ -6476,7 +6557,7 @@ function hzRenderSessionPanel(){
   const s = hzCombined(hzStatsSession);
   const net = hzR2((s.ret||0) - (s.wager||0));
   const pEl = $("spProfit");
-  pEl.textContent = (net >= 0 ? "+" : "-") + to2(Math.abs(net));
+  pEl.textContent = (net >= 0 ? "+" : "-") + fmtN(Math.abs(net));
   pEl.className = "v " + (net >= 0 ? "pos" : "neg");
   $("spWins").textContent = String(s.wins||0);
   $("spLosses").textContent = String(s.losses||0);
@@ -6491,7 +6572,7 @@ function hzRenderSessionPanel(){
     .sort((a,b)=> b.net - a.net);
   $("spByGame").innerHTML = rows.length
     ? rows.map(r=>`<div class="spRow"><span class="spName">${esc(r.name)} <span class="muted">· ${r.rounds}</span></span>
-        <span class="spVal ${r.net>=0?"pos":"neg"}">${r.net>=0?"+":"-"}${to2(Math.abs(r.net))}</span></div>`).join("")
+        <span class="spVal ${r.net>=0?"pos":"neg"}">${r.net>=0?"+":"-"}${fmtN(Math.abs(r.net))}</span></div>`).join("")
     : `<div class="spEmpty">Nothing played yet this session.</div>`;
 }
 function sessionPanelSet(open){
@@ -6881,7 +6962,7 @@ function rainRender(){
   const amtEl = $("rainPoolAmt"), cdEl = $("rainCountdown"), bar = $("rainBar");
   if(!amtEl || !cdEl) return;
   if(rainBroken){ amtEl.textContent = "—"; cdEl.textContent = "SQL"; return; }
-  amtEl.textContent = to2(rainPool.amount);
+  amtEl.textContent = fmtN(rainPool.amount);
   if(!rainPool.nextAt){ cdEl.textContent = "--:--"; return; }
   const left = rainPool.nextAt - Date.now();
   if(left <= 0){
@@ -7711,7 +7792,7 @@ function openProfile(){
   applyAvatar($("pAvatar"), meProfile.avatar_url || meProfile.avatar_seed || "p1");
   window.__selectedAvatar = meProfile.avatar_seed||"p1";
   window.__pendingAvatarUrl = undefined; // undefined = unchanged, null = cleared, string = new photo
-  $("pBal").textContent = to2(meProfile.pts||0);
+  $("pBal").textContent = fmtN(meProfile.pts||0);
   $("pLevel").textContent = vipFromXp(meProfile.lifetime_wager).name;
   $("pMonthW").textContent = to2(meProfile.month_wager||0);
   $("pLifeW").textContent = to2(meProfile.lifetime_wager||0);
