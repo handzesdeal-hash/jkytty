@@ -3233,9 +3233,13 @@ body{background:var(--bg);}
 
 /* ---------- session panel: its own identity, teal instead of purple ---------- */
 .sessionPanel{
-  left:auto;right:18px;bottom:18px;z-index:95;
+  /* z-index must beat the chat panel (96) — at 95 it opened BEHIND the chat and
+     looked like the button did nothing. */
+  left:auto;right:18px;bottom:18px;z-index:97;
   border-color:rgba(34,211,238,.34);
 }
+/* and don't sit under the chat panel when it's open */
+@media(min-width:1150px){ body.chatOpen .sessionPanel{right:350px;} }
 .sessionPanel .gspHd{
   background:linear-gradient(180deg,rgba(34,211,238,.20),transparent);
   border-bottom-color:rgba(34,211,238,.26);
@@ -5262,7 +5266,7 @@ alter table public.deposits disable row level security;
 
 <!-- ========= LIVE STATS PANEL (plinko-style) ========= -->
 <div class="gameStatsPanel" id="gameStatsPanel">
-  <div class="gspHd">
+  <div class="gspHd" id="gspHd">
     <span class="gspIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></span>
     <b id="gspTitle">Live Stats</b>
     <span class="spacer"></span>
@@ -6563,7 +6567,11 @@ const SP_BOX_KEY = "hz_sp_box";
    fights the CSS `bottom`. Size comes from CSS `resize:both`. */
 const GSP_BOX_KEY = "hz_gsp_box";
 (function(){
-  const panel = $("gameStatsPanel"), head = $("gspHd") || document.querySelector(".gspHd");
+  // Scope this to the panel. `document.querySelector(".gspHd")` used to be the
+  // fallback, and once the session panel was added earlier in the DOM it matched
+  // THAT header instead — so the per-game panel silently stopped dragging.
+  const panel = $("gameStatsPanel");
+  const head = panel && panel.querySelector(".gspHd");
   if(!panel || !head) return;
 
   const clamp = (v,min,max)=> Math.max(min, Math.min(max, v));
