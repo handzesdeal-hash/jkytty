@@ -3231,6 +3231,38 @@ body{background:var(--bg);}
 /* the ladder panel sits under the board instead of stealing a column */
 .minesRight{margin-top:14px;}
 
+/* ---------- session panel: its own identity, teal instead of purple ---------- */
+.sessionPanel{
+  left:auto;right:18px;bottom:18px;z-index:95;
+  border-color:rgba(34,211,238,.34);
+}
+.sessionPanel .gspHd{
+  background:linear-gradient(180deg,rgba(34,211,238,.20),transparent);
+  border-bottom-color:rgba(34,211,238,.26);
+}
+.sessionPanel .gspIco{color:#67e8f9;}
+.sessionPanel .gspCard{border-color:rgba(34,211,238,.20);}
+.sessionPanel .gspChartTitle{color:#7ddfef;}
+.spBreak .spRow{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:6px 0;border-top:1px solid rgba(255,255,255,.05);font-size:12px;
+}
+.spBreak .spRow:first-child{border-top:none;}
+.spBreak .spName{font-weight:800;color:#cfe9f2;}
+.spBreak .spVal{font-family:var(--mono);font-weight:900;}
+.spBreak .spVal.pos{color:#4ade80;}
+.spBreak .spVal.neg{color:#f87171;}
+.spEmpty{color:var(--muted);font-size:12px;padding:4px 0;}
+
+/* the button that opens it stands apart from the per-game chart buttons */
+#sessionStatsBtn{
+  border-color:rgba(34,211,238,.45);
+  background:linear-gradient(180deg,rgba(34,211,238,.22),rgba(34,211,238,.06));
+  color:#67e8f9;
+}
+#sessionStatsBtn:hover{background:linear-gradient(180deg,rgba(34,211,238,.34),rgba(34,211,238,.1));color:#b6f3ff;}
+#sessionStatsBtn.on{background:#22d3ee;border-color:transparent;color:#04222a;}
+
 /* ---------- rain pool bar + deposit modal ---------- */
 .rainBar{
   display:flex;align-items:center;gap:10px;padding:10px 12px;margin:0 12px 10px;
@@ -3252,10 +3284,46 @@ body{background:var(--bg);}
 .depMethod.active{background:var(--purple);border-color:transparent;color:#fff;}
 .depNote{margin-top:12px;font-size:11.5px;line-height:1.45;color:var(--muted);padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.12);}
 
-/* big-win chat card */
-.cSys.win{border-color:rgba(255,197,61,.45);background:linear-gradient(135deg,rgba(255,197,61,.2),rgba(168,85,247,.1));}
+/* Each automatic message gets its own colour so they're tellable apart at a
+   glance. Player messages are untouched. */
+.cSys{                                   /* rain — blue */
+  border-color:rgba(56,189,248,.42);
+  background:linear-gradient(135deg,rgba(56,189,248,.20),rgba(14,165,233,.08));
+}
+.cSys .cSysTitle{color:#a5e4ff;}
+.cSys .cSysText{color:#e6f7ff;}
+.cSys .cSysIco{background:rgba(56,189,248,.20);border-color:rgba(56,189,248,.35);}
+
+.cSys.tip{                               /* tip — green */
+  border-color:rgba(0,229,138,.42);
+  background:linear-gradient(135deg,rgba(0,229,138,.20),rgba(34,211,238,.08));
+}
+.cSys.tip .cSysTitle{color:#a8ffdc;}
+.cSys.tip .cSysText{color:#e4fff5;}
+.cSys.tip .cSysIco{background:rgba(0,229,138,.20);border-color:rgba(0,229,138,.35);}
+
+.cSys.win{                               /* big win — gold */
+  border-color:rgba(255,197,61,.5);
+  background:linear-gradient(135deg,rgba(255,197,61,.24),rgba(249,115,22,.10));
+}
 .cSys.win .cSysTitle{color:#ffe6a8;}
 .cSys.win .cSysText{color:#fff6e0;}
+.cSys.win .cSysIco{background:rgba(255,197,61,.22);border-color:rgba(255,197,61,.4);}
+
+/* emoji picker */
+.emojiPop{
+  position:absolute;bottom:56px;right:12px;left:12px;z-index:5;display:none;
+  background:var(--panel3);border:1px solid var(--line);border-radius:12px;
+  padding:8px;box-shadow:0 16px 40px rgba(0,0,0,.55);
+}
+.emojiPop.show{display:block;}
+.emojiGrid{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;max-height:180px;overflow:auto;}
+.emojiGrid button{
+  border:none;background:transparent;font-size:18px;line-height:1;padding:6px 0;
+  border-radius:8px;cursor:pointer;
+}
+.emojiGrid button:hover{background:rgba(255,255,255,.08);}
+.chatInputRow{position:relative;}
 
 /* ---------- VIP rank badges ---------- */
 .vipBadge{
@@ -3276,12 +3344,14 @@ body{background:var(--bg);}
   .vipBadge b{color:var(--v1);-webkit-text-fill-color:var(--v1);}
 }
 .vipBadge.vipPrivate{--v1:#9a93a6;--v2:#5d5768;}
-/* crest-only: chat and the topbar show just the icon, hover reveals the name */
-.vipBadge.vipIcon{padding:4px;border-radius:50%;}
+/* Crest-only: just the star, no chip around it. The tier colour is the only
+   thing that changes between ranks. Hover still reveals the name. */
+.vipBadge.vipIcon{
+  padding:0;border:none;background:none;border-radius:0;
+}
 .vipBadge.vipIcon b{display:none;}
-.vipBadge.vipIcon svg{width:13px;height:13px;flex:0 0 13px;}
-.vipBadge.vipSm.vipIcon{padding:3px;}
-.vipBadge.vipSm.vipIcon svg{width:11px;height:11px;flex:0 0 11px;}
+.vipBadge.vipIcon svg{width:15px;height:15px;flex:0 0 15px;}
+.vipBadge.vipSm.vipIcon svg{width:13px;height:13px;flex:0 0 13px;}
 .vipBadge.vipSm{padding:2px 7px 2px 5px;}
 .vipBadge.vipSm b{font-size:9.5px;}
 .vipBadge.vipSm svg{width:10px;height:10px;flex:0 0 10px;}
@@ -3691,7 +3761,7 @@ body{background:var(--bg);}
 
       <div style="display:flex;align-items:center;gap:9px;">
         <!-- session stats for every game, same panel/chart as the per-game ones -->
-        <button class="chatIconBtn" id="sessionStatsBtn" data-gstats="all" type="button" title="Session stats — all games">
+        <button class="chatIconBtn" id="sessionStatsBtn" type="button" title="Session stats — all games">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
         </button>
         <button class="profileBtn" id="profileBtn">
@@ -4874,6 +4944,43 @@ alter table public.deposits disable row level security;
   </div>
 </div>
 
+<!-- Session panel: ALL games, independent of the per-game one so both can be
+     open together, and it survives changing views. -->
+<div class="gameStatsPanel sessionPanel" id="sessionPanel">
+  <div class="gspHd" id="spHd">
+    <span class="gspIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span>
+    <b>Session · All games</b>
+    <span class="spacer"></span>
+    <button class="chatIconBtn" id="spReset" title="Reset session stats">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+    </button>
+    <button class="chatIconBtn" id="spClose" title="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <span class="gspGrip"></span>
+  <div class="gspBd">
+    <div class="gspCard gspTop">
+      <div class="gspProfit">
+        <div class="k">Session profit</div>
+        <div class="v" id="spProfit">0.00</div>
+      </div>
+      <div class="gspWL">
+        <div><div class="k">Wins</div><div class="v win" id="spWins">0</div></div>
+        <div><div class="k">Losses</div><div class="v loss" id="spLosses">0</div></div>
+      </div>
+    </div>
+    <div class="gspCard">
+      <div class="gspChartTitle">Profit history · every game</div>
+      <div class="gspChart" id="spChart"></div>
+    </div>
+    <div class="gspCard spBreak">
+      <div class="gspChartTitle">By game</div>
+      <div id="spByGame"></div>
+    </div>
+  </div>
+</div>
+
 <!-- Deposit modal (opened by the Wallet button) -->
 <div class="overlay" id="depositOverlay">
   <div class="modal" style="width:min(520px,100%);">
@@ -5056,6 +5163,8 @@ alter table public.deposits disable row level security;
   </div>
   <div class="chatMsgs" id="chatMsgs"></div>
   <div class="chatInputRow">
+    <div class="emojiPop" id="emojiPop"><div class="emojiGrid" id="emojiGrid"></div></div>
+    <button class="chatIconBtn" id="emojiBtn" type="button" title="Emoji">😊</button>
     <input id="chatInput" placeholder="Type your message…" maxlength="240" autocomplete="off"/>
     <button class="chatSendBtn" id="chatSendBtn" title="Send">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg>
@@ -6254,6 +6363,7 @@ function hzRecord(game, stake, payout){
   apply(hzStatsSession);
   const all = hzStatsLoad(); apply(all); hzStatsSave(all);
   try{ hzRenderGamePanel(); }catch(_){ }
+  try{ hzRenderSessionPanel(); }catch(_){ }
 }
 
 /* combine every game into one virtual "all" bucket */
@@ -6348,7 +6458,104 @@ if($("gspReset")) $("gspReset").onclick = ()=>{
   hzRenderGamePanel();
   toast("Session stats reset");
 };
+// Only the PER-GAME panel closes when you leave the view. The session panel is
+// deliberately left alone so it follows you around the site.
 window.addEventListener("hashchange", ()=>{ const p=$("gameStatsPanel"); if(p){ p.classList.remove("show"); gamePanelGame=null; } });
+
+/* ---------- session panel (all games) ----------
+   Separate element and state from the per-game panel, so both can be open at
+   once, and its open/closed state is remembered across view changes. */
+const SP_OPEN_KEY = "hz_session_panel_open";
+function hzRenderSessionPanel(){
+  const p = $("sessionPanel");
+  if(!p || !p.classList.contains("show")) return;
+  const s = hzCombined(hzStatsSession);
+  const net = hzR2((s.ret||0) - (s.wager||0));
+  const pEl = $("spProfit");
+  pEl.textContent = (net >= 0 ? "+" : "-") + to2(Math.abs(net));
+  pEl.className = "v " + (net >= 0 ? "pos" : "neg");
+  $("spWins").textContent = String(s.wins||0);
+  $("spLosses").textContent = String(s.losses||0);
+  $("spChart").innerHTML = hzChartSVG(s.hist)
+    || `<div class="gspEmpty">No rounds yet this session.<br/>Place a bet to start the chart.</div>`;
+
+  // per-game breakdown, best first
+  const rows = Object.keys(hzStatsSession)
+    .map(k => ({ k, g: hzStatsSession[k] }))
+    .filter(r => r.g && (r.g.rounds || r.g.wager))
+    .map(r => ({ name:(HZ_GAMES[r.k]&&HZ_GAMES[r.k].label)||r.k, net:hzR2((r.g.ret||0)-(r.g.wager||0)), rounds:r.g.rounds||0 }))
+    .sort((a,b)=> b.net - a.net);
+  $("spByGame").innerHTML = rows.length
+    ? rows.map(r=>`<div class="spRow"><span class="spName">${esc(r.name)} <span class="muted">· ${r.rounds}</span></span>
+        <span class="spVal ${r.net>=0?"pos":"neg"}">${r.net>=0?"+":"-"}${to2(Math.abs(r.net))}</span></div>`).join("")
+    : `<div class="spEmpty">Nothing played yet this session.</div>`;
+}
+function sessionPanelSet(open){
+  const p = $("sessionPanel"); if(!p) return;
+  p.classList.toggle("show", !!open);
+  $("sessionStatsBtn")?.classList.toggle("on", !!open);
+  try{ localStorage.setItem(SP_OPEN_KEY, open ? "1" : "0"); }catch(_){ }
+  if(open){ try{ window.__spApplyBox && window.__spApplyBox(); }catch(_){ } hzRenderSessionPanel(); }
+}
+if($("sessionStatsBtn")) $("sessionStatsBtn").onclick = (e)=>{
+  e.preventDefault(); e.stopPropagation();
+  sessionPanelSet(!$("sessionPanel").classList.contains("show"));
+};
+if($("spClose")) $("spClose").onclick = ()=> sessionPanelSet(false);
+if($("spReset")) $("spReset").onclick = ()=>{
+  Object.keys(hzStatsSession).forEach(k=>delete hzStatsSession[k]);
+  hzRenderSessionPanel(); hzRenderGamePanel();
+  toast("Session stats reset");
+};
+// restore on load
+try{ if(localStorage.getItem(SP_OPEN_KEY) === "1") setTimeout(()=>sessionPanelSet(true), 300); }catch(_){ }
+
+/* drag + resize, same behaviour as the per-game panel but its own saved box */
+const SP_BOX_KEY = "hz_sp_box";
+(function(){
+  const panel = $("sessionPanel"), head = $("spHd");
+  if(!panel || !head) return;
+  const clamp = (v,min,max)=> Math.max(min, Math.min(max, v));
+  function saveBox(){
+    try{
+      const r = panel.getBoundingClientRect();
+      localStorage.setItem(SP_BOX_KEY, JSON.stringify({ left:Math.round(r.left), top:Math.round(r.top), w:Math.round(r.width), h:Math.round(r.height) }));
+    }catch(_){ }
+  }
+  function applyBox(){
+    let b; try{ b = JSON.parse(localStorage.getItem(SP_BOX_KEY)||"null"); }catch(_){ }
+    if(!b) return;
+    const w = clamp(b.w, 250, window.innerWidth - 20);
+    const h = clamp(b.h, 200, window.innerHeight - 20);
+    panel.style.width = w+"px"; panel.style.height = h+"px";
+    panel.style.left = clamp(b.left, 0, Math.max(0, window.innerWidth - w))+"px";
+    panel.style.top  = clamp(b.top,  0, Math.max(0, window.innerHeight - h))+"px";
+    panel.style.right = "auto"; panel.style.bottom = "auto";
+  }
+  window.__spApplyBox = applyBox;
+  let dragging=false, dx=0, dy=0;
+  head.addEventListener("pointerdown",(e)=>{
+    if(e.target.closest("button")) return;
+    const r = panel.getBoundingClientRect();
+    panel.style.left = r.left+"px"; panel.style.top = r.top+"px";
+    panel.style.right = "auto"; panel.style.bottom = "auto";
+    dx = e.clientX - r.left; dy = e.clientY - r.top;
+    dragging = true; head.classList.add("dragging");
+    try{ head.setPointerCapture(e.pointerId); }catch(_){ }
+    e.preventDefault();
+  });
+  head.addEventListener("pointermove",(e)=>{
+    if(!dragging) return;
+    const r = panel.getBoundingClientRect();
+    panel.style.left = clamp(e.clientX-dx, 0, window.innerWidth  - r.width)+"px";
+    panel.style.top  = clamp(e.clientY-dy, 0, window.innerHeight - r.height)+"px";
+  });
+  const end=(e)=>{ if(!dragging) return; dragging=false; head.classList.remove("dragging"); try{ head.releasePointerCapture(e.pointerId); }catch(_){ } saveBox(); };
+  head.addEventListener("pointerup", end);
+  head.addEventListener("pointercancel", end);
+  try{ new ResizeObserver(()=>{ if(panel.classList.contains("show")) saveBox(); }).observe(panel); }catch(_){ }
+  window.addEventListener("resize", ()=>{ if(panel.classList.contains("show")) applyBox(); });
+})();
 
 /* ---------- Live Stats: drag by the header + remember size/position ----------
    The panel is fixed with left/bottom from CSS. On first drag we switch it to
@@ -6518,7 +6725,8 @@ function chatRenderMsg(r){
     body.className = "cSysBody";
     const title = document.createElement("div");
     title.className = "cSysTitle";
-    title.textContent = kind === "tip" ? "Tip sent" : kind === "win" ? "Big win" : "Rain!";
+    // no exclamation mark — at this size it reads as a capital I
+    title.textContent = kind === "tip" ? "Tip sent" : kind === "win" ? "Big win" : "Rain";
     const txt = document.createElement("div");
     txt.className = "cSysText";
     // Strip the leading emoji the message was stored with — the icon shows it now.
@@ -6605,6 +6813,28 @@ async function chatSend(){
   chatPoll(false);
 }
 if($("chatSendBtn")) $("chatSendBtn").onclick = chatSend;
+
+/* ---------- emoji picker ---------- */
+(function(){
+  const btn = $("emojiBtn"), pop = $("emojiPop"), grid = $("emojiGrid"), input = $("chatInput");
+  if(!btn || !pop || !grid || !input) return;
+  const EMOJI = ("😀 😂 🤣 😊 😍 😎 🤑 🤔 😅 😭 😡 🥳 🤝 👋 👍 👎 🙏 💪 🔥 💎 💰 🍀 🎲 🃏 🎰 🏆 🚀 ⚡ ☔ 💸 ✅ ❌ 😴 🤡 👀 💀 🥶 🤯 😤 🫡").split(" ");
+  grid.innerHTML = EMOJI.map(e=>`<button type="button" data-e="${e}">${e}</button>`).join("");
+  const close = ()=> pop.classList.remove("show");
+  btn.onclick = (e)=>{ e.stopPropagation(); pop.classList.toggle("show"); };
+  grid.onclick = (e)=>{
+    const b = e.target.closest("button[data-e]"); if(!b) return;
+    const em = b.getAttribute("data-e");
+    // insert at the caret rather than always appending
+    const s = input.selectionStart ?? input.value.length;
+    const t = input.selectionEnd ?? input.value.length;
+    input.value = input.value.slice(0,s) + em + input.value.slice(t);
+    input.focus();
+    const pos = s + em.length;
+    try{ input.setSelectionRange(pos,pos); }catch(_){ }
+  };
+  document.addEventListener("click",(e)=>{ if(!pop.contains(e.target) && e.target !== btn) close(); });
+})();
 if($("chatInput")) $("chatInput").addEventListener("keydown", (e)=>{ if(e.key==="Enter") chatSend(); });
 
 /* ---------- rain ---------- */
