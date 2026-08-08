@@ -2762,6 +2762,7 @@ th{color:#8a8199;}
 .navBtn[data-view="plinko"] .nIco{color:#f472b6;}
 .navBtn[data-view="blackjack"] .nIco{color:#fb7185;}
 .navBtn[data-view="roulette"] .nIco{color:#c084fc;}
+.navBtn[data-view="slots"] .nIco{color:#cbd5e1;}
 .navBtn[data-view="case"] .nIco{color:#ffc53d;}
 .navBtn[data-view="cases"] .nIco{color:#22d3ee;}
 .navBtn[data-view="sports"] .nIco{color:#a3e635;}
@@ -3554,6 +3555,7 @@ input[type=number],
   border-color:rgba(255,255,255,.06) !important;
   box-shadow:none !important;
 }
+.gToneSilver{background:linear-gradient(160deg,#9aa3b8 0%,#4c4470 55%,#1c1330 100%);}
 .diceBoard{
   background:#0a0810 !important;
   border-color:rgba(255,255,255,.06) !important;
@@ -3601,7 +3603,9 @@ input[type=number],
 /* games row under the board */
 .diceGamesSection{margin-top:14px;}
 .diceGamesSection .sectionHd{align-items:center;}
-#gamesGridDice,#gamesGridMines{display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(158px,11.5vw,196px),1fr));gap:16px;}
+/* .homeGamesGrid only sets the columns — it never sets display:grid — so these
+   rows need it here or the tiles stack into one full-width column. */
+#gamesGridDice,#gamesGridMines,#gamesGridSlots{display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(158px,11.5vw,196px),1fr));gap:16px;}
 
 /* the three fields below the bar */
 .diceBottom{background:#0f0d15;border:1px solid rgba(255,255,255,.06);}
@@ -3642,6 +3646,476 @@ input[type=number],
   .heroRow{gap:10px;}
 }
 
+/* ============================================================
+   3.0 — SLOTS: SILVER BANDIT
+   Its own world inside the site: brushed silver over deep violet, with the
+   colour coming from the symbols rather than the furniture. Everything is
+   sized off the reel width so one set of rules covers phone to ultrawide.
+   ============================================================ */
+#view-slots{
+  --sb-ink:#0a0713;
+  --sb-cab:#120c22;
+  --sb-cab2:#1a1130;
+  --sb-reel:#0d0918;
+  --sb-line:rgba(190,180,225,.13);
+  --sb-silver:#e8ecf5;
+  --sb-silver2:#b9c1d4;
+  --sb-silver3:#7b8399;
+  --sb-vio:#a855f7;
+  --sb-vio2:#c99bff;
+  --sb-viodeep:#5b21b6;
+  --sb-gold:#fbbf24;
+  --sb-mint:#34d399;
+  --sb-cyan:#22d3ee;
+  --sb-rose:#fb7185;
+  --sb-metal:linear-gradient(180deg,#fdfdff 0%,#c6cdda 26%,#8b94a8 52%,#e9edf6 74%,#9aa3b6 100%);
+}
+
+/* ---------- lobby ---------- */
+.sbLobbyGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.sbCard{
+  display:flex;flex-direction:column;text-align:left;position:relative;
+  border:1px solid var(--sb-line);border-radius:16px;overflow:hidden;cursor:pointer;
+  background:linear-gradient(180deg,#191131,#0e0a1c);padding:0;color:inherit;font:inherit;
+  transition:transform .22s cubic-bezier(.2,.8,.3,1),border-color .22s,box-shadow .22s;
+}
+.sbCard:hover{transform:translateY(-4px);border-color:rgba(168,85,247,.45);box-shadow:0 18px 44px rgba(88,28,180,.34);}
+.sbCardArt{
+  position:relative;display:block;height:168px;overflow:hidden;
+  background:radial-gradient(120% 120% at 50% 118%, #7c3aed 0%, #3b1a78 42%, #150e29 78%);
+}
+.sbCardGlow{position:absolute;inset:0;background:radial-gradient(60% 70% at 50% 8%, rgba(255,255,255,.22), transparent 62%);}
+.sbCardMark{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;}
+.sbCardMarkTop{
+  font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.42em;text-indent:.42em;
+  background:var(--sb-metal);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.sbCardMarkBot{
+  font-family:var(--display);font-weight:700;font-size:34px;letter-spacing:.07em;line-height:1;
+  background:var(--sb-metal);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 3px 10px rgba(0,0,0,.6));
+}
+.sbCardCoin{
+  position:absolute;width:34px;height:34px;border-radius:50%;
+  background:radial-gradient(circle at 34% 28%, #fff 0%, #d7dcea 30%, #8d95ab 64%, #575e72 100%);
+  box-shadow:0 4px 12px rgba(0,0,0,.5), inset 0 0 0 2px rgba(255,255,255,.35);
+}
+.sbCardCoin1{left:16%;top:24%;animation:sbFloatA 4.6s ease-in-out infinite;}
+.sbCardCoin2{right:14%;top:34%;width:26px;height:26px;animation:sbFloatB 5.4s ease-in-out infinite;}
+.sbCardCoin3{right:26%;bottom:16%;width:20px;height:20px;animation:sbFloatA 6.2s ease-in-out infinite .7s;}
+@keyframes sbFloatA{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-10px) rotate(6deg)}}
+@keyframes sbFloatB{0%,100%{transform:translateY(0) rotate(8deg)}50%{transform:translateY(-13px) rotate(-6deg)}}
+.sbCardTag{
+  position:absolute;left:10px;top:10px;font-size:10px;font-weight:800;letter-spacing:.1em;
+  padding:4px 8px;border-radius:6px;background:rgba(52,211,153,.18);color:#6ee7b7;border:1px solid rgba(52,211,153,.4);
+}
+.sbCardBody{display:flex;flex-direction:column;gap:6px;padding:12px 13px 14px;}
+.sbCardTitle{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.01em;}
+.sbCardSub{font-size:11.5px;color:var(--muted);}
+.sbCardMeta{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px;}
+.sbPill{font-size:10px;font-weight:800;letter-spacing:.06em;padding:4px 7px;border-radius:6px;
+  background:rgba(255,255,255,.06);border:1px solid var(--sb-line);color:var(--sb-silver2);}
+.sbPillGold{background:rgba(251,191,36,.14);border-color:rgba(251,191,36,.34);color:#fcd34d;}
+.sbPillHot{background:rgba(251,113,133,.14);border-color:rgba(251,113,133,.34);color:#fda4af;}
+.sbCardPlay{
+  position:absolute;right:12px;top:130px;width:44px;height:44px;border-radius:50%;
+  display:grid;place-items:center;background:var(--sb-vio);box-shadow:0 8px 22px rgba(124,58,237,.6);
+  opacity:0;transform:scale(.7);transition:.22s cubic-bezier(.2,.8,.3,1);
+}
+.sbCardPlay svg{width:20px;height:20px;fill:#fff;margin-left:2px;}
+.sbCard:hover .sbCardPlay{opacity:1;transform:scale(1);}
+.sbSoonCard{
+  display:grid;place-items:center;border:1px dashed var(--sb-line);border-radius:16px;min-height:200px;
+  color:var(--muted);font-size:12.5px;background:rgba(255,255,255,.015);
+}
+
+/* ---------- client shell ---------- */
+.sbClient{
+  border:1px solid var(--sb-line);border-radius:16px;overflow:hidden;background:var(--sb-ink);
+  box-shadow:0 24px 70px rgba(0,0,0,.6);
+}
+.sbClientBar{
+  display:flex;align-items:center;gap:12px;padding:9px 12px;
+  background:linear-gradient(180deg,#171029,#100b1e);border-bottom:1px solid var(--sb-line);
+}
+.sbClientName{display:flex;flex-direction:column;line-height:1.15;margin-right:auto;}
+.sbClientName b{font-family:var(--display);font-size:13.5px;letter-spacing:.12em;color:var(--sb-silver);}
+.sbClientName span{font-size:10px;color:var(--sb-silver3);letter-spacing:.08em;}
+.sbClientTools{display:flex;gap:6px;}
+.sbIconBtn{
+  display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:9px;cursor:pointer;
+  background:rgba(255,255,255,.05);border:1px solid var(--sb-line);color:var(--sb-silver2);
+  font-size:11.5px;font-weight:700;letter-spacing:.04em;transition:.16s;
+}
+.sbIconBtn:hover{background:rgba(168,85,247,.16);border-color:rgba(168,85,247,.4);color:#fff;}
+.sbIconBtn svg{width:15px;height:15px;}
+.sbBack{margin-right:2px;}
+
+/* the stage keeps a fixed shape so the loader and the machine occupy the same box */
+.sbStage{position:relative;background:
+  radial-gradient(90% 70% at 50% -10%, rgba(124,58,237,.30), transparent 62%),
+  radial-gradient(70% 60% at 50% 110%, rgba(34,211,238,.10), transparent 60%),
+  var(--sb-ink);
+  padding:14px;min-height:420px;}
+
+/* ---------- loader ---------- */
+.sbLoader{position:absolute;inset:0;z-index:6;display:grid;place-items:center;background:
+  radial-gradient(80% 70% at 50% 30%, rgba(124,58,237,.22), transparent 60%), #08050f;}
+.sbLoader.sbGone{opacity:0;pointer-events:none;transition:opacity .45s ease;}
+.sbLoadInner{width:min(420px,86%);display:flex;flex-direction:column;align-items:center;gap:14px;}
+.sbLoadLogo{display:flex;flex-direction:column;align-items:center;position:relative;padding-bottom:12px;}
+.sbLoadLogoTop{font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.5em;text-indent:.5em;
+  background:var(--sb-metal);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.sbLoadLogoBot{font-family:var(--display);font-weight:700;font-size:40px;line-height:1;letter-spacing:.06em;
+  background:var(--sb-metal);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 4px 16px rgba(168,85,247,.5));}
+.sbLoadLogoLine{position:absolute;bottom:0;left:8%;right:8%;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,var(--sb-vio),transparent);animation:sbSheen 2.4s ease-in-out infinite;}
+@keyframes sbSheen{0%,100%{opacity:.35;transform:scaleX(.6)}50%{opacity:1;transform:scaleX(1)}}
+.sbLoadBarWrap{width:100%;height:7px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden;
+  border:1px solid var(--sb-line);}
+.sbLoadBar{height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,#7c3aed,#c084fc 60%,#e9d5ff);
+  box-shadow:0 0 16px rgba(168,85,247,.7);transition:width .28s ease;}
+.sbLoadRow{display:flex;justify-content:space-between;width:100%;font-size:11.5px;color:var(--sb-silver3);}
+.sbLoadRow .mono{color:var(--sb-silver);font-weight:700;}
+.sbLoadTasks{width:100%;display:flex;flex-direction:column;gap:3px;min-height:74px;}
+.sbTask{display:flex;align-items:center;gap:7px;font-size:10.5px;color:#6c6483;letter-spacing:.02em;}
+.sbTask b{color:var(--sb-mint);font-size:11px;}
+.sbTask.sbTaskRun{color:var(--sb-silver2);}
+.sbPlayGate{display:flex;flex-direction:column;align-items:center;gap:9px;animation:sbPop .4s cubic-bezier(.2,1.3,.4,1);}
+@keyframes sbPop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+.sbPlayBtn{
+  position:relative;display:inline-flex;align-items:center;gap:10px;padding:14px 34px;border-radius:99px;
+  cursor:pointer;border:none;background:linear-gradient(180deg,#a855f7,#6d28d9);color:#fff;
+  font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:.16em;
+  box-shadow:0 12px 34px rgba(124,58,237,.62);
+}
+/* the "come and play" pulse lives on a pseudo-element: scaling the button
+   itself would move the hit target out from under the pointer mid-click */
+.sbPlayBtn::after{
+  content:"";position:absolute;inset:-7px;border-radius:99px;pointer-events:none;
+  border:2px solid rgba(196,181,253,.55);animation:sbBreath 2.2s ease-in-out infinite;
+}
+.sbPlayBtn svg{width:20px;height:20px;fill:currentColor;}
+.sbPlayBtn:hover{filter:brightness(1.1);}
+@keyframes sbBreath{0%,100%{transform:scale(1);opacity:.45}50%{transform:scale(1.07);opacity:1}}
+.sbGateNote{font-size:10.5px;color:var(--sb-silver3);letter-spacing:.08em;}
+
+/* ---------- the cabinet ---------- */
+/* its own stacking context, so the machine's 3D layers stay under the overlays */
+.sbGame{opacity:0;transition:opacity .5s ease;position:relative;z-index:1;}
+.sbGame.sbReady{opacity:1;}
+.sbCab{
+  border-radius:16px;padding:12px;position:relative;max-width:1000px;margin:0 auto;
+  background:linear-gradient(180deg,var(--sb-cab2),var(--sb-cab));
+  border:1px solid var(--sb-line);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07), 0 18px 50px rgba(0,0,0,.5);
+}
+.sbCabTop{display:flex;align-items:center;gap:10px;margin-bottom:10px;min-height:38px;}
+.sbBrandMini{display:flex;flex-direction:column;line-height:1.05;margin-right:auto;}
+.sbBrandMini span{font-family:var(--display);font-size:9px;letter-spacing:.44em;color:var(--sb-silver3);}
+.sbBrandMini b{font-family:var(--display);font-size:17px;letter-spacing:.05em;
+  background:var(--sb-metal);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.sbWinMeter{
+  display:flex;align-items:center;gap:9px;padding:7px 14px;border-radius:11px;
+  background:rgba(0,0,0,.34);border:1px solid var(--sb-line);
+}
+.sbWinLbl{font-size:9.5px;letter-spacing:.2em;color:var(--sb-silver3);font-weight:800;}
+.sbWinVal{font-size:19px;font-weight:800;color:var(--sb-silver);font-variant-numeric:tabular-nums;}
+.sbWinMeter.sbWinHot .sbWinVal{color:var(--sb-mint);text-shadow:0 0 18px rgba(52,211,153,.6);}
+
+/* free-spins panel, only visible inside the feature */
+.sbFsPanel{display:none;align-items:center;gap:12px;padding:7px 14px;border-radius:11px;
+  background:linear-gradient(180deg,rgba(168,85,247,.24),rgba(109,40,217,.18));
+  border:1px solid rgba(168,85,247,.42);box-shadow:0 0 24px rgba(124,58,237,.28);}
+.sbFsPanel.sbOn{display:flex;}
+.sbFsTag{font-size:9.5px;font-weight:800;letter-spacing:.16em;color:var(--sb-vio2);}
+.sbFsLeft,.sbFsMult{font-size:11px;color:var(--sb-silver2);letter-spacing:.04em;}
+.sbFsLeft b,.sbFsMult b{color:#fff;font-size:14px;font-family:var(--mono);}
+.sbFsTotal{font-family:var(--mono);font-weight:800;font-size:15px;color:var(--sb-gold);}
+
+/* A reel is 3 cells tall (aspect-ratio 1/3), so board height is driven entirely
+   by its width. Left to fill a 2560 monitor the cells became ~220px and the
+   board 670px tall, which pushed the controls off screen. Cap the reel area and
+   centre it; the cabinet stays wide so the HUD still spans the panel. */
+.sbReelsWrap{position:relative;border-radius:14px;padding:9px;max-width:760px;margin:0 auto;
+  background:linear-gradient(180deg,#0b0716,#0a0614);border:1px solid var(--sb-line);
+  box-shadow:inset 0 2px 22px rgba(0,0,0,.75);}
+.sbReels{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;}
+.sbReel{
+  position:relative;overflow:hidden;border-radius:10px;aspect-ratio:1/3;
+  background:linear-gradient(180deg,#141024,#0c0817);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.045), inset 0 10px 24px rgba(0,0,0,.55);
+}
+/* soft top/bottom vignette so symbols enter and leave the window naturally */
+.sbReel::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:3;border-radius:10px;
+  background:linear-gradient(180deg,rgba(6,4,12,.85),transparent 13%,transparent 87%,rgba(6,4,12,.85));}
+.sbReel.sbAntic{box-shadow:inset 0 0 0 2px rgba(251,191,36,.65), 0 0 26px rgba(251,191,36,.35);}
+.sbReel.sbAntic::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(180deg,rgba(251,191,36,.16),transparent 50%,rgba(251,191,36,.16));
+  animation:sbAnticPulse .5s ease-in-out infinite alternate;}
+@keyframes sbAnticPulse{from{opacity:.35}to{opacity:1}}
+
+.sbStrip{position:absolute;top:0;left:0;width:100%;will-change:transform;}
+.sbStrip.sbBlur .sbSymWrap{filter:blur(1.5px);opacity:.94;}
+.sbCell{position:relative;width:100%;aspect-ratio:1;display:grid;place-items:center;perspective:620px;}
+.sbSymWrap{
+  width:84%;height:84%;display:grid;place-items:center;transform-style:preserve-3d;
+  transition:filter .12s linear;
+}
+.sbSym{width:100%;height:100%;display:block;filter:drop-shadow(0 6px 10px rgba(0,0,0,.55));}
+
+/* idle life: symbols breathe very slightly so the board is never static */
+.sbCell.sbIdle .sbSymWrap{animation:sbIdleTilt 5.5s ease-in-out infinite;}
+@keyframes sbIdleTilt{
+  0%,100%{transform:rotateY(-7deg) rotateX(3deg) translateZ(0)}
+  50%{transform:rotateY(7deg) rotateX(-3deg) translateZ(8px)}
+}
+/* landing bounce */
+.sbCell.sbLand .sbSymWrap{animation:sbLand .42s cubic-bezier(.2,1.5,.4,1);}
+@keyframes sbLand{
+  0%{transform:translateY(-14%) scaleY(1.18) scaleX(.9)}
+  55%{transform:translateY(3%) scaleY(.9) scaleX(1.08)}
+  100%{transform:translateY(0) scale(1)}
+}
+/* winning symbol: spin up on its Y axis and glow */
+.sbCell.sbWin::before{content:"";position:absolute;inset:6%;border-radius:14px;z-index:0;
+  background:radial-gradient(circle, rgba(168,85,247,.42), transparent 68%);animation:sbWinGlow .8s ease-in-out infinite;}
+@keyframes sbWinGlow{0%,100%{opacity:.35;transform:scale(.9)}50%{opacity:1;transform:scale(1.12)}}
+.sbCell.sbWin .sbSymWrap{animation:sbWinSpin .9s cubic-bezier(.3,.8,.3,1) infinite;}
+@keyframes sbWinSpin{
+  0%{transform:rotateY(0) scale(1)}
+  35%{transform:rotateY(180deg) scale(1.14)}
+  70%{transform:rotateY(360deg) scale(1)}
+  100%{transform:rotateY(360deg) scale(1)}
+}
+.sbCell.sbDim .sbSymWrap{filter:grayscale(.8) brightness(.5);opacity:.6;transition:.2s;}
+
+/* coin face value printed on the coin symbol */
+.sbCoinVal{
+  position:absolute;z-index:4;left:50%;top:56%;transform:translate(-50%,-50%);
+  font-family:var(--mono);font-weight:800;font-size:clamp(9px,1.5vw,15px);color:#2b1d05;
+  text-shadow:0 1px 0 rgba(255,255,255,.55);pointer-events:none;letter-spacing:-.02em;
+}
+.sbCell.sbSticky .sbSymWrap{animation:none;transform:none;}
+.sbCell.sbSticky::after{content:"";position:absolute;inset:5%;border-radius:12px;z-index:0;
+  border:2px solid rgba(251,191,36,.55);box-shadow:0 0 20px rgba(251,191,36,.32) inset;}
+.sbCell.sbCollected .sbSymWrap{animation:sbSuck .5s ease-in forwards;}
+@keyframes sbSuck{to{transform:scale(.2) translateX(160%) rotate(220deg);opacity:0}}
+
+/* payline overlay */
+.sbLineArt{position:absolute;inset:9px;width:calc(100% - 18px);height:calc(100% - 18px);
+  pointer-events:none;z-index:4;overflow:visible;}
+.sbLineArt path{fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 0 6px currentColor);opacity:0;}
+.sbLineArt path.sbLineOn{opacity:1;animation:sbLineDraw .5s ease;}
+@keyframes sbLineDraw{from{stroke-dasharray:600;stroke-dashoffset:600}to{stroke-dasharray:600;stroke-dashoffset:0}}
+
+/* floating win chips + particles */
+.sbFx{position:absolute;inset:0;pointer-events:none;z-index:7;overflow:hidden;border-radius:14px;}
+.sbChip{
+  position:absolute;transform:translate(-50%,-50%);padding:5px 11px;border-radius:9px;
+  font-family:var(--mono);font-weight:800;font-size:14px;color:#08210f;white-space:nowrap;
+  background:linear-gradient(180deg,#6ee7b7,#10b981);box-shadow:0 6px 18px rgba(16,185,129,.5);
+  animation:sbChipUp 1.15s cubic-bezier(.2,.9,.3,1) forwards;
+}
+.sbChipGold{background:linear-gradient(180deg,#fde68a,#f59e0b);color:#3b2306;box-shadow:0 6px 18px rgba(245,158,11,.55);}
+@keyframes sbChipUp{
+  0%{opacity:0;transform:translate(-50%,-30%) scale(.6)}
+  22%{opacity:1;transform:translate(-50%,-60%) scale(1.1)}
+  75%{opacity:1;transform:translate(-50%,-95%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-135%) scale(.9)}
+}
+.sbSpark{position:absolute;width:7px;height:7px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,#fff,#fbbf24 55%,transparent 70%);}
+.sbFlyCoin{
+  position:absolute;width:26px;height:26px;border-radius:50%;z-index:8;transform:translate(-50%,-50%);
+  background:radial-gradient(circle at 34% 28%, #fff 0%, #e3e8f4 26%, #99a1b6 62%, #5b6376 100%);
+  box-shadow:0 0 14px rgba(255,255,255,.5), inset 0 0 0 2px rgba(255,255,255,.4);
+}
+.sbCab.sbShake{animation:sbShake .42s cubic-bezier(.36,.07,.19,.97);}
+@keyframes sbShake{
+  10%,90%{transform:translate(-2px,1px)} 20%,80%{transform:translate(4px,-2px)}
+  30%,50%,70%{transform:translate(-6px,2px)} 40%,60%{transform:translate(6px,-1px)}
+}
+
+/* vault flash on the right edge when a collector lands */
+.sbVault{position:absolute;right:9px;top:9px;bottom:9px;width:19%;border-radius:10px;pointer-events:none;z-index:5;
+  opacity:0;background:radial-gradient(circle at 50% 50%, rgba(251,191,36,.35), transparent 70%);}
+.sbVault.sbOn{animation:sbVaultFlash .7s ease-out;}
+@keyframes sbVaultFlash{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+
+/* ---------- control deck ---------- */
+.sbCabBottom{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-top:11px;}
+.sbCtrlLeft{display:flex;align-items:center;gap:9px;}
+.sbCtrlRight{display:flex;align-items:center;gap:7px;justify-content:flex-end;}
+.sbBetBox{background:rgba(0,0,0,.32);border:1px solid var(--sb-line);border-radius:11px;padding:6px 9px;}
+.sbBetLbl{font-size:9px;font-weight:800;letter-spacing:.2em;color:var(--sb-silver3);display:block;margin-bottom:3px;}
+.sbBetRow{display:flex;align-items:center;gap:5px;}
+.sbStep{width:26px;height:26px;border-radius:7px;cursor:pointer;font-size:16px;font-weight:700;line-height:1;
+  background:rgba(255,255,255,.07);border:1px solid var(--sb-line);color:var(--sb-silver);}
+.sbStep:hover{background:rgba(168,85,247,.24);}
+.sbBetVal{width:78px;text-align:center;background:transparent;border:none;color:#fff;
+  font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;outline:none;}
+.sbToggle{
+  display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:8px 12px;border-radius:11px;cursor:pointer;
+  background:rgba(255,255,255,.05);border:1px solid var(--sb-line);color:var(--sb-silver2);text-align:left;transition:.16s;
+}
+.sbToggle:hover{border-color:rgba(168,85,247,.45);}
+.sbToggleName{font-size:11px;font-weight:800;letter-spacing:.1em;}
+.sbToggleSub{font-size:9px;color:var(--sb-silver3);letter-spacing:.03em;}
+.sbToggle.sbOn{background:linear-gradient(180deg,rgba(251,191,36,.24),rgba(217,119,6,.16));
+  border-color:rgba(251,191,36,.55);color:#fde68a;box-shadow:0 0 20px rgba(251,191,36,.22);}
+.sbToggle.sbOn .sbToggleSub{color:rgba(253,230,138,.8);}
+
+.sbSpin{
+  position:relative;width:104px;height:104px;border-radius:50%;cursor:pointer;border:none;
+  display:grid;place-items:center;gap:0;color:#fff;
+  background:radial-gradient(circle at 50% 32%, #c084fc, #7c3aed 58%, #4c1d95 100%);
+  box-shadow:0 12px 34px rgba(124,58,237,.55), inset 0 2px 0 rgba(255,255,255,.35), inset 0 -6px 14px rgba(0,0,0,.4);
+  transition:transform .14s cubic-bezier(.2,.9,.3,1),filter .16s;
+}
+.sbSpin:hover:not(:disabled){transform:scale(1.045);filter:brightness(1.08);}
+.sbSpin:active:not(:disabled){transform:scale(.96);}
+.sbSpin:disabled{cursor:not-allowed;filter:grayscale(.45) brightness(.7);}
+.sbSpinRing{position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(196,181,253,.4);}
+.sbSpin:not(:disabled) .sbSpinRing{animation:sbRing 2.6s linear infinite;}
+@keyframes sbRing{0%{transform:rotate(0);opacity:.35}50%{opacity:.9}100%{transform:rotate(360deg);opacity:.35}}
+.sbSpinIco{grid-area:1/1;display:grid;place-items:center;opacity:0;transform:scale(.6);transition:.2s;}
+.sbSpinIco svg{width:34px;height:34px;}
+.sbSpinTxt{grid-area:1/1;font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:.11em;transition:.2s;}
+.sbSpin.sbBusy .sbSpinIco{opacity:1;transform:scale(1);animation:sbSpinIco .9s linear infinite;}
+.sbSpin.sbBusy .sbSpinTxt{opacity:0;transform:scale(.7);}
+@keyframes sbSpinIco{to{transform:rotate(360deg)}}
+
+.sbMini{
+  display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 11px;border-radius:11px;cursor:pointer;
+  background:rgba(255,255,255,.05);border:1px solid var(--sb-line);color:var(--sb-silver2);
+  font-size:9px;font-weight:800;letter-spacing:.1em;transition:.16s;min-width:58px;
+}
+.sbMini svg{width:17px;height:17px;}
+.sbMini:hover{border-color:rgba(168,85,247,.45);color:#fff;}
+.sbMini.sbOn{background:rgba(34,211,238,.16);border-color:rgba(34,211,238,.5);color:#a5f3fc;}
+.sbBuy{background:linear-gradient(180deg,rgba(168,85,247,.3),rgba(109,40,217,.22));
+  border-color:rgba(168,85,247,.5);color:#e9d5ff;}
+.sbBuy:hover{filter:brightness(1.15);}
+
+.sbBalStrip{display:flex;align-items:center;gap:11px;justify-content:center;margin-top:9px;
+  font-size:10.5px;letter-spacing:.08em;color:var(--sb-silver3);font-weight:700;}
+.sbBalStrip b{color:var(--sb-silver);font-size:12.5px;margin-left:5px;font-variant-numeric:tabular-nums;}
+.sbBalDot{width:3px;height:3px;border-radius:50%;background:var(--sb-silver3);opacity:.6;}
+.sbLastWin b{color:var(--sb-mint);}
+
+/* ---------- overlays ---------- */
+/* No backdrop-filter here. The symbols sit in 3D (perspective + preserve-3d),
+   which promotes each one to its own composited layer, and those layers paint
+   over a backdrop-filtered element even though it wins hit-testing — the sheet
+   was fully clickable but drawn behind the reels. An opaque wash has the same
+   effect and no compositing hazard. */
+.sbOverlay{position:absolute;inset:0;z-index:12;display:none;place-items:center;
+  background:rgba(5,3,10,.93);border-radius:14px;padding:16px;}
+.sbOverlay.sbOn{display:grid;animation:sbFadeIn .25s ease;}
+@keyframes sbFadeIn{from{opacity:0}to{opacity:1}}
+.sbBonusCard{
+  width:min(430px,94%);text-align:center;padding:26px 22px;border-radius:18px;
+  background:linear-gradient(180deg,#241545,#140d26);border:1px solid rgba(168,85,247,.5);
+  box-shadow:0 24px 70px rgba(88,28,180,.5);animation:sbPop .45s cubic-bezier(.2,1.3,.4,1);
+}
+.sbBonusKick{font-size:10.5px;font-weight:800;letter-spacing:.28em;color:var(--sb-vio2);}
+.sbBonusName{font-family:var(--display);font-weight:700;font-size:32px;letter-spacing:.04em;margin-top:6px;
+  background:var(--sb-metal);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.sbBonusBig{display:flex;flex-direction:column;align-items:center;margin:14px 0 10px;}
+.sbBonusBig b{font-family:var(--mono);font-size:56px;line-height:1;color:var(--sb-gold);
+  text-shadow:0 0 30px rgba(251,191,36,.5);}
+.sbBonusBig span{font-size:11px;font-weight:800;letter-spacing:.24em;color:var(--sb-silver3);margin-top:4px;}
+.sbBonusNote{font-size:11.5px;color:var(--sb-silver3);line-height:1.5;max-width:320px;margin:0 auto;}
+.sbBonusGo{margin-top:16px;padding:12px 34px;border-radius:99px;border:none;cursor:pointer;
+  background:linear-gradient(180deg,#a855f7,#6d28d9);color:#fff;font-family:var(--display);
+  font-weight:700;font-size:14px;letter-spacing:.16em;box-shadow:0 10px 28px rgba(124,58,237,.55);}
+.sbBonusGo:hover{filter:brightness(1.1);}
+.sbBonusWinAmt{font-size:44px;color:var(--sb-gold);-webkit-text-fill-color:currentColor;background:none;}
+
+.sbBigWinOv{background:rgba(5,3,10,.72);}
+.sbBigWinInner{text-align:center;animation:sbPop .5s cubic-bezier(.2,1.4,.4,1);}
+.sbBigWinTag{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:.3em;
+  background:var(--sb-metal);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.sbBigWinAmt{font-size:clamp(38px,8vw,74px);font-weight:800;color:#fff;line-height:1.05;margin-top:6px;
+  text-shadow:0 0 40px rgba(251,191,36,.7);font-variant-numeric:tabular-nums;}
+.sbBigWinMult{font-size:19px;font-weight:800;color:var(--sb-gold);letter-spacing:.1em;margin-top:4px;}
+
+.sbSheetOv{align-items:start;}
+.sbSheet{width:min(430px,96%);max-height:100%;overflow:auto;border-radius:16px;margin:auto;
+  background:linear-gradient(180deg,#1a1230,#100b1e);border:1px solid var(--sb-line);
+  box-shadow:0 24px 60px rgba(0,0,0,.6);}
+.sbSheetWide{width:min(680px,96%);}
+.sbSheetHd{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;
+  border-bottom:1px solid var(--sb-line);position:sticky;top:0;background:#170f2b;z-index:2;}
+.sbSheetHd h4{margin:0;font-family:var(--display);font-size:14.5px;letter-spacing:.02em;}
+.sbSheetX{width:28px;height:28px;border-radius:8px;cursor:pointer;background:rgba(255,255,255,.06);
+  border:1px solid var(--sb-line);color:var(--sb-silver2);font-size:13px;}
+.sbSheetX:hover{background:rgba(251,113,133,.2);color:#fff;}
+.sbBuyGrid{display:grid;gap:10px;padding:14px;}
+.sbBuyOpt{display:grid;gap:3px;text-align:left;padding:14px;border-radius:13px;cursor:pointer;
+  background:linear-gradient(180deg,rgba(168,85,247,.16),rgba(109,40,217,.08));
+  border:1px solid rgba(168,85,247,.34);color:inherit;transition:.16s;}
+.sbBuyOpt:hover{border-color:rgba(168,85,247,.7);transform:translateY(-2px);}
+.sbBuyOptSuper{background:linear-gradient(180deg,rgba(251,191,36,.16),rgba(180,83,9,.08));
+  border-color:rgba(251,191,36,.4);}
+.sbBuyOptSuper:hover{border-color:rgba(251,191,36,.75);}
+.sbBuyName{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.06em;}
+.sbBuyDesc{font-size:11px;color:var(--sb-silver3);line-height:1.45;}
+.sbBuyPrice{font-size:21px;font-weight:800;color:var(--sb-gold);margin-top:5px;font-variant-numeric:tabular-nums;}
+.sbBuyMult{font-size:10px;letter-spacing:.12em;color:var(--sb-silver3);font-weight:800;}
+.sbSheetNote{padding:0 14px 14px;font-size:10.5px;color:var(--sb-silver3);line-height:1.5;}
+
+.sbInfoBody{padding:14px;display:flex;flex-direction:column;gap:14px;}
+.sbInfoSec h5{margin:0 0 7px;font-size:11px;letter-spacing:.16em;color:var(--sb-vio2);font-weight:800;}
+.sbPayGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:8px;}
+.sbPayRow{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:10px;
+  background:rgba(255,255,255,.04);border:1px solid var(--sb-line);}
+.sbPayIco{width:34px;height:34px;flex:0 0 34px;}
+.sbPayNums{display:flex;flex-direction:column;gap:1px;font-family:var(--mono);font-size:10.5px;color:var(--sb-silver2);}
+.sbPayNums span b{color:#fff;}
+.sbRules{font-size:11.5px;line-height:1.6;color:var(--sb-silver2);}
+.sbRules b{color:#fff;}
+.sbStatTable{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:11.5px;color:var(--sb-silver2);}
+.sbStatTable b{color:#fff;font-family:var(--mono);}
+
+/* ---------- responsive ---------- */
+@media(max-width:1050px){
+  .sbSpin{width:88px;height:88px;}
+  .sbSpinTxt{font-size:14px;}
+}
+@media(max-width:820px){
+  .sbStage{padding:9px;min-height:340px;}
+  .sbCab{padding:9px;}
+  .sbCabBottom{grid-template-columns:1fr;gap:9px;}
+  .sbCtrlLeft{order:2;justify-content:space-between;}
+  .sbCtrlMid{order:1;display:grid;place-items:center;}
+  .sbCtrlRight{order:3;justify-content:space-between;}
+  .sbMini{flex:1;}
+  .sbCabTop{flex-wrap:wrap;}
+  .sbFsPanel{order:3;width:100%;justify-content:space-between;}
+  .sbBrandMini b{font-size:15px;}
+  .sbBonusBig b{font-size:44px;}
+}
+@media(max-width:520px){
+  .sbReels{gap:4px;}
+  .sbReelsWrap{padding:6px;}
+  .sbLineArt{inset:6px;width:calc(100% - 12px);height:calc(100% - 12px);}
+  .sbClientName span{display:none;}
+  .sbIconBtn span{display:none;}
+  .sbBetVal{width:62px;font-size:14px;}
+  /* wrapping otherwise leaves a separator dot dangling at the end of a line */
+  .sbBalStrip{flex-wrap:wrap;gap:6px 12px;}
+  .sbBalDot{display:none;}
+}
+
+/* respect people who don't want motion: keep the game playable, drop the loops */
+@media(prefers-reduced-motion:reduce){
+  .sbCell.sbIdle .sbSymWrap,.sbCell.sbWin .sbSymWrap,.sbSpin .sbSpinRing,
+  .sbPlayBtn,.sbCardCoin,.sbLoadLogoLine{animation:none !important;}
+}
 </style>
 </head>
 <body>
@@ -3758,6 +4232,10 @@ input[type=number],
       <span class="nIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v5M12 16v5M3 12h5M16 12h5"/></svg></span>
       <span class="nLbl">Roulette</span>
     </button>
+    <button class="navBtn" data-view="slots">
+      <span class="nIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M9 5v14M15 5v14"/><circle cx="5.8" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="18.2" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></span>
+      <span class="nLbl">Slots</span><span class="chip ok">NEW</span>
+    </button>
 
     <div class="sideTitle">Rewards</div>
     <button class="navBtn" data-view="case">
@@ -3856,6 +4334,7 @@ input[type=number],
         <button class="navBtn" data-view="dice"><span>Dice</span></button>
         <button class="navBtn" data-view="roulette"><span>Roulette</span></button>
         <button class="navBtn" data-view="mines"><span>Mines</span></button>
+        <button class="navBtn" data-view="slots"><span>Slots</span></button>
         <button class="navBtn" data-view="plinko"><span>Plinko</span></button>
         <button class="navBtn" data-view="sports"><span>Sports</span></button>
         <button class="navBtn" data-view="leaderboard"><span>Leaderboard</span></button>
@@ -4160,6 +4639,226 @@ input[type=number],
         </div>
         <div class="sectionBd">
           <div class="homeGamesGrid" id="gamesGridMines"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLOTS — lobby + on-demand game client (Silver Bandit)
+         ============================================================ -->
+    <section id="view-slots" style="display:none;">
+
+      <div class="section" id="sbLobby">
+        <div class="sectionHd">
+          <div><h3>Slots</h3><div class="sub">Provider-style reels that load on demand, the way a real casino client does.</div></div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button class="statsFab" data-gstats="slots" type="button" title="Live stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></button>
+            <div class="chip">1 GAME</div>
+          </div>
+        </div>
+        <div class="sectionBd">
+          <div class="sbLobbyGrid">
+            <button class="sbCard" id="sbOpenBandit" type="button">
+              <span class="sbCardArt">
+                <span class="sbCardGlow"></span>
+                <span class="sbCardMark">
+                  <span class="sbCardMarkTop">SILVER</span>
+                  <span class="sbCardMarkBot">BANDIT</span>
+                </span>
+                <span class="sbCardCoin sbCardCoin1"></span>
+                <span class="sbCardCoin sbCardCoin2"></span>
+                <span class="sbCardCoin sbCardCoin3"></span>
+                <span class="sbCardTag">NEW</span>
+              </span>
+              <span class="sbCardBody">
+                <span class="sbCardTitle">Silver Bandit</span>
+                <span class="sbCardSub">HANDZES Originals · 5×3 · 10 lines</span>
+                <span class="sbCardMeta">
+                  <span class="sbPill">96.15% RTP</span>
+                  <span class="sbPill sbPillGold">10 000× MAX</span>
+                  <span class="sbPill sbPillHot">HIGH VOL</span>
+                </span>
+              </span>
+              <span class="sbCardPlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+            </button>
+
+            <div class="sbSoonCard"><span>More slots landing soon</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- the game client itself: hidden until the lobby card is opened -->
+      <div class="sbClient" id="sbClient" style="display:none;">
+        <div class="sbClientBar">
+          <button class="sbIconBtn sbBack" id="sbBackBtn" type="button" title="Back to lobby">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span>Lobby</span>
+          </button>
+          <div class="sbClientName"><b>SILVER BANDIT</b><span>HANDZES Originals</span></div>
+          <div class="sbClientTools">
+            <button class="sbIconBtn" id="sbSoundBtn" type="button" title="Sound"></button>
+            <button class="sbIconBtn" id="sbInfoBtn" type="button" title="Game info & paytable">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.6" r="1.1" fill="currentColor" stroke="none"/></svg>
+            </button>
+            <button class="sbIconBtn" id="sbFullBtn" type="button" title="Fullscreen">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="sbStage" id="sbStage">
+          <!-- ---------- loader ---------- -->
+          <div class="sbLoader" id="sbLoader">
+            <div class="sbLoadInner">
+              <div class="sbLoadLogo">
+                <span class="sbLoadLogoTop">SILVER</span>
+                <span class="sbLoadLogoBot">BANDIT</span>
+                <span class="sbLoadLogoLine"></span>
+              </div>
+              <div class="sbLoadBarWrap"><div class="sbLoadBar" id="sbLoadBar"></div></div>
+              <div class="sbLoadRow"><span id="sbLoadStage">Connecting…</span><span class="mono" id="sbLoadPct">0%</span></div>
+              <div class="sbLoadTasks" id="sbLoadTasks"></div>
+              <div class="sbPlayGate" id="sbPlayGate" style="display:none;">
+                <button class="sbPlayBtn" id="sbPlayBtn" type="button">
+                  <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span>PLAY</span>
+                </button>
+                <div class="sbGateNote">96.15% RTP · max win 10 000×</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ---------- the machine ---------- -->
+          <div class="sbGame" id="sbGame">
+            <div class="sbCab">
+              <div class="sbCabTop">
+                <div class="sbBrandMini"><span>SILVER</span><b>BANDIT</b></div>
+                <div class="sbFsPanel" id="sbFsPanel">
+                  <span class="sbFsTag">BOUNTY SPINS</span>
+                  <span class="sbFsLeft"><b id="sbFsLeft">0</b> left</span>
+                  <span class="sbFsMult">COLLECT <b id="sbFsMult">×1</b></span>
+                  <span class="sbFsTotal" id="sbFsTotal">0.00</span>
+                </div>
+                <div class="sbWinMeter" id="sbWinMeter"><span class="sbWinLbl">WIN</span><span class="sbWinVal mono" id="sbWinVal">0.00</span></div>
+              </div>
+
+              <div class="sbReelsWrap">
+                <div class="sbReels" id="sbReels"></div>
+                <svg class="sbLineArt" id="sbLineArt" viewBox="0 0 500 300" preserveAspectRatio="none"></svg>
+                <div class="sbFx" id="sbFx"></div>
+                <div class="sbVault" id="sbVault"></div>
+              </div>
+
+              <div class="sbCabBottom">
+                <div class="sbCtrlLeft">
+                  <div class="sbBetBox">
+                    <span class="sbBetLbl">BET</span>
+                    <div class="sbBetRow">
+                      <button class="sbStep" id="sbBetDown" type="button">−</button>
+                      <input class="sbBetVal mono" id="sbBetVal" type="text" inputmode="decimal" value="1.00"/>
+                      <button class="sbStep" id="sbBetUp" type="button">+</button>
+                    </div>
+                  </div>
+                  <button class="sbToggle" id="sbAnteBtn" type="button">
+                    <span class="sbToggleName">BANDIT BET</span>
+                    <span class="sbToggleSub">2× stake · 3× bonus chance</span>
+                  </button>
+                </div>
+
+                <div class="sbCtrlMid">
+                  <button class="sbSpin" id="sbSpinBtn" type="button">
+                    <span class="sbSpinRing"></span>
+                    <span class="sbSpinIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3.2-6.9"/><path d="M21 4v5h-5"/></svg></span>
+                    <span class="sbSpinTxt" id="sbSpinTxt">SPIN</span>
+                  </button>
+                </div>
+
+                <div class="sbCtrlRight">
+                  <button class="sbMini" id="sbTurboBtn" type="button" title="Turbo spin">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M13 2L4.5 13.5H11L9.5 22 19 10h-6.5z"/></svg><span>TURBO</span>
+                  </button>
+                  <button class="sbMini" id="sbAutoBtn" type="button" title="Autoplay">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg><span id="sbAutoTxt">AUTO</span>
+                  </button>
+                  <button class="sbMini sbBuy" id="sbBuyBtn" type="button" title="Buy the bonus">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M8 7V5.5A4 4 0 0 1 16 5.5V7"/></svg><span>BUY</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="sbBalStrip">
+                <span>BALANCE <b class="mono" id="sbBal">0.00</b></span>
+                <span class="sbBalDot"></span>
+                <span>TOTAL BET <b class="mono" id="sbTotalBet">1.00</b></span>
+                <span class="sbBalDot"></span>
+                <span class="sbLastWin">LAST WIN <b class="mono" id="sbLastWin">0.00</b></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ---------- overlays ---------- -->
+          <div class="sbOverlay" id="sbBonusIntro">
+            <div class="sbBonusCard">
+              <div class="sbBonusKick">YOU TRIGGERED</div>
+              <div class="sbBonusName">BOUNTY SPINS</div>
+              <div class="sbBonusBig"><b id="sbBonusCount">10</b><span>FREE SPINS</span></div>
+              <div class="sbBonusNote">Coins stick. Every vault empties them and lifts the collect multiplier.</div>
+              <button class="sbBonusGo" id="sbBonusGo" type="button">START</button>
+            </div>
+          </div>
+
+          <div class="sbOverlay" id="sbBonusOutro">
+            <div class="sbBonusCard sbBonusCardEnd">
+              <div class="sbBonusKick">BOUNTY SPINS COMPLETE</div>
+              <div class="sbBonusName sbBonusWinAmt mono" id="sbOutroAmt">0.00</div>
+              <div class="sbBonusNote" id="sbOutroSub">from 10 spins</div>
+              <button class="sbBonusGo" id="sbOutroGo" type="button">COLLECT</button>
+            </div>
+          </div>
+
+          <div class="sbOverlay sbBigWinOv" id="sbBigWin">
+            <div class="sbBigWinInner">
+              <div class="sbBigWinTag" id="sbBigWinTag">BIG WIN</div>
+              <div class="sbBigWinAmt mono" id="sbBigWinAmt">0.00</div>
+              <div class="sbBigWinMult mono" id="sbBigWinMult">0×</div>
+            </div>
+          </div>
+
+          <div class="sbOverlay sbSheetOv" id="sbBuyMenu">
+            <div class="sbSheet">
+              <div class="sbSheetHd"><h4>Buy a feature</h4><button class="sbSheetX" id="sbBuyClose" type="button">✕</button></div>
+              <div class="sbBuyGrid">
+                <button class="sbBuyOpt" id="sbBuyNormal" type="button">
+                  <span class="sbBuyName">BOUNTY SPINS</span>
+                  <span class="sbBuyDesc">10 free spins · collector starts at ×1</span>
+                  <span class="sbBuyPrice mono" id="sbBuyPrice1">0.00</span>
+                  <span class="sbBuyMult">106× bet</span>
+                </button>
+                <button class="sbBuyOpt sbBuyOptSuper" id="sbBuySuper" type="button">
+                  <span class="sbBuyName">SUPER BOUNTY</span>
+                  <span class="sbBuyDesc">12 free spins · starts at ×2 with 2 coins already stuck</span>
+                  <span class="sbBuyPrice mono" id="sbBuyPrice2">0.00</span>
+                  <span class="sbBuyMult">248× bet</span>
+                </button>
+              </div>
+              <div class="sbSheetNote">Buying replaces the spin cost. Feature RTP is the same 96%.</div>
+            </div>
+          </div>
+
+          <div class="sbOverlay sbSheetOv" id="sbInfoSheet">
+            <div class="sbSheet sbSheetWide">
+              <div class="sbSheetHd"><h4>Silver Bandit — paytable & rules</h4><button class="sbSheetX" id="sbInfoClose" type="button">✕</button></div>
+              <div class="sbInfoBody" id="sbInfoBody"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section diceGamesSection" id="sbSuggest">
+        <div class="sectionHd">
+          <div><h3>🎮 Suggested games</h3></div>
+          <button class="btn" type="button" data-nav="games">View all</button>
+        </div>
+        <div class="sectionBd">
+          <div class="homeGamesGrid" id="gamesGridSlots"></div>
         </div>
       </div>
     </section>
@@ -5733,6 +6432,7 @@ function setHostBalance(newPts){
   try{ window.meProfile = meProfile; }catch(_){ }
   try{ updateMeUI(); }catch(e){}
   try{ refreshAdminPlayerRowSelf(); }catch(_){ }
+  try{ if(window.sbSyncBalance) window.sbSyncBalance(); }catch(_){ }
   try{ window.dispatchEvent(new CustomEvent('hostBalanceChanged', { detail: Number(newPts) })); }catch(e){}
 }
 
@@ -6029,7 +6729,7 @@ function applyView(v){
   const prevView = document.querySelector(".navBtn[data-view].active")?.dataset?.view || "";
   try{ sessionStorage.setItem(LAST_VIEW_KEY, String(v||"home")); }catch(_){ }
   document.querySelectorAll(".navBtn[data-view]").forEach(b=>b.classList.toggle("active", b.dataset.view===v));
-  ["home","games","dice","roulette","mines","blackjack","plinko","sports","leaderboard","bets","case","cases","trading","admin"].forEach(id=>{
+  ["home","games","dice","roulette","mines","blackjack","plinko","slots","sports","leaderboard","bets","case","cases","trading","admin"].forEach(id=>{
     const el=$("view-"+id); if(el) el.style.display=(id===v)?"":"none";
   });
   if(prevView === "dice" && v !== "dice") diceResetState();
@@ -6052,6 +6752,8 @@ function applyView(v){
     adminPlayersPollTimer = null;
     stopAdminPlayersRealtime();
   }
+  if(prevView === "slots" && v !== "slots"){ try{ if(window.__sb){ window.__sb.auto = 0; window.__sb.autoStop = true; } }catch(_){ } }
+  if(v==="slots"){ try{ if(window.sbSyncBalance) window.sbSyncBalance(); }catch(_){ } }
   if(v==="case") refreshCaseUI();
   if(v==="cases") renderCasesLobby();
   if(v==="trading") tradingOnViewEnter();
@@ -6254,7 +6956,7 @@ document.querySelectorAll(".navBtn[data-view]").forEach(b=>b.onclick=()=>setView
    (#/home, #/dice, #/cases/starter, #/trading/coin/x, …)
    so the browser Back / Forward buttons navigate the site.
    ========================================================= */
-const ROUTE_VIEWS = new Set(["home","games","dice","roulette","mines","blackjack","plinko","sports","leaderboard","bets","case","cases","trading","admin"]);
+const ROUTE_VIEWS = new Set(["home","games","dice","roulette","mines","blackjack","plinko","slots","sports","leaderboard","bets","case","cases","trading","admin"]);
 let __routeSuppress = 0;      // ignore hashchange events we triggered ourselves
 let __routeApplying = false;  // true while the router itself is calling app functions
 let __lastMainHash = "#/home";
@@ -6418,7 +7120,7 @@ try{
 }catch(_){ }
 
 /* ---------- game stats engine ---------- */
-const HZ_GAMES = { dice:"Dice", mines:"Mines", roulette:"Roulette", blackjack:"Blackjack", plinko:"Plinko", cases:"Cases", case:"Daily Case" };
+const HZ_GAMES = { dice:"Dice", mines:"Mines", roulette:"Roulette", blackjack:"Blackjack", plinko:"Plinko", slots:"Slots", cases:"Cases", case:"Daily Case" };
 const hzStatsSession = {};
 /* ============================================================
    LIFETIME STATS — stored on the ACCOUNT, not just this device.
@@ -7100,7 +7802,9 @@ function hzMaybeAnnounceWin(game, stake, payout){
   if(mult < BIGWIN_MULT || p < BIGWIN_MIN) return;
   if(Date.now() - lastBigWinAt < 20000) return;    // never spam
   lastBigWinAt = Date.now();
-  const label = (HZ_GAMES[game] && HZ_GAMES[game].label) || game;
+  // HZ_GAMES maps id -> display name (a string), so the old `.label` lookup was
+  // always undefined and the chat announced the raw id ("dice" instead of "Dice")
+  const label = HZ_GAMES[game] || game;
   supabase.from("chat_messages").insert({
     user_id: session.user.id,
     name: meProfile.display_name || "Player",
@@ -7588,7 +8292,11 @@ async function loadEvents(){
   renderSports();
 }
 
-async function addWagerAndPayout(stake, payout){
+/* opts.noStats: skip the stats/rain/announce hook. Games that settle in two
+   legs (debit now, credit when the round resolves) would otherwise record the
+   same round twice — once as a loss, once as a win — so they pass noStats here
+   and call hzRecord once at the end with the real stake and payout. */
+async function addWagerAndPayout(stake, payout, opts){
   if(!(await ensureActionReady(false))) throw new Error("session");
   if(!meProfile) throw new Error("profile");
   await normalizeMonthForMe();
@@ -7610,7 +8318,7 @@ async function addWagerAndPayout(stake, payout){
   meProfile.lifetime_wager=newLife; meProfile.month_wager=newMonth; meProfile.level=newLvl;
   setHostBalance(newPts);
   refreshCaseUI();
-  try{ hzRecord(getActiveView(), stake, payout); }catch(_){ }
+  if(!(opts && opts.noStats)){ try{ hzRecord(getActiveView(), stake, payout); }catch(_){ } }
   return { newPts, newLvl };
 }
 
@@ -7661,8 +8369,8 @@ function renderGames(){
     {icon:"🃏",name:"Blackjack",desc:"Classic 21",live:true,art:"assets/blackjack-tile.jpg"},
     {icon:"🎡",name:"Roulette",desc:"Red / black",live:true,art:"assets/roulette-tile.jpg"},
     {icon:"📦",name:"Cases",desc:"Open cases, win big",live:true,tone:"gToneGold"},
+    {icon:"🎰",name:"Slots",desc:"Silver Bandit · 10 000x",live:true,tone:"gToneSilver"},
     {icon:"🚀",name:"Crash",desc:"Cash out",live:false,tone:"gToneOrange"},
-    {icon:"🎰",name:"Slots",desc:"Spin reels",live:false,tone:"gTonePink"},
     {icon:"🎯",name:"Keno",desc:"Pick numbers",live:false,tone:"gToneBlue"},
     {icon:"📈",name:"Trading",desc:"Meme coin market",live:true,tone:"gToneTeal"},
   ];
@@ -7688,6 +8396,7 @@ function renderGames(){
       else if(g.name==="Plinko") setView("plinko");
       else if(g.name==="Trading") setView("trading");
       else if(g.name==="Cases") setView("cases");
+      else if(g.name==="Slots") setView("slots");
       else toast("Coming soon");
     };
     return el;
@@ -7701,18 +8410,20 @@ function renderGames(){
   const minesGrid2=$("gamesGridMines");  // and under the mines board
   if(diceGrid) diceGrid.innerHTML="";
   if(minesGrid2) minesGrid2.innerHTML="";
+  if($("gamesGridSlots")) $("gamesGridSlots").innerHTML="";
   if(homeGrid) homeGrid.innerHTML="";
   if(homeLive) homeLive.innerHTML="";
   if(homeSoon) homeSoon.innerHTML="";
   if(gamesLive) gamesLive.innerHTML="";
   if(gamesSoon) gamesSoon.innerHTML="";
 
-  const homeList = new Set(["Dice","Mines","Plinko","Blackjack","Roulette","Crash","Keno"]);
+  const homeList = new Set(["Dice","Mines","Slots","Plinko","Blackjack","Roulette","Crash","Keno"]);
   // A short suggested set under the dice board, not the whole catalogue.
   // mk() builds a fresh element each call, so this grid gets its own working tiles.
   const pick = (names, into)=>{ if(!into) return; names.forEach(n=>{ const g=G.find(x=>x.name===n); if(g) into.appendChild(mk(g)); }); };
-  pick(["Mines","Plinko","Blackjack","Roulette","Cases"], diceGrid);
-  pick(["Dice","Plinko","Blackjack","Roulette","Cases"], minesGrid2);   // no Mines on the mines page
+  pick(["Mines","Slots","Plinko","Blackjack","Roulette"], diceGrid);
+  pick(["Dice","Slots","Plinko","Blackjack","Roulette"], minesGrid2);   // no Mines on the mines page
+  pick(["Dice","Mines","Plinko","Blackjack","Roulette"], $("gamesGridSlots"));
   G.forEach(g=>{
     if(g.live){
       if(gamesLive) gamesLive.appendChild(mk(g));
@@ -12233,6 +12944,1238 @@ minesResetUI();
 renderMinesLadder();
 $("minesPayoutTop").textContent = "—";
 restoreMinesState();
+
+/* ============================================================================
+   SILVER BANDIT — 5x3, 10 lines, coin-collect + Bounty Spins
+   ----------------------------------------------------------------------------
+   The maths here is not decorative. Reel strips, paytable and coin ladder were
+   solved offline: a payline's expectation is exact (a cell is uniform over its
+   strip and the five reels are independent, so it's a sum over 13^5 tuples),
+   scatters are spaced so at most one shows per reel which makes the trigger an
+   exact convolution, and coins live on reels 1-4 while the vault lives on reel 5
+   so the two are independent. Only the feature needed sampling. Verified:
+
+       base                   96.15% RTP · hit 25.6% · bonus 1 in 196
+       Bandit Bet (2x)        95.91% RTP · bonus 1 in 70
+       buy Bounty (106x)      95.75% RTP
+       buy Super Bounty(248x) 96.05% RTP
+       max win capped at 10 000x
+
+   A 3 000 000-spin run of this exact code agreed with the closed form to 0.03%.
+   Changing any strip, pay or coin weight invalidates all of the above.
+   ============================================================================ */
+(function(){
+  "use strict";
+
+  /* ---------------- symbols & paytable ---------------- */
+  const S = { CLUB:0, SPADE:1, HEART:2, DIAM:3, HORSE:4, HAT:5, GUN:6, TNT:7, BANDIT:8, WILD:9, COIN:10, VAULT:11, SCAT:12 };
+  const SYM_ID = ["club","spade","heart","diam","horse","hat","gun","tnt","bandit","wild","coin","vault","scat"];
+  const SYM_NAME = ["Clubs","Spades","Hearts","Diamonds","Horseshoe","Bandit Hat","Revolver","Dynamite","The Bandit","Wild","Silver Coin","The Vault","Wanted"];
+
+  /* [x2, x3, x4, x5] of TOTAL bet */
+  const PAY = {
+    [S.BANDIT]:[1.00,2.50,9.00,45.0], [S.TNT]:[0.60,1.50,4.50,22.0], [S.GUN]:[0.45,1.20,3.00,15.0],
+    [S.HAT]:[0,0.90,2.40,12.0], [S.HORSE]:[0,0.60,1.50,7.5], [S.DIAM]:[0,0.45,1.20,6.0],
+    [S.HEART]:[0,0.35,0.90,4.5], [S.SPADE]:[0,0.30,0.75,3.6], [S.CLUB]:[0,0.25,0.60,3.0],
+  };
+  const LINES = [[1,1,1,1,1],[0,0,0,0,0],[2,2,2,2,2],[0,1,2,1,0],[2,1,0,1,2],[0,0,1,2,2],[2,2,1,0,0],[1,0,1,2,1],[1,2,1,0,1],[0,1,1,1,2]];
+  const LINE_COLORS = ["#a855f7","#34d399","#22d3ee","#fbbf24","#fb7185","#c4b5fd","#4ade80","#38bdf8","#f472b6","#facc15"];
+
+  const COIN_VALUES = [[0.5,3400],[1,2600],[1.5,1150],[2,800],[3,520],[5,300],[7,150],[10,105],[15,46],[20,25],[25,16],[50,7],[100,2.6],[250,0.7],[500,0.22],[1000,0.07]];
+  const COIN_W = COIN_VALUES.reduce((a,c)=>a+c[1],0);
+
+  const MULT_LADDER = [1,2,3,5,10];
+  const MAX_WIN = 10000;
+  const ANTE_COST = 2;
+  const BUY_PRICE = 106, SUPER_PRICE = 248;
+  const FS_FOR = { 3:10, 4:12, 5:15 };
+  const RETRIGGER = 5;
+
+  /* ---------------- reel strips ---------------- */
+  function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+  /* blocks are [symbol, blockSize, blockCount] — stacked lows are what give a
+     10-line game a workable hit rate without inflating the paytable */
+  function buildStrip(blocks, seed){
+    const rng = mulberry32(seed), parts = [];
+    for(const [sym,size,count] of blocks) for(let i=0;i<count;i++) parts.push(new Array(size).fill(sym));
+    for(let i=parts.length-1;i>0;i--){ const j=Math.floor(rng()*(i+1)); const t=parts[i]; parts[i]=parts[j]; parts[j]=t; }
+    const strip = [].concat.apply([], parts), n = strip.length;
+    // no two scatters inside one 3-cell window, which is what makes the trigger maths exact
+    for(let pass=0; pass<600; pass++){
+      let bad = -1;
+      for(let i=0;i<n && bad<0;i++){
+        if(strip[i]!==S.SCAT) continue;
+        for(let d=1;d<4;d++) if(strip[(i+d)%n]===S.SCAT){ bad=(i+d)%n; break; }
+      }
+      if(bad<0) break;
+      let j = Math.floor(rng()*n);
+      for(let t=0;t<n;t++){ const c=(j+t)%n; if(strip[c]!==S.SCAT){ j=c; break; } }
+      const tmp = strip[bad]; strip[bad]=strip[j]; strip[j]=tmp;
+    }
+    return strip;
+  }
+  const BASE_BLOCKS = [
+    [[S.CLUB,3,4],[S.SPADE,3,4],[S.HEART,3,3],[S.DIAM,2,4],[S.HORSE,2,5],[S.HAT,2,2],[S.GUN,1,5],[S.TNT,1,4],[S.BANDIT,1,3],[S.COIN,1,3],[S.SCAT,1,2]],
+    [[S.CLUB,3,4],[S.SPADE,3,3],[S.HEART,3,3],[S.DIAM,2,4],[S.HORSE,2,4],[S.HAT,2,3],[S.GUN,1,5],[S.TNT,1,4],[S.BANDIT,1,3],[S.WILD,1,3],[S.COIN,1,3],[S.SCAT,1,2]],
+    [[S.CLUB,3,3],[S.SPADE,3,3],[S.HEART,3,3],[S.DIAM,2,5],[S.HORSE,2,4],[S.HAT,2,3],[S.GUN,1,5],[S.TNT,1,4],[S.BANDIT,1,3],[S.WILD,1,4],[S.COIN,1,3],[S.SCAT,1,2]],
+    [[S.CLUB,3,4],[S.SPADE,3,3],[S.HEART,3,3],[S.DIAM,2,4],[S.HORSE,2,4],[S.HAT,2,3],[S.GUN,1,5],[S.TNT,1,4],[S.BANDIT,1,3],[S.WILD,1,3],[S.COIN,1,3],[S.SCAT,1,2]],
+    [[S.CLUB,3,4],[S.SPADE,3,4],[S.HEART,3,3],[S.DIAM,2,4],[S.HORSE,2,5],[S.HAT,2,2],[S.GUN,1,5],[S.TNT,1,3],[S.BANDIT,1,2],[S.VAULT,1,5],[S.SCAT,1,2]],
+  ];
+  const ANTE_BLOCKS = BASE_BLOCKS.map(bl => bl.map(b => b[0]===S.SCAT ? [S.SCAT,1,3] : b.slice()).concat([[S.HORSE,2,1]]));
+  const FEAT_BLOCKS = [
+    [[S.CLUB,3,4],[S.SPADE,3,3],[S.HEART,2,3],[S.DIAM,2,3],[S.HORSE,2,3],[S.HAT,2,2],[S.GUN,1,4],[S.TNT,1,3],[S.BANDIT,1,2],[S.COIN,1,6],[S.SCAT,1,2]],
+    [[S.CLUB,3,4],[S.SPADE,3,3],[S.HEART,2,3],[S.DIAM,2,3],[S.HORSE,2,2],[S.HAT,2,2],[S.GUN,1,4],[S.TNT,1,3],[S.BANDIT,1,2],[S.WILD,1,2],[S.COIN,1,6],[S.SCAT,1,2]],
+    [[S.CLUB,3,4],[S.SPADE,3,3],[S.HEART,2,3],[S.DIAM,2,3],[S.HORSE,2,2],[S.HAT,2,2],[S.GUN,1,4],[S.TNT,1,3],[S.BANDIT,1,2],[S.WILD,1,2],[S.COIN,1,6],[S.SCAT,1,2]],
+    [[S.CLUB,3,4],[S.SPADE,3,3],[S.HEART,2,3],[S.DIAM,2,3],[S.HORSE,2,2],[S.HAT,2,2],[S.GUN,1,4],[S.TNT,1,3],[S.BANDIT,1,2],[S.WILD,1,2],[S.COIN,1,6],[S.SCAT,1,2]],
+    [[S.CLUB,3,4],[S.SPADE,3,3],[S.HEART,2,3],[S.DIAM,2,3],[S.HORSE,2,3],[S.HAT,2,2],[S.GUN,1,4],[S.TNT,1,3],[S.BANDIT,1,2],[S.VAULT,1,6],[S.SCAT,1,2]],
+  ];
+  let STRIPS = null;   // built during load
+  function compileStrips(){
+    return {
+      base: BASE_BLOCKS.map((b,i)=>buildStrip(b, 20260808 + i*7919)),
+      ante: ANTE_BLOCKS.map((b,i)=>buildStrip(b, 31415926 + i*7919)),
+      feat: FEAT_BLOCKS.map((b,i)=>buildStrip(b, 27182818 + i*7919)),
+    };
+  }
+
+  /* ---------------- randomness ---------------- */
+  let rndBuf = null, rndAt = 0;
+  function rnd(){
+    try{
+      if(!rndBuf || rndAt >= rndBuf.length){ rndBuf = new Uint32Array(512); crypto.getRandomValues(rndBuf); rndAt = 0; }
+      return rndBuf[rndAt++] / 4294967296;
+    }catch(_){ return Math.random(); }
+  }
+  function drawCoin(){
+    let r = rnd()*COIN_W;
+    for(let i=0;i<COIN_VALUES.length;i++){ r -= COIN_VALUES[i][1]; if(r<=0) return COIN_VALUES[i][0]; }
+    return COIN_VALUES[0][0];
+  }
+
+  /* ---------------- spin maths ---------------- */
+  function spinGrid(strips){
+    const g = [], stops = [];
+    for(let r=0;r<5;r++){
+      const st = strips[r], n = st.length, p = Math.floor(rnd()*n);
+      stops.push(p);
+      g.push([st[p], st[(p+1)%n], st[(p+2)%n]]);
+    }
+    return { grid:g, stops };
+  }
+  function evalLines(grid){
+    const wins = []; let total = 0;
+    for(let li=0; li<LINES.length; li++){
+      const rows = LINES[li];
+      let sym = -1;
+      for(let r=0;r<5;r++){ const s = grid[r][rows[r]]; if(s===S.WILD) continue; sym = s; break; }
+      if(sym < 0) sym = S.BANDIT;
+      if(!PAY[sym]) continue;
+      let count = 0;
+      for(let r=0;r<5;r++){ const s = grid[r][rows[r]]; if(s===sym || s===S.WILD) count++; else break; }
+      if(count < 2) continue;
+      const pay = PAY[sym][count-2];
+      if(!pay) continue;
+      total += pay;
+      const cells = []; for(let r=0;r<count;r++) cells.push([r, rows[r]]);
+      wins.push({ line:li, sym, count, pay, cells });
+    }
+    return { total: Math.round(total*1e6)/1e6, wins };
+  }
+  function findAll(grid, sym){
+    const out = [];
+    for(let r=0;r<5;r++) for(let w=0;w<3;w++) if(grid[r][w]===sym) out.push([r,w]);
+    return out;
+  }
+  function baseSpin(ante){
+    const { grid, stops } = spinGrid(ante ? STRIPS.ante : STRIPS.base);
+    const lines = evalLines(grid);
+    const coins = findAll(grid, S.COIN).map(([r,w])=>({ r, w, v: drawCoin() }));
+    const vaults = findAll(grid, S.VAULT);
+    const scatters = findAll(grid, S.SCAT);
+    let collect = 0;
+    if(vaults.length && coins.length) collect = coins.reduce((a,c)=>a+c.v,0) * vaults.length;
+    return { grid, stops, coins, vaults, scatters, lineWins: lines.wins, lineTotal: lines.total,
+             collect: Math.round(collect*100)/100, trigger: scatters.length>=3 ? scatters.length : 0 };
+  }
+  /* the whole feature is resolved up front, then replayed as animation */
+  function runFeature(spins, opts){
+    opts = opts || {};
+    const sticky = [], stickyAt = Object.create(null), steps = [];
+    let mult = opts.startMult || 1;
+    let mi = MULT_LADDER.indexOf(mult); if(mi < 0) mi = 0;
+    let total = 0, left = spins, played = 0, retriggers = 0;
+
+    if(opts.preCoins){
+      for(let i=0;i<opts.preCoins;i++){
+        let r,w,k,guard=0;
+        do{ r = Math.floor(rnd()*4); w = Math.floor(rnd()*3); k = r+","+w; }while(stickyAt[k] && guard++ < 80);
+        if(stickyAt[k]) continue;
+        stickyAt[k] = true; sticky.push({ r, w, v: drawCoin() });
+      }
+    }
+    const preSticky = sticky.map(c=>({...c}));
+
+    while(left > 0 && total < MAX_WIN){
+      left--; played++;
+      const { grid, stops } = spinGrid(STRIPS.feat);
+      for(const c of sticky) grid[c.r][c.w] = S.COIN;
+
+      const lines = evalLines(grid);
+      let spinWin = lines.total;
+
+      const newCoins = [];
+      for(const [r,w] of findAll(grid, S.COIN)){
+        const k = r+","+w;
+        if(stickyAt[k]) continue;
+        stickyAt[k] = true;
+        const c = { r, w, v: drawCoin() };
+        sticky.push(c); newCoins.push(c);
+      }
+
+      const vaults = findAll(grid, S.VAULT), collects = [];
+      for(let i=0;i<vaults.length;i++){
+        const sum = sticky.reduce((a,c)=>a+c.v, 0);
+        const amt = Math.round(sum*mult*100)/100;
+        if(amt > 0){ spinWin += amt; collects.push({ at: vaults[i], mult, amount: amt }); }
+        if(mi < MULT_LADDER.length-1){ mi++; mult = MULT_LADDER[mi]; }
+      }
+
+      const scat = findAll(grid, S.SCAT);
+      let extra = 0;
+      if(scat.length >= 3){ extra = RETRIGGER; left += extra; retriggers++; }
+
+      total += spinWin;
+      steps.push({ grid, stops, lines: lines.wins, lineTotal: lines.total, newCoins,
+                   sticky: sticky.map(c=>({...c})), collects, vaults, scat, extra, mult,
+                   spinWin: Math.round(spinWin*100)/100, spinsLeft: left, index: played,
+                   runningTotal: Math.round(Math.min(total, MAX_WIN)*100)/100 });
+      if(total >= MAX_WIN) break;
+    }
+    return { total: Math.min(Math.round(total*100)/100, MAX_WIN), steps, played, retriggers, preSticky,
+           startMult: opts.startMult || 1, capped: total >= MAX_WIN };
+  }
+
+  /* ---------------- symbol art ----------------
+     One hidden sprite; every cell is a <use>. Each symbol is drawn as a dark
+     extrude, the body, then a specular pass, which is what reads as 3D once the
+     cell tilts on its Y axis. */
+  const SPRITE = `<svg id="sbSprite" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;pointer-events:none;">
+<defs>
+  <linearGradient id="sbgSilver" x1="0" y1="0" x2=".3" y2="1">
+    <stop offset="0" stop-color="#ffffff"/><stop offset=".24" stop-color="#dfe5f0"/><stop offset=".5" stop-color="#98a1b5"/>
+    <stop offset=".68" stop-color="#f2f5fa"/><stop offset="1" stop-color="#6d7488"/></linearGradient>
+  <linearGradient id="sbgGreen" x1="0" y1="0" x2=".3" y2="1">
+    <stop offset="0" stop-color="#a7f3d0"/><stop offset=".42" stop-color="#34d399"/><stop offset="1" stop-color="#047857"/></linearGradient>
+  <linearGradient id="sbgPurple" x1="0" y1="0" x2=".3" y2="1">
+    <stop offset="0" stop-color="#e9d5ff"/><stop offset=".42" stop-color="#a855f7"/><stop offset="1" stop-color="#5b21b6"/></linearGradient>
+  <linearGradient id="sbgRose" x1="0" y1="0" x2=".3" y2="1">
+    <stop offset="0" stop-color="#fecdd3"/><stop offset=".42" stop-color="#fb7185"/><stop offset="1" stop-color="#9f1239"/></linearGradient>
+  <linearGradient id="sbgCyan" x1="0" y1="0" x2=".3" y2="1">
+    <stop offset="0" stop-color="#cffafe"/><stop offset=".42" stop-color="#22d3ee"/><stop offset="1" stop-color="#0e7490"/></linearGradient>
+  <linearGradient id="sbgGold" x1="0" y1="0" x2=".3" y2="1">
+    <stop offset="0" stop-color="#fef3c7"/><stop offset=".38" stop-color="#fbbf24"/><stop offset="1" stop-color="#b45309"/></linearGradient>
+  <linearGradient id="sbgRed" x1="0" y1="0" x2=".35" y2="1">
+    <stop offset="0" stop-color="#fca5a5"/><stop offset=".4" stop-color="#ef4444"/><stop offset="1" stop-color="#7f1d1d"/></linearGradient>
+  <linearGradient id="sbgDarkHat" x1="0" y1="0" x2=".3" y2="1">
+    <stop offset="0" stop-color="#4c3f6b"/><stop offset=".45" stop-color="#2a2140"/><stop offset="1" stop-color="#150f24"/></linearGradient>
+  <linearGradient id="sbgSteel" x1="0" y1="0" x2=".4" y2="1">
+    <stop offset="0" stop-color="#cbd5e1"/><stop offset=".4" stop-color="#64748b"/><stop offset="1" stop-color="#1e293b"/></linearGradient>
+  <linearGradient id="sbgPaper" x1="0" y1="0" x2=".2" y2="1">
+    <stop offset="0" stop-color="#fdf0d5"/><stop offset=".55" stop-color="#e7cfa4"/><stop offset="1" stop-color="#c0a173"/></linearGradient>
+  <linearGradient id="sbgSkin" x1="0" y1="0" x2=".3" y2="1">
+    <stop offset="0" stop-color="#f5d0b0"/><stop offset="1" stop-color="#c08b62"/></linearGradient>
+  <radialGradient id="sbgShine" cx=".33" cy=".24" r=".62">
+    <stop offset="0" stop-color="#ffffff" stop-opacity=".85"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+</defs>
+
+<symbol id="sbs-club" viewBox="0 0 100 100">
+  <g transform="translate(0,4)" opacity=".45"><circle cx="50" cy="33" r="16" fill="#022c22"/><circle cx="32" cy="55" r="16" fill="#022c22"/><circle cx="68" cy="55" r="16" fill="#022c22"/><path d="M45 60h10l5 26H40z" fill="#022c22"/></g>
+  <path d="M45 58h10l5 26H40z" fill="url(#sbgGreen)"/>
+  <circle cx="50" cy="31" r="16" fill="url(#sbgGreen)"/><circle cx="32" cy="53" r="16" fill="url(#sbgGreen)"/><circle cx="68" cy="53" r="16" fill="url(#sbgGreen)"/>
+  <path d="M50 15a16 16 0 0 1 14 8 16 16 0 0 0-28 0 16 16 0 0 1 14-8z" fill="url(#sbgShine)"/>
+  <circle cx="44" cy="25" r="6" fill="#fff" opacity=".5"/><circle cx="27" cy="47" r="5" fill="#fff" opacity=".4"/>
+</symbol>
+
+<symbol id="sbs-spade" viewBox="0 0 100 100">
+  <g transform="translate(0,4)" opacity=".45"><path d="M50 16 76 46c9 11 4 24-9 24-6 0-11-3-13-7l4 23H42l4-23c-2 4-7 7-13 7-13 0-18-13-9-24z" fill="#2e1065"/></g>
+  <path d="M50 14 76 44c9 11 4 24-9 24-6 0-11-3-13-7l4 23H42l4-23c-2 4-7 7-13 7-13 0-18-13-9-24z" fill="url(#sbgPurple)"/>
+  <path d="M50 20 66 39c-6-4-11-5-16-5s-10 1-16 5z" fill="url(#sbgShine)"/>
+  <ellipse cx="40" cy="38" rx="6" ry="9" fill="#fff" opacity=".38" transform="rotate(-24 40 38)"/>
+</symbol>
+
+<symbol id="sbs-heart" viewBox="0 0 100 100">
+  <g transform="translate(0,4)" opacity=".45"><path d="M50 86C20 64 12 48 20 35c7-12 24-11 30 2 6-13 23-14 30-2 8 13 0 29-30 51z" fill="#4c0519"/></g>
+  <path d="M50 84C20 62 12 46 20 33c7-12 24-11 30 2 6-13 23-14 30-2 8 13 0 29-30 51z" fill="url(#sbgRose)"/>
+  <path d="M28 30c6-4 14-2 17 6-5-9-13-11-19-7z" fill="#fff" opacity=".5"/>
+  <ellipse cx="34" cy="42" rx="7" ry="10" fill="#fff" opacity=".34" transform="rotate(-30 34 42)"/>
+</symbol>
+
+<symbol id="sbs-diam" viewBox="0 0 100 100">
+  <g transform="translate(0,4)" opacity=".45"><path d="M50 14 84 50 50 88 16 50z" fill="#083344"/></g>
+  <path d="M50 12 84 50 50 86 16 50z" fill="url(#sbgCyan)"/>
+  <path d="M50 12 84 50H16z" fill="#fff" opacity=".22"/>
+  <path d="M50 12 66 50 50 86 34 50z" fill="#fff" opacity=".14"/>
+  <path d="M50 18 70 44H30z" fill="url(#sbgShine)"/>
+</symbol>
+
+<symbol id="sbs-horse" viewBox="0 0 100 100">
+  <g transform="translate(0,4)" opacity=".45"><path d="M31 22C14 42 17 74 50 76c33-2 36-34 19-54" fill="none" stroke="#0f172a" stroke-width="17" stroke-linecap="round"/></g>
+  <path d="M31 22C14 42 17 74 50 76c33-2 36-34 19-54" fill="none" stroke="url(#sbgSilver)" stroke-width="17" stroke-linecap="round"/>
+  <path d="M31 22C14 42 17 74 50 76c33-2 36-34 19-54" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" opacity=".38"/>
+  <g fill="#3c4353">
+    <circle cx="22" cy="42" r="2.7"/><circle cx="23" cy="59" r="2.7"/><circle cx="34" cy="71" r="2.7"/>
+    <circle cx="78" cy="42" r="2.7"/><circle cx="77" cy="59" r="2.7"/><circle cx="66" cy="71" r="2.7"/>
+  </g>
+</symbol>
+
+<symbol id="sbs-hat" viewBox="0 0 100 100">
+  <g transform="translate(0,4)" opacity=".45"><ellipse cx="50" cy="66" rx="42" ry="12" fill="#0b0716"/></g>
+  <path d="M28 64C28 40 33 26 50 26s22 14 22 38z" fill="url(#sbgDarkHat)"/>
+  <ellipse cx="50" cy="64" rx="42" ry="12" fill="url(#sbgDarkHat)"/>
+  <ellipse cx="50" cy="62" rx="42" ry="11" fill="#3b2f57" opacity=".55"/>
+  <path d="M28 58h44v9H28z" fill="#a855f7" opacity=".85"/>
+  <circle cx="63" cy="62" r="4" fill="url(#sbgGold)"/>
+  <path d="M36 40c2-9 6-13 14-13-7 3-10 7-11 14z" fill="#fff" opacity=".3"/>
+</symbol>
+
+<symbol id="sbs-gun" viewBox="0 0 100 100">
+  <g transform="translate(0,4)" opacity=".45">
+    <rect x="16" y="32" width="78" height="19" rx="5" fill="#0f172a"/><path d="M22 54h22l-9 36-22-6z" fill="#0f172a"/></g>
+  <path d="M20 54 44 54 36 90 13 84Z" fill="#7c4a24"/>
+  <path d="M25 57 40 57 34 85 20 81Z" fill="#9a6134"/>
+  <path d="M18 25 27 28 24 36 15 33Z" fill="#64748b"/>
+  <rect x="16" y="32" width="78" height="19" rx="5" fill="url(#sbgSteel)"/>
+  <rect x="24" y="35" width="62" height="4" rx="2" fill="#e2e8f0" opacity=".5"/>
+  <rect x="86" y="26" width="5" height="7" rx="1.5" fill="#475569"/>
+  <path d="M46 55h16a13 13 0 0 1-13 13" fill="none" stroke="#475569" stroke-width="4.5" stroke-linecap="round"/>
+  <circle cx="40" cy="43" r="16" fill="url(#sbgSilver)"/>
+  <circle cx="40" cy="43" r="7.5" fill="#334155"/>
+  <g fill="#1e293b"><circle cx="40" cy="33.5" r="2.7"/><circle cx="49.5" cy="43" r="2.7"/><circle cx="40" cy="52.5" r="2.7"/><circle cx="30.5" cy="43" r="2.7"/></g>
+  <ellipse cx="34" cy="37" rx="6" ry="4" fill="#fff" opacity=".45" transform="rotate(-30 34 37)"/>
+</symbol>
+
+<symbol id="sbs-tnt" viewBox="0 0 100 100">
+  <g transform="translate(0,4)" opacity=".45"><rect x="20" y="42" width="60" height="44" rx="7" fill="#450a0a"/></g>
+  <rect x="20" y="40" width="18" height="44" rx="6" fill="url(#sbgRed)"/>
+  <rect x="41" y="36" width="18" height="48" rx="6" fill="url(#sbgRed)"/>
+  <rect x="62" y="40" width="18" height="44" rx="6" fill="url(#sbgRed)"/>
+  <rect x="16" y="54" width="68" height="13" rx="3" fill="#7f1d1d"/>
+  <text x="50" y="64.5" text-anchor="middle" font-family="Impact,Haettenschweiler,'Arial Narrow',sans-serif" font-size="12" fill="#fde68a" letter-spacing="1.2">TNT</text>
+  <path d="M50 36c0-10 12-10 12-19" stroke="#a16207" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+  <circle cx="63" cy="15" r="6" fill="url(#sbgGold)"/><circle cx="63" cy="15" r="2.6" fill="#fff"/>
+  <rect x="24" y="44" width="4" height="34" rx="2" fill="#fff" opacity=".3"/>
+</symbol>
+
+<symbol id="sbs-bandit" viewBox="0 0 100 100">
+  <g transform="translate(0,4)" opacity=".45"><ellipse cx="50" cy="34" rx="40" ry="11" fill="#0b0716"/></g>
+  <circle cx="50" cy="56" r="26" fill="url(#sbgSkin)"/>
+  <path d="M24 56a26 26 0 0 0 52 0z" fill="#a855f7"/>
+  <path d="M24 56h52v4a26 26 0 0 1-52 0z" fill="#7c3aed"/>
+  <path d="M30 60c8 4 32 4 40 0" stroke="#5b21b6" stroke-width="2" fill="none"/>
+  <rect x="26" y="40" width="48" height="12" rx="5" fill="#1c1330"/>
+  <circle cx="39" cy="46" r="3.4" fill="#fff"/><circle cx="61" cy="46" r="3.4" fill="#fff"/>
+  <circle cx="39.8" cy="46" r="1.7" fill="#0f172a"/><circle cx="61.8" cy="46" r="1.7" fill="#0f172a"/>
+  <path d="M26 34C26 18 34 10 50 10s24 8 24 24z" fill="url(#sbgDarkHat)"/>
+  <ellipse cx="50" cy="34" rx="40" ry="10" fill="url(#sbgDarkHat)"/>
+  <ellipse cx="50" cy="32" rx="40" ry="9" fill="#4a3c6d" opacity=".5"/>
+  <rect x="26" y="27" width="48" height="7" fill="#c084fc" opacity=".9"/>
+  <path d="M34 20c2-6 6-9 12-9-6 2-9 5-10 10z" fill="#fff" opacity=".28"/>
+</symbol>
+
+<symbol id="sbs-wild" viewBox="0 0 100 100">
+  <g transform="translate(0,4)" opacity=".5"><path d="M50 10 62 38l30 3-22 20 6 29-26-15-26 15 6-29L8 41l30-3z" fill="#2e1065"/></g>
+  <path d="M50 8 62 36l30 3-22 20 6 29-26-15-26 15 6-29L8 39l30-3z" fill="url(#sbgSilver)"/>
+  <path d="M50 8 62 36l30 3-22 20-20-51z" fill="#fff" opacity=".28"/>
+  <path d="M50 18 58 39l22 2-16 15 4 21-18-11z" fill="url(#sbgShine)"/>
+  <rect x="20" y="52" width="60" height="19" rx="5" fill="#6d28d9"/>
+  <rect x="20" y="52" width="60" height="8" rx="4" fill="#a855f7"/>
+  <text x="50" y="66" text-anchor="middle" font-family="'Space Grotesk',Impact,sans-serif" font-weight="700" font-size="15" fill="#fff" letter-spacing="2">WILD</text>
+</symbol>
+
+<symbol id="sbs-coin" viewBox="0 0 100 100">
+  <g transform="translate(0,4)" opacity=".5"><circle cx="50" cy="50" r="42" fill="#1e293b"/></g>
+  <circle cx="50" cy="50" r="42" fill="url(#sbgSilver)"/>
+  <circle cx="50" cy="50" r="35" fill="#aab2c4"/><circle cx="50" cy="50" r="35" fill="url(#sbgShine)" opacity=".7"/>
+  <circle cx="50" cy="50" r="35" fill="none" stroke="#6b7386" stroke-width="2"/>
+  <circle cx="50" cy="50" r="42" fill="none" stroke="#f5f7fb" stroke-width="2.4" opacity=".7"/>
+  <g stroke="#7d879c" stroke-width="2.2">
+    <path d="M50 8v6M50 86v6M8 50h6M86 50h6M20 20l4.5 4.5M75.5 75.5 80 80M80 20l-4.5 4.5M24.5 75.5 20 80"/></g>
+  <ellipse cx="36" cy="30" rx="13" ry="8" fill="#fff" opacity=".55" transform="rotate(-30 36 30)"/>
+</symbol>
+
+<symbol id="sbs-vault" viewBox="0 0 100 100">
+  <g transform="translate(0,4)" opacity=".5"><rect x="8" y="12" width="84" height="78" rx="10" fill="#020617"/></g>
+  <rect x="8" y="10" width="84" height="78" rx="10" fill="#1e293b"/>
+  <rect x="8" y="10" width="84" height="78" rx="10" fill="url(#sbgShine)" opacity=".2"/>
+  <rect x="13" y="15" width="74" height="68" rx="7" fill="none" stroke="#0f172a" stroke-width="3"/>
+  <!-- the door itself, offset left so the hinge side reads -->
+  <rect x="20" y="17" width="64" height="64" rx="8" fill="url(#sbgSteel)"/>
+  <rect x="20" y="17" width="64" height="64" rx="8" fill="url(#sbgShine)" opacity=".3"/>
+  <circle cx="16" cy="27" r="3.4" fill="#0f172a"/><circle cx="16" cy="49" r="3.4" fill="#0f172a"/><circle cx="16" cy="71" r="3.4" fill="#0f172a"/>
+  <!-- spoked handle -->
+  <g stroke="url(#sbgSilver)" stroke-width="6.5" stroke-linecap="round">
+    <path d="M52 26v46M29 49h46M36 35 68 63M68 35 36 63"/></g>
+  <circle cx="52" cy="49" r="17" fill="none" stroke="url(#sbgSilver)" stroke-width="5"/>
+  <circle cx="52" cy="49" r="10" fill="#334155"/>
+  <circle cx="52" cy="49" r="6" fill="url(#sbgGold)"/>
+  <circle cx="50" cy="46" r="2.2" fill="#fff" opacity=".6"/>
+</symbol>
+
+<symbol id="sbs-scat" viewBox="0 0 100 100">
+  <g transform="translate(2,5)" opacity=".45"><rect x="14" y="8" width="72" height="84" rx="4" fill="#1c1917"/></g>
+  <g transform="rotate(-3 50 50)">
+    <rect x="14" y="8" width="72" height="84" rx="4" fill="url(#sbgPaper)"/>
+    <text x="50" y="27" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="13.5" fill="#4a2f16" letter-spacing="0.8" textLength="56" lengthAdjust="spacingAndGlyphs">WANTED</text>
+    <path d="M20 32h60" stroke="#8a6b43" stroke-width="1.6"/>
+    <circle cx="50" cy="52" r="16" fill="#8a6b43" opacity=".35"/>
+    <path d="M34 52a16 16 0 0 1 32 0z" fill="#4a2f16" opacity=".55"/>
+    <rect x="38" y="47" width="24" height="6" rx="3" fill="#4a2f16"/>
+    <path d="M36 40c0-8 5-12 14-12s14 4 14 12z" fill="#4a2f16" opacity=".8"/>
+    <text x="50" y="80" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="12" fill="#4a2f16" letter-spacing="1">$10 000</text>
+  </g>
+</symbol>
+</svg>`;
+
+  const symSVG = (sym)=>'<svg class="sbSym" viewBox="0 0 100 100"><use href="#sbs-'+SYM_ID[sym]+'"/></svg>';
+
+  /* ---------------- tiny synth (no audio files needed) ---------------- */
+  let actx = null;
+  function audio(){
+    if(actx) return actx;
+    try{ actx = new (window.AudioContext||window.webkitAudioContext)(); }catch(_){ actx = null; }
+    return actx;
+  }
+  function beep(freq, dur, type, vol, slideTo){
+    if(!st.sound) return;
+    const a = audio(); if(!a) return;
+    try{
+      if(a.state === "suspended") a.resume();
+      const o = a.createOscillator(), g = a.createGain();
+      o.type = type || "triangle";
+      o.frequency.setValueAtTime(freq, a.currentTime);
+      if(slideTo) o.frequency.exponentialRampToValueAtTime(Math.max(30, slideTo), a.currentTime + dur);
+      g.gain.setValueAtTime(0.0001, a.currentTime);
+      g.gain.exponentialRampToValueAtTime(vol || 0.06, a.currentTime + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + dur);
+      o.connect(g); g.connect(a.destination);
+      o.start(); o.stop(a.currentTime + dur + 0.02);
+    }catch(_){ }
+  }
+  const sfx = {
+    click(){ beep(420, .06, "square", .035); },
+    reelStop(i){ beep(180 + i*26, .09, "triangle", .05, 120 + i*20); },
+    tick(){ beep(900, .03, "square", .02); },
+    win(level){ const base = 520 + level*90; beep(base, .12, "triangle", .06); setTimeout(()=>beep(base*1.26, .16, "triangle", .055), 90); },
+    coin(){ beep(1180, .07, "sine", .05, 1600); },
+    collect(){ beep(300, .5, "sawtooth", .05, 1400); },
+    bonus(){ [0,140,280,460].forEach((d,i)=>setTimeout(()=>beep(440*Math.pow(1.26,i), .3, "triangle", .07), d)); },
+    big(){ [0,90,180,300,440].forEach((d,i)=>setTimeout(()=>beep(392*Math.pow(1.2,i), .35, "sawtooth", .05), d)); },
+  };
+
+  /* ---------------- state ---------------- */
+  const BETS = [0.10,0.20,0.30,0.50,0.80,1,2,3,5,8,10,20,30,50,80,100,200,500];
+  const LS = "hz_sb_v1";
+  const st = {
+    bet: 1, ante: false, turbo: false, auto: 0, sound: true,
+    busy: false, loaded: false, loading: false, inFeature: false,
+    lastWin: 0, autoStop: false,
+  };
+  function saveCfg(){ try{ localStorage.setItem(LS, JSON.stringify({ bet:st.bet, ante:st.ante, turbo:st.turbo, sound:st.sound })); }catch(_){ } }
+  function loadCfg(){
+    try{
+      const c = JSON.parse(localStorage.getItem(LS)||"{}");
+      if(BETS.indexOf(Number(c.bet)) >= 0) st.bet = Number(c.bet);
+      st.ante = !!c.ante; st.turbo = !!c.turbo; st.sound = c.sound !== false;
+    }catch(_){ }
+  }
+
+  const el = (id)=>document.getElementById(id);
+  const wait = (ms)=>new Promise(r=>setTimeout(r, ms));
+  const money = (n)=>(typeof fmtN === "function" ? fmtN(n) : Number(n||0).toFixed(2));
+
+  /* ---------------- loader ----------------
+     Real work, not a fake timer: it injects and decodes the symbol atlas,
+     compiles the reel strips, builds the reel DOM and waits for fonts. */
+  /* [label, share of the bar, minimum time on screen].
+     The work is real, but on a fast machine it finishes in a few hundred
+     milliseconds, which reads as a flicker rather than a game loading. The
+     floors below pace the sequence so each stage is legible — the same thing
+     every real casino client does. */
+  const TASKS = [
+    ["Connecting to game server", 8, 340],
+    ["Loading symbol atlas", 22, 420],
+    ["Decoding textures", 30, 780],
+    ["Compiling reel strips", 14, 360],
+    ["Building the cabinet", 16, 420],
+    ["Warming up renderer", 10, 340],
+  ];
+  let pctShown = 0, pctTarget = 0, pctRAF = 0;
+  function paintPct(){
+    const bar = el("sbLoadBar"), p = el("sbLoadPct");
+    if(bar) bar.style.width = pctShown.toFixed(1) + "%";
+    if(p) p.textContent = pctShown.toFixed(0) + "%";
+  }
+  function setLoad(pct, label){
+    pctTarget = Math.max(pctTarget, Math.min(100, pct));
+    const s = el("sbLoadStage");
+    if(s && label) s.textContent = label;
+    cancelAnimationFrame(pctRAF);
+    (function tick(){
+      pctShown += (pctTarget - pctShown) * 0.16;
+      if(pctTarget - pctShown < 0.12) pctShown = pctTarget;
+      paintPct();
+      if(pctShown < pctTarget) pctRAF = requestAnimationFrame(tick);
+    })();
+  }
+  function renderTasks(done, running){
+    const box = el("sbLoadTasks"); if(!box) return;
+    box.innerHTML = TASKS.map((t,i)=>{
+      const cls = i < done ? "sbTask" : (i === running ? "sbTask sbTaskRun" : "sbTask");
+      const mark = i < done ? "<b>✓</b>" : (i === running ? "<b style='color:#c99bff'>▸</b>" : "<span style='opacity:.4'>·</span>");
+      return '<div class="'+cls+'">'+mark+'<span>'+t[0]+'</span></div>';
+    }).join("");
+  }
+  /* Turns a <symbol> into a standalone image, waits for the browser to actually
+     decode it, then rasterises it once onto a canvas. Both steps are real work
+     on the exact path the reels use, so the first spin never hitches. */
+  const rasterCache = [];
+  function decodeSymbol(sym){
+    return new Promise((resolve)=>{
+      try{
+        const src = document.getElementById("sbs-"+SYM_ID[sym]);
+        const defs = document.querySelector("#sbSprite defs");
+        if(!src) return resolve(false);
+        const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="160" height="160">'
+          + (defs ? new XMLSerializer().serializeToString(defs) : "") + src.innerHTML + '</svg>';
+        const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+        const img = new Image();
+        const finish = ()=>{
+          try{
+            const cv = document.createElement("canvas");
+            cv.width = cv.height = 160;
+            cv.getContext("2d").drawImage(img, 0, 0, 160, 160);
+            rasterCache[sym] = cv;
+          }catch(_){ }
+          resolve(true);
+        };
+        img.onload = ()=>{ if(img.decode) img.decode().then(finish).catch(finish); else finish(); };
+        img.onerror = ()=>resolve(false);
+        img.src = url;
+      }catch(_){ resolve(false); }
+    });
+  }
+  const frame = ()=>new Promise(r=>requestAnimationFrame(()=>r()));
+
+  async function boot(){
+    if(st.loaded || st.loading) return;
+    st.loading = true;
+    let acc = 0;
+
+    // runs one stage's real work, then holds it on screen for its floor
+    const stage = async (i, work)=>{
+      const t0 = performance.now();
+      renderTasks(i, i);
+      setLoad(acc + TASKS[i][1] * 0.15, TASKS[i][0]);
+      await frame();
+      if(work) await work();
+      acc += TASKS[i][1];
+      setLoad(acc, TASKS[i][0]);
+      const left = TASKS[i][2] - (performance.now() - t0);
+      if(left > 0) await wait(left);
+    };
+
+    await stage(0, async ()=>{
+      try{ if(typeof ensureActionReady === "function") await ensureActionReady(false); }catch(_){ }
+    });
+
+    await stage(1, async ()=>{
+      if(!document.getElementById("sbSprite")){
+        const holder = document.createElement("div");
+        holder.style.cssText = "position:absolute;width:0;height:0;overflow:hidden;";
+        holder.innerHTML = SPRITE;
+        document.body.appendChild(holder);
+      }
+      await frame();
+    });
+
+    // per-texture progress: this stage genuinely is measuring decode work
+    {
+      const t0 = performance.now();
+      renderTasks(2, 2);
+      const per = TASKS[2][1] / SYM_ID.length, minEach = TASKS[2][2] / SYM_ID.length;
+      for(let i=0;i<SYM_ID.length;i++){
+        await decodeSymbol(i);
+        acc += per;
+        setLoad(acc, "Decoding textures · " + SYM_NAME[i]);
+        const behind = minEach * (i + 1) - (performance.now() - t0);
+        if(behind > 0) await wait(behind);
+      }
+    }
+
+    await stage(3, async ()=>{
+      STRIPS = compileStrips();
+      // the published RTP figures assume exactly these strip lengths
+      if(STRIPS.base.some(s=>s.length!==72) || STRIPS.ante.some(s=>s.length!==75) || STRIPS.feat.some(s=>s.length!==60)){
+        console.warn("Silver Bandit: unexpected strip lengths", STRIPS.base.map(s=>s.length));
+      }
+    });
+
+    await stage(4, async ()=>{
+      buildReels();
+      buildInfoSheet();
+      try{ await document.fonts.ready; }catch(_){ }
+    });
+
+    await stage(5, async ()=>{
+      // paint a real board and let it composite so the first spin is warm
+      paintGrid(spinGrid(STRIPS.base).grid, { idle:true });
+      for(let i=0;i<5;i++) await frame();
+    });
+
+    renderTasks(TASKS.length, -1);
+    setLoad(100, "Ready");
+    await wait(260);
+
+    st.loaded = true; st.loading = false;
+    el("sbPlayGate").style.display = "";
+  }
+
+  /* ---------------- reels ---------------- */
+  const reels = [];
+  function buildReels(){
+    const wrap = el("sbReels"); if(!wrap) return;
+    wrap.innerHTML = "";
+    reels.length = 0;
+    for(let r=0;r<5;r++){
+      const reel = document.createElement("div"); reel.className = "sbReel";
+      const strip = document.createElement("div"); strip.className = "sbStrip";
+      reel.appendChild(strip); wrap.appendChild(reel);
+      reels.push({ reel, strip });
+    }
+    // sticky-coin layer floats above the reels so stuck coins never move
+    let sl = el("sbStickyLayer");
+    if(!sl){
+      sl = document.createElement("div");
+      sl.id = "sbStickyLayer";
+      sl.style.cssText = "position:absolute;inset:0;pointer-events:none;z-index:6;";
+      el("sbReels").parentNode.appendChild(sl);
+    }
+    sl.innerHTML = "";
+    drawLineArt();
+  }
+  const cellSize = ()=> reels.length ? reels[0].reel.clientWidth : 0;
+
+  /* Geometry for anything drawn over the reels. offsetLeft/offsetTop are not
+     reliable here (browsers disagree about whether they include the offset
+     parent's padding), so overlay positions are measured against the overlay's
+     own box instead — sbFx and sbStickyLayer are both inset:0 in the same
+     wrapper, so one helper serves both. */
+  function cellBox(r, w){
+    const fx = el("sbFx");
+    if(!fx || !reels[r]) return { left:0, top:0, size:0, cx:0, cy:0 };
+    const base = fx.getBoundingClientRect(), rr = reels[r].reel.getBoundingClientRect();
+    const size = rr.width;
+    const left = rr.left - base.left, top = rr.top - base.top + w * size;
+    return { left, top, size, cx: left + size/2, cy: top + size/2 };
+  }
+
+  function cellHTML(sym, coinVal, extraCls){
+    const cls = "sbCell" + (extraCls ? " " + extraCls : "");
+    return '<div class="'+cls+'" data-s="'+sym+'"><div class="sbSymWrap">'+symSVG(sym)+'</div>'
+      + (sym === S.COIN && coinVal != null ? '<span class="sbCoinVal">'+coinVal+'</span>' : '')
+      + '</div>';
+  }
+  /* paints a settled grid without any spin animation */
+  function paintGrid(grid, opts){
+    opts = opts || {};
+    const coins = opts.coins || [];
+    const coinAt = {}; coins.forEach(c=>{ coinAt[c.r+","+c.w] = c.v; });
+    for(let r=0;r<5;r++){
+      let html = "";
+      for(let w=0;w<3;w++) html += cellHTML(grid[r][w], coinAt[r+","+w], opts.idle ? "sbIdle" : "");
+      reels[r].strip.style.transform = "translateY(0px)";
+      reels[r].strip.innerHTML = html;
+    }
+  }
+
+  function fillerSym(strip){ return strip[Math.floor(rnd()*strip.length)]; }
+
+  /* Spins the reels to a grid the maths already decided.
+     Each strip is rebuilt with filler + the landing window at the end, then
+     translated by exactly (cells - 3) rows. */
+  function spinReels(grid, opts){
+    opts = opts || {};
+    const src = opts.strips || STRIPS.base;
+    const coinAt = {}; (opts.coins||[]).forEach(c=>{ coinAt[c.r+","+c.w] = c.v; });
+    const cell = cellSize();
+    const turbo = opts.turbo;
+    const baseDur = turbo ? 260 : 620;
+    const stagger = turbo ? 55 : 135;
+    const speed = turbo ? 46 : 30;      // cells per second-ish
+
+    const jobs = reels.map((rr, r)=>{
+      const extra = (opts.anticipate && opts.anticipate.indexOf(r) >= 0) ? (turbo ? 420 : 1150) : 0;
+      const dur = baseDur + r*stagger + extra;
+      const filler = Math.max(8, Math.round(speed * dur / 1000));
+      let html = "";
+      for(let i=0;i<filler;i++) html += cellHTML(fillerSym(src[r]));
+      // Stuck coins are also drawn by the floating overlay, but they must still
+      // be painted into the strip: leaving a hole here meant that the moment the
+      // overlay cleared at the end of a feature, those cells were blank.
+      for(let w=0;w<3;w++) html += cellHTML(grid[r][w], coinAt[r+","+w]);
+      html += cellHTML(fillerSym(src[r]));
+      rr.strip.innerHTML = html;
+      rr.strip.style.transform = "translateY(0px)";
+      const dist = filler * cell;
+      return { rr, r, dur, dist, extra };
+    });
+
+    return Promise.all(jobs.map((j)=>{
+      j.rr.strip.classList.add("sbBlur");
+      if(j.extra) j.rr.reel.classList.add("sbAntic");
+      const anim = j.rr.strip.animate([
+        { transform:"translateY(0px)", easing:"cubic-bezier(.45,0,.85,.5)" },
+        { transform:"translateY(" + (-(j.dist - cell*3)) + "px)", offset:.74, easing:"linear" },
+        { transform:"translateY(" + (-(j.dist + cell*0.22)) + "px)", offset:.92, easing:"cubic-bezier(.25,.85,.4,1)" },
+        { transform:"translateY(" + (-j.dist) + "px)", easing:"cubic-bezier(.3,.5,.4,1)" },
+      ], { duration: j.dur, fill:"forwards" });
+
+      setTimeout(()=>j.rr.strip.classList.remove("sbBlur"), Math.max(60, j.dur - 190));
+      return anim.finished.catch(()=>{}).then(()=>{
+        j.rr.strip.style.transform = "translateY(" + (-j.dist) + "px)";
+        try{ anim.cancel(); }catch(_){ }
+        j.rr.reel.classList.remove("sbAntic");
+        sfx.reelStop(j.r);
+        const cells = j.rr.strip.children;
+        for(let w=0;w<3;w++){
+          const c = cells[cells.length - 4 + w];
+          if(c){ c.classList.add("sbLand"); setTimeout(()=>{ c.classList.remove("sbLand"); c.classList.add("sbIdle"); }, 430); }
+        }
+      });
+    }));
+  }
+
+  /* the landed cell element for board position (r,w) */
+  function cellAt(r, w){
+    const kids = reels[r].strip.children;
+    return kids[kids.length - 4 + w] || null;
+  }
+
+  /* ---------------- sticky coin overlay ---------------- */
+  function renderSticky(list){
+    const sl = el("sbStickyLayer"); if(!sl) return;
+    if(!list || !list.length){ sl.innerHTML = ""; return; }
+    sl.innerHTML = list.map(c=>{
+      const b = cellBox(c.r, c.w);
+      return '<div class="sbCell sbSticky" style="position:absolute;left:'+b.left+'px;top:'+b.top+'px;width:'+b.size+'px;height:'+b.size+'px;">'
+        + '<div class="sbSymWrap">'+symSVG(S.COIN)+'</div><span class="sbCoinVal">'+c.v+'</span></div>';
+    }).join("");
+  }
+
+  /* ---------------- payline art ---------------- */
+  function drawLineArt(){
+    const svg = el("sbLineArt"); if(!svg) return;
+    svg.innerHTML = LINES.map((rows, i)=>{
+      const pts = rows.map((w, r)=>((r + .5) * 100) + "," + ((w + .5) * 100)).join(" L ");
+      return '<path d="M ' + pts + '" stroke="' + LINE_COLORS[i] + '" data-line="' + i + '"/>';
+    }).join("");
+    svg.setAttribute("viewBox", "0 0 500 300");
+  }
+  function showLines(list){
+    const svg = el("sbLineArt"); if(!svg) return;
+    svg.querySelectorAll("path").forEach(p=>p.classList.remove("sbLineOn"));
+    (list||[]).forEach(w=>{
+      const p = svg.querySelector('path[data-line="'+w.line+'"]');
+      if(p) p.classList.add("sbLineOn");
+    });
+  }
+  function clearHighlights(){
+    showLines([]);
+    for(let r=0;r<5;r++) for(let w=0;w<3;w++){
+      const c = cellAt(r,w); if(c) c.classList.remove("sbWin","sbDim","sbCollected");
+    }
+  }
+
+  /* ---------------- effects ---------------- */
+  function chip(r, w, text, gold){
+    const fx = el("sbFx"); if(!fx) return;
+    const b = cellBox(r, w);
+    const d = document.createElement("div");
+    d.className = "sbChip" + (gold ? " sbChipGold" : "");
+    d.style.left = b.cx + "px";
+    d.style.top = b.cy + "px";
+    d.textContent = text;
+    fx.appendChild(d);
+    setTimeout(()=>d.remove(), 1250);
+  }
+  function sparkBurst(r, w, n){
+    const fx = el("sbFx"); if(!fx) return;
+    const b = cellBox(r, w), cx = b.cx, cy = b.cy;
+    for(let i=0;i<(n||10);i++){
+      const s = document.createElement("div");
+      s.className = "sbSpark";
+      s.style.left = cx + "px"; s.style.top = cy + "px";
+      fx.appendChild(s);
+      const ang = rnd()*Math.PI*2, dist = 30 + rnd()*70;
+      s.animate([{ transform:"translate(-50%,-50%) scale(1)", opacity:1 },
+                 { transform:"translate("+(Math.cos(ang)*dist-6)+"px,"+(Math.sin(ang)*dist-6)+"px) scale(.2)", opacity:0 }],
+                { duration: 520 + rnd()*380, easing:"cubic-bezier(.2,.8,.4,1)" }).finished.catch(()=>{}).then(()=>s.remove());
+    }
+  }
+  /* coins physically travel to the vault before it pays */
+  function flyCoins(coins, toReel, toRow){
+    const fx = el("sbFx"); if(!fx || !coins || !coins.length) return Promise.resolve();
+    const t = cellBox(toReel != null ? toReel : 4, toRow != null ? toRow : 1);
+    return Promise.all(coins.map((c, i)=>{
+      const b = cellBox(c.r, c.w);
+      const d = document.createElement("div");
+      d.className = "sbFlyCoin";
+      d.style.left = b.cx + "px";
+      d.style.top = b.cy + "px";
+      fx.appendChild(d);
+      setTimeout(()=>sfx.coin(), i*55);
+      return d.animate([
+        { transform:"translate(-50%,-50%) scale(1)", opacity:1 },
+        { transform:"translate("+(t.cx - b.cx)+"px,"+(t.cy - b.cy)+"px) scale(.45)", opacity:.15 },
+      ], { duration: 480, delay: i*55, easing:"cubic-bezier(.5,0,.75,.4)", fill:"forwards" })
+        .finished.catch(()=>{}).then(()=>d.remove());
+    }));
+  }
+  function shake(){ const c = document.querySelector("#sbGame .sbCab"); if(!c) return; c.classList.add("sbShake"); setTimeout(()=>c.classList.remove("sbShake"), 440); }
+
+  /* ---------------- meters ---------------- */
+  function rollTo(node, from, to, ms){
+    if(!node) return Promise.resolve();
+    const t0 = performance.now();
+    return new Promise(res=>{
+      (function tick(now){
+        const k = Math.min(1, (now - t0) / ms);
+        const e = 1 - Math.pow(1 - k, 3);
+        node.textContent = money(from + (to - from) * e);
+        if(k < 1) requestAnimationFrame(tick); else { node.textContent = money(to); res(); }
+      })(t0);
+    });
+  }
+  function setWin(v, hot){
+    const m = el("sbWinMeter");
+    if(m) m.classList.toggle("sbWinHot", !!hot && v > 0);
+    const n = el("sbWinVal"); if(n) n.textContent = money(v);
+  }
+  function syncBalance(){
+    const b = el("sbBal");
+    if(b) b.textContent = money(Number((typeof meProfile !== "undefined" && meProfile) ? meProfile.pts : 0) || 0);
+    const tb = el("sbTotalBet"); if(tb) tb.textContent = money(totalStake());
+    const bv = el("sbBetVal"); if(bv && document.activeElement !== bv) bv.value = Number(st.bet).toFixed(2);
+    const p1 = el("sbBuyPrice1"); if(p1) p1.textContent = money(st.bet * BUY_PRICE);
+    const p2 = el("sbBuyPrice2"); if(p2) p2.textContent = money(st.bet * SUPER_PRICE);
+    const lw = el("sbLastWin"); if(lw) lw.textContent = money(st.lastWin);
+  }
+  const totalStake = ()=> Math.round(st.bet * (st.ante ? ANTE_COST : 1) * 100) / 100;
+
+  /* ---------------- big win ---------------- */
+  const WIN_TIERS = [[500,"BANDIT'S HAUL"],[100,"MEGA WIN"],[40,"HUGE WIN"],[15,"BIG WIN"]];
+  async function bigWin(amount, mult){
+    let tag = null;
+    for(const [m, t] of WIN_TIERS) if(mult >= m){ tag = t; break; }
+    if(!tag) return;
+    const ov = el("sbBigWin");
+    el("sbBigWinTag").textContent = tag;
+    el("sbBigWinMult").textContent = mult.toFixed(2) + "×";
+    el("sbBigWinAmt").textContent = money(0);
+    ov.classList.add("sbOn");
+    sfx.big(); shake();
+    await rollTo(el("sbBigWinAmt"), 0, amount, st.turbo ? 900 : 1900);
+    await wait(st.turbo ? 500 : 1200);
+    ov.classList.remove("sbOn");
+  }
+
+  /* ---------------- balance plumbing ---------------- */
+  async function debit(amount){
+    // The site-wide bet path: checks the balance, writes the wager and level,
+    // then confirms from the DB. Stats are deliberately deferred to settle()
+    // so one spin is recorded as one round, not as a loss plus a win.
+    await addWagerAndPayout(amount, 0, { noStats:true });
+    syncBalance();
+  }
+  async function credit(payout){
+    if(!(payout > 0)) return;
+    try{
+      const newPts = clamp2(Number(meProfile.pts) + payout);
+      const { error } = await withTimeout(supabase.from("profiles").update({ pts:newPts }).eq("id", session.user.id), 12000);
+      if(error) throw error;
+      setHostBalance(newPts);
+    }catch(e){
+      console.error("slots credit failed", e);
+      toast(/timeout/i.test(String(e && e.message)) ? "Win payout timed out — check your connection" : "Win payout failed (DB/RLS)");
+    }
+    syncBalance();
+  }
+  /* one round in, one round out: stats, rain contribution and the big-win
+     chat announce all key off the true stake and payout */
+  function settle(stake, payout){
+    try{ hzRecord("slots", stake, payout); }catch(_){ }
+  }
+
+  /* ---------------- presentation of one settled board ---------------- */
+  async function showWins(res, opts){
+    opts = opts || {};
+    const fast = st.turbo;
+    let shown = 0;
+
+    if(res.lineWins && res.lineWins.length){
+      const winCells = {};
+      res.lineWins.forEach(w=>w.cells.forEach(([r,c])=>{ winCells[r+","+c] = true; }));
+      for(let r=0;r<5;r++) for(let w=0;w<3;w++){
+        const c = cellAt(r,w); if(!c) continue;
+        if(winCells[r+","+w]) c.classList.add("sbWin"); else c.classList.add("sbDim");
+      }
+      showLines(res.lineWins);
+      const mult = res.lineTotal;
+      sfx.win(Math.min(4, Math.floor(mult)));
+      res.lineWins.slice(0, 4).forEach(w=>{
+        const [r,c] = w.cells[w.cells.length-1];
+        chip(r, c, "+" + money(w.pay * st.bet));
+      });
+      shown += res.lineTotal;
+      setWin(shown * st.bet, true);
+      await wait(fast ? 320 : 900);
+      clearHighlights();
+    }
+
+    // the vault empties every coin on screen
+    if(opts.collects && opts.collects.length){
+      for(const col of opts.collects){
+        const coins = opts.collectCoins || [];
+        el("sbVault").classList.add("sbOn");
+        setTimeout(()=>el("sbVault").classList.remove("sbOn"), 720);
+        const vr = col.at ? col.at[0] : 4, vw = col.at ? col.at[1] : 1;
+        const vc = cellAt(vr, vw); if(vc) vc.classList.add("sbWin");
+        await flyCoins(coins, vr, vw);
+        sfx.collect();
+        sparkBurst(vr, vw, 18);
+        chip(vr, vw, "+" + money(col.amount * st.bet) + (col.mult > 1 ? "  ×" + col.mult : ""), true);
+        shown += col.amount;
+        setWin(shown * st.bet, true);
+        if(vc) setTimeout(()=>vc.classList.remove("sbWin"), 600);
+        await wait(fast ? 300 : 720);
+      }
+      clearHighlights();
+    }
+    return shown;
+  }
+
+  /* ---------------- the Bounty Spins feature ---------------- */
+  async function playFeature(feat, count, label){
+    st.inFeature = true;
+    const panel = el("sbFsPanel");
+    el("sbBonusCount").textContent = String(count);
+    el("sbBonusIntro").classList.add("sbOn");
+    sfx.bonus();
+    await new Promise(res=>{
+      const go = el("sbBonusGo");
+      const done = ()=>{ go.removeEventListener("click", done); res(); };
+      go.addEventListener("click", done);
+      setTimeout(()=>{ if(el("sbBonusIntro").classList.contains("sbOn")) done(); }, 6000);
+    });
+    el("sbBonusIntro").classList.remove("sbOn");
+
+    panel.classList.add("sbOn");
+    el("sbFsMult").textContent = "×" + feat.startMult;
+    el("sbFsTotal").textContent = money(0);
+    let running = 0;
+    renderSticky(feat.preSticky);
+
+    for(const step of feat.steps){
+      el("sbFsLeft").textContent = String(step.spinsLeft + 1);
+      clearHighlights();
+      setWin(0, false);
+
+      // step.sticky carries every coin on the board with its value, new ones included
+      await spinReels(step.grid, { strips: STRIPS.feat, turbo: st.turbo, coins: step.sticky });
+      renderSticky(step.sticky);
+      el("sbFsLeft").textContent = String(step.spinsLeft);
+
+      if(step.newCoins.length){ step.newCoins.forEach(c=>sparkBurst(c.r, c.w, 6)); sfx.coin(); }
+
+      const gained = await showWins(
+        { lineWins: step.lines, lineTotal: step.lineTotal },
+        { collects: step.collects, collectCoins: step.sticky }
+      );
+      if(step.collects.length) renderSticky(step.sticky);
+      // step.mult is the ladder position AFTER this spin resolved, which is what
+      // the next collect will pay at. A vault landing on an empty board still
+      // climbs the ladder, so this must not be tied to whether anything paid.
+      el("sbFsMult").textContent = "×" + step.mult;
+      running = step.runningTotal;
+      el("sbFsTotal").textContent = money(running * st.bet);
+
+      if(step.extra){
+        el("sbBonusCount").textContent = "+" + step.extra;
+        chip(2, 1, "+" + step.extra + " SPINS", true);
+        sfx.bonus();
+        await wait(st.turbo ? 400 : 900);
+      }
+      await wait(st.turbo ? 90 : 260);
+    }
+
+    renderSticky([]);
+    panel.classList.remove("sbOn");
+    el("sbOutroAmt").textContent = money(0);
+    el("sbOutroSub").textContent = "from " + feat.played + " spin" + (feat.played === 1 ? "" : "s") + (feat.capped ? " · MAX WIN" : "");
+    el("sbBonusOutro").classList.add("sbOn");
+    await rollTo(el("sbOutroAmt"), 0, feat.total * st.bet, st.turbo ? 700 : 1500);
+    await new Promise(res=>{
+      const go = el("sbOutroGo");
+      const done = ()=>{ go.removeEventListener("click", done); res(); };
+      go.addEventListener("click", done);
+      setTimeout(()=>{ if(el("sbBonusOutro").classList.contains("sbOn")) done(); }, 7000);
+    });
+    el("sbBonusOutro").classList.remove("sbOn");
+    st.inFeature = false;
+    return feat.total;
+  }
+
+  /* ---------------- a full round ---------------- */
+  async function play(mode){
+    if(st.busy || !st.loaded) return;
+    if(typeof ensureActionReady === "function" && !(await ensureActionReady())) return;
+    if(!meProfile) return toast("Profile not ready");
+
+    const bet = st.bet;
+    const cost = mode === "buy" ? bet * BUY_PRICE : mode === "super" ? bet * SUPER_PRICE : totalStake();
+    if(Number(meProfile.pts) < cost) return toast("Not enough balance for " + money(cost));
+
+    st.busy = true;
+    el("sbSpinBtn").disabled = true;
+    el("sbSpinBtn").classList.add("sbBusy");
+    setWin(0, false);
+    clearHighlights();
+    renderSticky([]);
+    sfx.click();
+
+    try{
+      try{
+        await debit(cost);
+      }catch(e){
+        const msg = String((e && e.message) || e);
+        toast(/balance/.test(msg) ? "Not enough balance" : /timeout/i.test(msg) ? "Bet timed out — try again" : "Bet failed (DB/RLS)");
+        return;
+      }
+
+      let totalX = 0;   // in multiples of bet
+
+      if(mode === "buy" || mode === "super"){
+        const feat = mode === "super" ? runFeature(12, { startMult:2, preCoins:2 }) : runFeature(10);
+        totalX = await playFeature(feat, mode === "super" ? 12 : 10, mode);
+      }else{
+        const res = baseSpin(st.ante);
+        // tease the last reel only when a trigger is genuinely still live
+        const antic = [];
+        const firstThree = res.scatters.filter(c=>c[0] <= 2).length;
+        if(firstThree >= 2 && res.scatters.length >= 2) antic.push(3, 4);
+        await spinReels(res.grid, { strips: st.ante ? STRIPS.ante : STRIPS.base, turbo: st.turbo, coins: res.coins, anticipate: antic });
+
+        if(res.coins.length) sfx.coin();
+        const collects = res.vaults.length && res.coins.length
+          ? res.vaults.map(v=>({ at:v, mult:1, amount: res.coins.reduce((a,c)=>a+c.v,0) }))
+          : [];
+        totalX = await showWins(res, { collects, collectCoins: res.coins });
+
+        if(res.trigger){
+          res.scatters.forEach(([r,w])=>{ const c = cellAt(r,w); if(c) c.classList.add("sbWin"); sparkBurst(r,w,14); });
+          shake();
+          await wait(st.turbo ? 350 : 800);
+          clearHighlights();
+          const spins = FS_FOR[res.trigger] || 10;
+          const feat = runFeature(spins);
+          totalX += await playFeature(feat, spins, "trigger");
+        }
+      }
+
+      if(totalX > MAX_WIN) totalX = MAX_WIN;
+      const payout = Math.round(totalX * bet * 100) / 100;
+      st.lastWin = payout;
+      setWin(payout, payout > 0);
+
+      settle(cost, payout);
+      if(payout > 0){
+        await bigWin(payout, payout / cost);
+        await credit(payout);
+      }else{
+        syncBalance();
+      }
+    } finally {
+      st.busy = false;
+      el("sbSpinBtn").disabled = false;
+      el("sbSpinBtn").classList.remove("sbBusy");
+      syncBalance();
+    }
+
+    // autoplay continues only while it can afford the next round
+    if(st.auto > 0 && !st.autoStop){
+      st.auto--;
+      updateAuto();
+      if(st.auto > 0 && Number(meProfile.pts) >= totalStake()){
+        await wait(st.turbo ? 120 : 340);
+        if(st.auto > 0 && !st.autoStop && isOpen()) return play("spin");
+      }
+      if(st.auto <= 0){ st.auto = 0; updateAuto(); }
+    }
+  }
+
+  const isOpen = ()=> el("sbClient") && el("sbClient").style.display !== "none" && document.getElementById("view-slots").style.display !== "none";
+  function updateAuto(){
+    const b = el("sbAutoBtn"), t = el("sbAutoTxt");
+    if(!b || !t) return;
+    b.classList.toggle("sbOn", st.auto > 0);
+    t.textContent = st.auto > 0 ? String(st.auto) : "AUTO";
+  }
+
+  /* ---------------- info sheet, generated from the live paytable ---------------- */
+  function buildInfoSheet(){
+    const box = el("sbInfoBody"); if(!box) return;
+    const order = [S.BANDIT,S.TNT,S.GUN,S.HAT,S.HORSE,S.DIAM,S.HEART,S.SPADE,S.CLUB];
+    const pays = order.map(s=>{
+      const p = PAY[s];
+      const rows = [[5,p[3]],[4,p[2]],[3,p[1]]].concat(p[0] ? [[2,p[0]]] : [])
+        .map(([n,v])=>'<span>'+n+' × <b>'+v+'</b></span>').join("");
+      return '<div class="sbPayRow"><svg class="sbPayIco" viewBox="0 0 100 100"><use href="#sbs-'+SYM_ID[s]+'"/></svg><div class="sbPayNums">'+rows+'</div></div>';
+    }).join("");
+    const coinRows = COIN_VALUES.map(c=>c[0]).join(" · ");
+    box.innerHTML =
+      '<div class="sbInfoSec"><h5>LINE PAYS — × TOTAL BET</h5><div class="sbPayGrid">'+pays+'</div></div>'
+    + '<div class="sbInfoSec"><h5>SPECIAL SYMBOLS</h5><div class="sbPayGrid">'
+      + ['wild','coin','vault','scat'].map((k,i)=>{
+          const desc = [ "Substitutes for every symbol except coins, vaults and Wanted posters. Reels 2, 3 and 4.",
+                         "Lands on reels 1-4 carrying a value in × your bet. Pays nothing on its own.",
+                         "Lands on reel 5 only and empties every coin on screen. Two vaults pay twice.",
+                         "3, 4 or 5 anywhere award 10, 12 or 15 Bounty Spins." ][i];
+          return '<div class="sbPayRow"><svg class="sbPayIco" viewBox="0 0 100 100"><use href="#sbs-'+k+'"/></svg><div class="sbPayNums"><span style="line-height:1.45">'+desc+'</span></div></div>';
+        }).join("")
+      + '</div></div>'
+    + '<div class="sbInfoSec"><h5>BOUNTY SPINS</h5><div class="sbRules">'
+      + 'Coins <b>stick</b> where they land for the whole feature. Every vault empties all of them at the current collect multiplier, then the multiplier climbs <b>×1 → ×2 → ×3 → ×5 → ×10</b>. Three more Wanted posters add <b>+5 spins</b>.'
+      + '</div></div>'
+    + '<div class="sbInfoSec"><h5>COIN VALUES (× BET)</h5><div class="sbRules">'+coinRows+'</div></div>'
+    + '<div class="sbInfoSec"><h5>THE NUMBERS</h5><div class="sbStatTable">'
+      + '<span>Return to player — base game</span><b>96.15%</b>'
+      + '<span>Return to player — Bandit Bet</span><b>95.91%</b>'
+      + '<span>Return to player — bought bonus</span><b>95.7 – 96.1%</b>'
+      + '<span>Hit frequency</span><b>25.6%</b>'
+      + '<span>Bonus — base game</span><b>1 in 196</b>'
+      + '<span>Bonus — Bandit Bet (2× stake)</span><b>1 in 70</b>'
+      + '<span>Maximum win</span><b>10 000×</b>'
+      + '<span>Lines · reels</span><b>10 · 5×3</b>'
+      + '</div></div>';
+  }
+
+  /* ---------------- wiring ---------------- */
+  function openClient(){
+    el("sbLobby").style.display = "none";
+    el("sbClient").style.display = "";
+    const sug = el("sbSuggest"); if(sug) sug.style.display = "none";
+    if(!st.loaded && !st.loading) boot().catch(e=>{
+      console.error("Silver Bandit failed to load", e);
+      setLoad(100, "Load failed — go back and try again");
+    });
+  }
+  function closeClient(){
+    st.auto = 0; st.autoStop = true; updateAuto();
+    el("sbClient").style.display = "none";
+    el("sbLobby").style.display = "";
+    const sug = el("sbSuggest"); if(sug) sug.style.display = "";
+  }
+  function setSoundIcon(){
+    const b = el("sbSoundBtn"); if(!b) return;
+    b.innerHTML = st.sound
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9v6h4l5 4V5L9 9z"/><path d="M17 9a4 4 0 0 1 0 6"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9v6h4l5 4V5L9 9z"/><path d="M17 10l4 4M21 10l-4 4"/></svg>';
+    b.classList.toggle("sbOn", st.sound);
+  }
+  function stepBet(dir){
+    let i = BETS.indexOf(st.bet);
+    if(i < 0){ i = 0; for(let k=0;k<BETS.length;k++) if(BETS[k] <= st.bet) i = k; }
+    i = Math.max(0, Math.min(BETS.length-1, i + dir));
+    st.bet = BETS[i];
+    saveCfg(); syncBalance(); sfx.tick();
+  }
+
+  function wire(){
+    const open = el("sbOpenBandit"); if(open) open.onclick = openClient;
+    const back = el("sbBackBtn"); if(back) back.onclick = ()=>{ if(st.busy) return toast("Finishing the round…"); closeClient(); };
+    const play0 = el("sbPlayBtn");
+    if(play0) play0.onclick = ()=>{
+      audio();                       // the gate tap is our permission to make sound
+      el("sbLoader").classList.add("sbGone");
+      el("sbGame").classList.add("sbReady");
+      setTimeout(()=>{ const l = el("sbLoader"); if(l) l.style.display = "none"; }, 500);
+      syncBalance();
+    };
+    const spin = el("sbSpinBtn"); if(spin) spin.onclick = ()=>{ st.autoStop = false; play("spin"); };
+    const up = el("sbBetUp"); if(up) up.onclick = ()=>stepBet(1);
+    const dn = el("sbBetDown"); if(dn) dn.onclick = ()=>stepBet(-1);
+    const bv = el("sbBetVal");
+    if(bv) bv.onchange = ()=>{
+      const v = Number(String(bv.value).replace(/[^\d.]/g, ""));
+      let best = BETS[0];
+      for(const b of BETS) if(Math.abs(b - v) < Math.abs(best - v)) best = b;
+      st.bet = best; saveCfg(); syncBalance();
+    };
+    const ante = el("sbAnteBtn");
+    if(ante) ante.onclick = ()=>{
+      if(st.busy) return;
+      st.ante = !st.ante; ante.classList.toggle("sbOn", st.ante);
+      saveCfg(); syncBalance(); sfx.tick();
+    };
+    const turbo = el("sbTurboBtn");
+    if(turbo) turbo.onclick = ()=>{ st.turbo = !st.turbo; turbo.classList.toggle("sbOn", st.turbo); saveCfg(); sfx.tick(); };
+    const auto = el("sbAutoBtn");
+    if(auto) auto.onclick = ()=>{
+      if(st.auto > 0){ st.auto = 0; st.autoStop = true; updateAuto(); return; }
+      st.auto = 25; st.autoStop = false; updateAuto();
+      if(!st.busy) play("spin");
+    };
+    const snd = el("sbSoundBtn"); if(snd) snd.onclick = ()=>{ st.sound = !st.sound; setSoundIcon(); saveCfg(); };
+    const full = el("sbFullBtn");
+    if(full) full.onclick = ()=>{
+      const box = el("sbClient");
+      try{ document.fullscreenElement ? document.exitFullscreen() : box.requestFullscreen(); }catch(_){ }
+    };
+    const info = el("sbInfoBtn"); if(info) info.onclick = ()=>{ buildInfoSheet(); el("sbInfoSheet").classList.add("sbOn"); };
+    const infoX = el("sbInfoClose"); if(infoX) infoX.onclick = ()=>el("sbInfoSheet").classList.remove("sbOn");
+    const buy = el("sbBuyBtn"); if(buy) buy.onclick = ()=>{ if(st.busy) return; syncBalance(); el("sbBuyMenu").classList.add("sbOn"); };
+    const buyX = el("sbBuyClose"); if(buyX) buyX.onclick = ()=>el("sbBuyMenu").classList.remove("sbOn");
+    const b1 = el("sbBuyNormal"); if(b1) b1.onclick = ()=>{ el("sbBuyMenu").classList.remove("sbOn"); play("buy"); };
+    const b2 = el("sbBuySuper"); if(b2) b2.onclick = ()=>{ el("sbBuyMenu").classList.remove("sbOn"); play("super"); };
+    [el("sbBuyMenu"), el("sbInfoSheet")].forEach(o=>{ if(o) o.addEventListener("click", (e)=>{ if(e.target === o) o.classList.remove("sbOn"); }); });
+
+    // reels are sized in px off the reel width, so a resize has to redraw them
+    let rz = 0;
+    window.addEventListener("resize", ()=>{
+      clearTimeout(rz);
+      rz = setTimeout(()=>{ if(st.loaded && !st.busy && isOpen()) paintGrid(spinGrid(STRIPS.base).grid, { idle:true }); }, 220);
+    });
+  }
+
+  loadCfg();
+  wire();
+  setSoundIcon();
+  const anteBtn = el("sbAnteBtn"); if(anteBtn) anteBtn.classList.toggle("sbOn", st.ante);
+  const turboBtn = el("sbTurboBtn"); if(turboBtn) turboBtn.classList.toggle("sbOn", st.turbo);
+  syncBalance();
+
+  // let the rest of the app refresh the machine's balance readout
+  window.sbSyncBalance = syncBalance;
+  window.__sb = st;
+  /* Read-only view of the maths so the reel strips and paytable in this file can
+     be checked against the model they were solved from. Everything here is pure
+     and already published in the in-game info sheet. */
+  window.__sbMath = {
+    S, PAY, LINES, COIN_VALUES, MULT_LADDER, MAX_WIN, ANTE_COST, BUY_PRICE, SUPER_PRICE, FS_FOR,
+    strips: ()=>STRIPS || (STRIPS = compileStrips()),
+    evalLines, baseSpin, runFeature,
+  };
+})();
 
 /* AUTH */
 $("btnSignIn").onclick=async ()=>{
