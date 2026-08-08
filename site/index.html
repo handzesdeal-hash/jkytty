@@ -3517,22 +3517,20 @@ input[type=number],
 
 /* Fixed hero text: with the content width capped, viewport-based clamps would
    still differ between monitors for no reason. */
-/* The card is a flex column with overflow:hidden, so its automatic minimum size
-   is 0 and the grid row obeys min-height rather than growing to fit — meaning a
-   title that's too big gets silently clipped instead of pushing the card taller.
-   min-height therefore has to cover the tallest case (2 wrapped lines). */
-.heroCard{min-height:236px;}
-@media(min-width:1500px){ .heroCard{min-height:230px;} }   /* headroom for a 2-line title around 1600 */
+/* Back to the original card height — enlarging these made the banners dominate
+   the page. The card is a flex column with overflow:hidden, so its automatic
+   minimum size is 0 and the grid row obeys min-height rather than growing: a
+   title too big for the box gets silently clipped, so the two must stay in step. */
+.heroCard{min-height:150px;}
 .heroCard .hTitle{
-  font-size:27px;font-weight:700;
-  /* 1.06 was tighter than Space Grotesk's descender, so glyphs spilled the line
-     box by ~3px — invisible here but it clips on some systems */
-  letter-spacing:-.03em;line-height:1.16;
-  max-width:88%;
-  text-shadow:0 2px 14px rgba(0,0,0,.28);
+  font-size:22px;font-weight:700;
+  /* 1.06 was tighter than Space Grotesk's descender and spilled the line box */
+  letter-spacing:-.02em;line-height:1.16;
+  max-width:82%;
+  text-shadow:0 2px 12px rgba(0,0,0,.26);
 }
-@media(max-width:1350px){ .heroCard .hTitle{font-size:23px;} }
-@media(max-width:900px){  .heroCard .hTitle{font-size:21px;} }
+@media(max-width:1350px){ .heroCard .hTitle{font-size:20px;} }
+@media(max-width:900px){  .heroCard .hTitle{font-size:19px;} }
 
 /* Dice was hard-capped at 1280px (wrap) / 1320px (section) from an older layout.
    Now that the rest of the site fills the column, that left it using only 55% of
@@ -4799,6 +4797,14 @@ create table if not exists public.deposits (
   created_at timestamptz default now()
 );
 alter table public.deposits disable row level security;
+
+-- ===== v2.3: lifetime stats on the account, not per device =====
+create table if not exists public.user_stats (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  data jsonb not null default '{}'::jsonb,
+  updated_at timestamptz default now()
+);
+alter table public.user_stats disable row level security;
 </pre>
             </div>
           </div>
@@ -6414,9 +6420,59 @@ try{
 /* ---------- game stats engine ---------- */
 const HZ_GAMES = { dice:"Dice", mines:"Mines", roulette:"Roulette", blackjack:"Blackjack", plinko:"Plinko", cases:"Cases", case:"Daily Case" };
 const hzStatsSession = {};
+/* ============================================================
+   LIFETIME STATS — stored on the ACCOUNT, not just this device.
+   localStorage stays as a synchronous cache (everything reads it inline), and
+   public.user_stats holds the authoritative copy so the numbers follow you to
+   any browser or phone you sign in on.
+   ============================================================ */
 function hzStatsKey(){ return "hz_stats_" + String(session?.user?.id||"anon"); }
 function hzStatsLoad(){ try{ return JSON.parse(localStorage.getItem(hzStatsKey())||"{}"); }catch(_){ return {}; } }
-function hzStatsSave(s){ try{ localStorage.setItem(hzStatsKey(), JSON.stringify(s)); }catch(_){ } }
+
+let hzStatsPushTimer = 0, hzStatsBroken = false;
+const hzStatsMissing = (e)=> /relation|does not exist|schema cache|42P01/i.test(String(e?.message||""));
+
+function hzStatsSave(s){
+  try{ localStorage.setItem(hzStatsKey(), JSON.stringify(s)); }catch(_){ }
+  hzStatsPush(s);
+}
+
+/* Debounced: a burst of quick rounds becomes one write instead of twenty. */
+function hzStatsPush(s){
+  if(!supabase || hzStatsBroken) return;
+  const uid = session?.user?.id; if(!uid) return;
+  clearTimeout(hzStatsPushTimer);
+  hzStatsPushTimer = setTimeout(async ()=>{
+    try{
+      const { error } = await withTimeout(supabase.from("user_stats").upsert(
+        { user_id: uid, data: s, updated_at: new Date().toISOString() },
+        { onConflict: "user_id" }
+      ), 12000);
+      if(error && hzStatsMissing(error)) hzStatsBroken = true;
+    }catch(_){ /* offline — the cache still holds it, next save retries */ }
+  }, 1500);
+}
+
+/* Pull the account's stats on sign-in. The server row wins: it's the account
+   record, and this device's copy is only ever a cache of it. */
+async function hzStatsSyncDown(){
+  if(!supabase || hzStatsBroken) return;
+  const uid = session?.user?.id; if(!uid) return;
+  try{
+    const { data, error } = await withTimeout(
+      supabase.from("user_stats").select("data").eq("user_id", uid).maybeSingle(), 10000);
+    if(error){ if(hzStatsMissing(error)) hzStatsBroken = true; return; }
+    if(data && data.data && typeof data.data === "object" && Object.keys(data.data).length){
+      try{ localStorage.setItem(hzStatsKey(), JSON.stringify(data.data)); }catch(_){ }
+    }else{
+      // nothing stored yet — seed the account from whatever this device has
+      const local = hzStatsLoad();
+      if(Object.keys(local).length) hzStatsPush(local);
+    }
+    try{ renderStatsModal(); }catch(_){ }
+    try{ hzRenderGamePanel(); hzRenderSessionPanel(); }catch(_){ }
+  }catch(_){ }
+}
 function hzBlank(){ return { wager:0, ret:0, rounds:0, wins:0, losses:0, best:0, hist:[] }; }
 const HZ_HIST_MAX = 400;
 /* NOTE: clamp2() floors at 0 because it guards balances — never use it for
@@ -12245,6 +12301,7 @@ async function showApp(){
   renderGames();
   updateMeUI();
   try{ chatRestoreState(); }catch(_){ }
+  try{ hzStatsSyncDown(); }catch(_){ }   // stats follow the account, not the device
   await loadEvents();
   await loadMyBets();
   refreshCaseUI();
