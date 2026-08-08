@@ -32,6 +32,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <!-- three roles, not one face everywhere:
      Inter = body/UI · Space Grotesk = headings & titles · JetBrains Mono = numbers -->
+<link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet"/>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"HANDZES.BET","logo":"./assets/hz-logo.png"}</script>
 <style id="hzTheme">
@@ -3724,6 +3725,7 @@ input[type=number],
 }
 .sbCardPlay svg{width:20px;height:20px;fill:#fff;margin-left:2px;}
 .sbCard:hover .sbCardPlay{opacity:1;transform:scale(1);}
+.sbCardArtClassic{background:radial-gradient(120% 120% at 50% 118%, #a855f7 0%, #3b1a78 42%, #150e29 78%) !important;}
 .sbSoonCard{
   display:grid;place-items:center;border:1px dashed var(--sb-line);border-radius:16px;min-height:200px;
   color:var(--muted);font-size:12.5px;background:rgba(255,255,255,.015);
@@ -4116,6 +4118,139 @@ input[type=number],
   .sbCell.sbIdle .sbSymWrap,.sbCell.sbWin .sbSymWrap,.sbSpin .sbSpinRing,
   .sbPlayBtn,.sbCardCoin,.sbLoadLogoLine{animation:none !important;}
 }
+
+/* ============================================================
+   3.1 — SLOTS v2: 6x5 cartoon grid
+   The strip-based reels are gone; the board is a plain 6x5 grid and a cascade
+   repaints only the cells whose symbol changed, so coins and pots visibly stay
+   put while everything around them falls.
+   ============================================================ */
+#view-slots{
+  --sb-ink:#181017; --sb-cab:#241a1d; --sb-cab2:#312325;
+  --sb-line:rgba(255,226,180,.14);
+  --sb-paper:#f3e0bb; --sb-ink2:#3a2412;
+}
+/* the alley: warm brick, cobbles and a heavy vignette, all in CSS */
+#sbClient .sbStage{
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(255,214,150,.22), transparent 60%),
+    linear-gradient(180deg, #6b5238 0%, #4a3728 42%, #2b1f18 100%);
+}
+#sbClient .sbStage::before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.32;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.20) 0 2px, transparent 2px 30px),
+    repeating-linear-gradient(90deg, rgba(0,0,0,.16) 0 2px, transparent 2px 60px);
+}
+#sbClient .sbStage::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 0 140px rgba(20,10,4,.75);
+}
+#sbClient .sbCab{
+  background:linear-gradient(180deg,rgba(58,40,32,.92),rgba(30,20,16,.95));
+  border:2px solid rgba(255,214,150,.2);
+  box-shadow:inset 0 1px 0 rgba(255,236,200,.12), 0 20px 54px rgba(0,0,0,.6);
+  position:relative;z-index:1;
+}
+#sbClient .sbReelsWrap{
+  max-width:700px;
+  background:linear-gradient(180deg,#241a1d,#191113);
+  border:2px solid rgba(255,214,150,.16);
+}
+
+/* the board */
+.sbGrid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;}
+.sbGrid .sbCell{
+  position:relative;width:100%;aspect-ratio:1;display:grid;place-items:center;
+  border-radius:9px;background:rgba(0,0,0,.26);
+  box-shadow:inset 0 0 0 1px rgba(255,226,180,.06);
+  overflow:visible;perspective:none;
+}
+/* the faint checkerboard from the reference */
+.sbGrid .sbCell:nth-child(even){background:rgba(0,0,0,.38);}
+.sbGrid .sbCell.sbBlock{background:rgba(255,196,90,.10);box-shadow:inset 0 0 0 2px rgba(255,196,90,.34);}
+.sbGrid .sbSymWrap{width:88%;height:88%;display:grid;place-items:center;transform:none;}
+.sbGrid .sbSym{width:100%;height:100%;filter:drop-shadow(0 4px 6px rgba(0,0,0,.55));}
+
+/* Card letters are styled with presentation attributes inside the sprite:
+   document CSS cannot select into a <use> shadow tree, so a rule here would
+   silently do nothing. */
+
+/* symbols drop in from above */
+.sbCell.sbDropIn .sbSymWrap,.sbCell.sbDropIn .sbFace{
+  /* the delay is set on the CELL, but the animation runs on its child and
+     animation-delay does not inherit — so it is carried by a custom property,
+     which does. Without this every column landed at once. */
+  animation:sbFall .58s cubic-bezier(.2,1.3,.45,1) both;animation-delay:var(--sbD,0ms);}
+@keyframes sbFall{
+  0%{transform:translateY(-190%) scale(.9);opacity:0}
+  62%{opacity:1}
+  78%{transform:translateY(6%) scaleY(.88) scaleX(1.06)}
+  100%{transform:translateY(0) scale(1);opacity:1}
+}
+/* a winning symbol lights up, then bursts */
+.sbCell.sbHit{background:rgba(255,214,110,.22);box-shadow:inset 0 0 0 2px rgba(255,214,110,.7),0 0 22px rgba(255,196,60,.35);}
+.sbCell.sbHit .sbSymWrap{animation:sbThrob .42s ease-in-out infinite alternate;}
+@keyframes sbThrob{from{transform:scale(1)}to{transform:scale(1.13)}}
+.sbCell.sbBurst .sbSymWrap{animation:sbBurstOut .2s ease-in forwards;}
+@keyframes sbBurstOut{to{transform:scale(1.5);opacity:0}}
+
+/* value printed on a coin / clover */
+.sbFace{
+  position:absolute;z-index:4;left:50%;top:53%;transform:translate(-50%,-50%);
+  font-family:"Bangers",Impact,sans-serif;letter-spacing:.5px;pointer-events:none;
+  font-size:clamp(11px,2.1vw,21px);color:#4a2708;
+  text-shadow:0 1px 0 rgba(255,255,255,.6),0 -1px 0 rgba(0,0,0,.25);
+}
+.sbFaceClover{color:#0f3d09;top:50%;text-shadow:0 1px 0 rgba(255,255,255,.5);}
+
+
+/* the machine's own identity: cartoon wordmark and a warm spin button, so the
+   cabinet reads as its own game rather than a purple site panel */
+#sbClient .sbBrandMini b,#sbClient .sbLoadLogoBot,#sbClient .sbCardMarkBot{
+  font-family:"Bangers","Luckiest Guy",Impact,sans-serif;letter-spacing:.05em;
+  background:linear-gradient(180deg,#fff3cf 0%,#f7c85a 48%,#c8850f 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  -webkit-text-stroke:0;filter:drop-shadow(0 2px 0 #3a2412) drop-shadow(0 5px 10px rgba(0,0,0,.5));
+}
+#sbClient .sbBrandMini span,#sbClient .sbLoadLogoTop,#sbClient .sbCardMarkTop{
+  font-family:"Bangers",Impact,sans-serif;color:#f0d9a4;background:none;-webkit-text-fill-color:#f0d9a4;
+}
+#sbClient .sbSpin{
+  background:radial-gradient(circle at 50% 30%, #ffd166, #f08a2c 55%, #a24d06 100%);
+  box-shadow:0 12px 30px rgba(200,110,20,.5), inset 0 2px 0 rgba(255,240,200,.5), inset 0 -6px 14px rgba(0,0,0,.35);
+}
+#sbClient .sbSpin .sbSpinRing{border-color:rgba(255,214,150,.5);}
+#sbClient .sbSpinTxt{font-family:"Bangers",Impact,sans-serif;letter-spacing:.12em;font-size:19px;
+  text-shadow:0 2px 0 rgba(120,60,5,.6);}
+#sbClient .sbWinMeter,#sbClient .sbBetBox,#sbClient .sbToggle,#sbClient .sbMini{
+  background:rgba(0,0,0,.3);border-color:rgba(255,214,150,.18);color:#f0d9a4;
+}
+#sbClient .sbMini:hover,#sbClient .sbToggle:hover{border-color:rgba(255,196,90,.55);color:#fff;}
+#sbClient .sbToggle.sbOn{background:linear-gradient(180deg,rgba(255,196,90,.3),rgba(200,110,20,.2));
+  border-color:rgba(255,196,90,.65);color:#ffe9b8;}
+#sbClient .sbBuy{background:linear-gradient(180deg,rgba(255,196,90,.3),rgba(180,90,10,.2));
+  border-color:rgba(255,196,90,.5);color:#ffe9b8;}
+#sbClient .sbBalStrip{color:#c3a578;}
+#sbClient .sbBalStrip b{color:#f7e6c4;}
+#sbClient .sbBonusCard,#sbClient .sbSheet{
+  background:linear-gradient(180deg,#3a2a20,#241812);border-color:rgba(255,214,150,.28);}
+#sbClient .sbSheetHd{background:#33241b;}
+#sbClient .sbBonusName,#sbClient .sbBigWinTag{
+  font-family:"Bangers",Impact,sans-serif;letter-spacing:.06em;
+  background:linear-gradient(180deg,#fff3cf,#f7c85a 55%,#c8850f);
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
+#sbClient .sbBonusGo,#sbClient .sbPlayBtn{
+  background:linear-gradient(180deg,#ffd166,#c8760c);color:#3a2005;
+  font-family:"Bangers",Impact,sans-serif;letter-spacing:.12em;
+  box-shadow:0 10px 26px rgba(200,110,20,.5);}
+#sbClient .sbPlayBtn::after{border-color:rgba(255,214,150,.6);}
+#sbClient .sbLoader{background:radial-gradient(80% 70% at 50% 30%, rgba(120,80,40,.5), transparent 60%), #1a1109;}
+#sbClient .sbLoadBar{background:linear-gradient(90deg,#c8760c,#ffd166 60%,#fff3cf);box-shadow:0 0 16px rgba(255,180,60,.6);}
+
+@media(max-width:820px){ .sbGrid{gap:3px;} }
+@media(max-width:520px){ .sbGrid{gap:2px;} .sbGrid .sbCell{border-radius:6px;} }
+
 </style>
 </head>
 <body>
@@ -4662,13 +4797,36 @@ input[type=number],
               <span class="sbCardArt">
                 <span class="sbCardGlow"></span>
                 <span class="sbCardMark">
+                  <span class="sbCardMarkTop">RAINBOW</span>
+                  <span class="sbCardMarkBot">HEIST</span>
+                </span>
+                <span class="sbCardCoin sbCardCoin1"></span>
+                <span class="sbCardCoin sbCardCoin2"></span>
+                <span class="sbCardCoin sbCardCoin3"></span>
+                <span class="sbCardTag">NEW</span>
+              </span>
+              <span class="sbCardBody">
+                <span class="sbCardTitle">Rainbow Heist</span>
+                <span class="sbCardSub">HANDZES Originals · 6×5 · pays anywhere</span>
+                <span class="sbCardMeta">
+                  <span class="sbPill">96.09% RTP</span>
+                  <span class="sbPill sbPillGold">10 000× MAX</span>
+                  <span class="sbPill sbPillHot">VERY HIGH VOL</span>
+                </span>
+              </span>
+              <span class="sbCardPlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+            </button>
+
+            <button class="sbCard" id="sbOpenClassic" type="button">
+              <span class="sbCardArt sbCardArtClassic">
+                <span class="sbCardGlow"></span>
+                <span class="sbCardMark">
                   <span class="sbCardMarkTop">SILVER</span>
                   <span class="sbCardMarkBot">BANDIT</span>
                 </span>
                 <span class="sbCardCoin sbCardCoin1"></span>
                 <span class="sbCardCoin sbCardCoin2"></span>
                 <span class="sbCardCoin sbCardCoin3"></span>
-                <span class="sbCardTag">NEW</span>
               </span>
               <span class="sbCardBody">
                 <span class="sbCardTitle">Silver Bandit</span>
@@ -4681,8 +4839,171 @@ input[type=number],
               </span>
               <span class="sbCardPlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
             </button>
-
             <div class="sbSoonCard"><span>More slots landing soon</span></div>
+          </div>
+        </div>
+      </div>
+
+<div class="sbClient" id="saClient" style="display:none;">
+        <div class="sbClientBar">
+          <button class="sbIconBtn sbBack" id="saBackBtn" type="button" title="Back to lobby">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span>Lobby</span>
+          </button>
+          <div class="sbClientName"><b>SILVER BANDIT</b><span>HANDZES Originals</span></div>
+          <div class="sbClientTools">
+            <button class="sbIconBtn" id="saSoundBtn" type="button" title="Sound"></button>
+            <button class="sbIconBtn" id="saInfoBtn" type="button" title="Game info & paytable">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.6" r="1.1" fill="currentColor" stroke="none"/></svg>
+            </button>
+            <button class="sbIconBtn" id="saFullBtn" type="button" title="Fullscreen">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="sbStage" id="saStage">
+          <!-- ---------- loader ---------- -->
+          <div class="sbLoader" id="saLoader">
+            <div class="sbLoadInner">
+              <div class="sbLoadLogo">
+                <span class="sbLoadLogoTop">SILVER</span>
+                <span class="sbLoadLogoBot">BANDIT</span>
+                <span class="sbLoadLogoLine"></span>
+              </div>
+              <div class="sbLoadBarWrap"><div class="sbLoadBar" id="saLoadBar"></div></div>
+              <div class="sbLoadRow"><span id="saLoadStage">Connecting…</span><span class="mono" id="saLoadPct">0%</span></div>
+              <div class="sbLoadTasks" id="saLoadTasks"></div>
+              <div class="sbPlayGate" id="saPlayGate" style="display:none;">
+                <button class="sbPlayBtn" id="saPlayBtn" type="button">
+                  <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span>PLAY</span>
+                </button>
+                <div class="sbGateNote">96.15% RTP · max win 10 000×</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ---------- the machine ---------- -->
+          <div class="sbGame" id="saGame">
+            <div class="sbCab">
+              <div class="sbCabTop">
+                <div class="sbBrandMini"><span>SILVER</span><b>BANDIT</b></div>
+                <div class="sbFsPanel" id="saFsPanel">
+                  <span class="sbFsTag">BOUNTY SPINS</span>
+                  <span class="sbFsLeft"><b id="saFsLeft">0</b> left</span>
+                  <span class="sbFsMult">COLLECT <b id="saFsMult">×1</b></span>
+                  <span class="sbFsTotal" id="saFsTotal">0.00</span>
+                </div>
+                <div class="sbWinMeter" id="saWinMeter"><span class="sbWinLbl">WIN</span><span class="sbWinVal mono" id="saWinVal">0.00</span></div>
+              </div>
+
+              <div class="sbReelsWrap">
+                <div class="sbReels" id="saReels"></div>
+                <svg class="sbLineArt" id="saLineArt" viewBox="0 0 500 300" preserveAspectRatio="none"></svg>
+                <div class="sbFx" id="saFx"></div>
+                <div class="sbVault" id="saVault"></div>
+              </div>
+
+              <div class="sbCabBottom">
+                <div class="sbCtrlLeft">
+                  <div class="sbBetBox">
+                    <span class="sbBetLbl">BET</span>
+                    <div class="sbBetRow">
+                      <button class="sbStep" id="saBetDown" type="button">−</button>
+                      <input class="sbBetVal mono" id="saBetVal" type="text" inputmode="decimal" value="1.00"/>
+                      <button class="sbStep" id="saBetUp" type="button">+</button>
+                    </div>
+                  </div>
+                  <button class="sbToggle" id="saAnteBtn" type="button">
+                    <span class="sbToggleName">BANDIT BET</span>
+                    <span class="sbToggleSub">2× stake · 3× bonus chance</span>
+                  </button>
+                </div>
+
+                <div class="sbCtrlMid">
+                  <button class="sbSpin" id="saSpinBtn" type="button">
+                    <span class="sbSpinRing"></span>
+                    <span class="sbSpinIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3.2-6.9"/><path d="M21 4v5h-5"/></svg></span>
+                    <span class="sbSpinTxt" id="saSpinTxt">SPIN</span>
+                  </button>
+                </div>
+
+                <div class="sbCtrlRight">
+                  <button class="sbMini" id="saTurboBtn" type="button" title="Turbo spin">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M13 2L4.5 13.5H11L9.5 22 19 10h-6.5z"/></svg><span>TURBO</span>
+                  </button>
+                  <button class="sbMini" id="saAutoBtn" type="button" title="Autoplay">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg><span id="saAutoTxt">AUTO</span>
+                  </button>
+                  <button class="sbMini sbBuy" id="saBuyBtn" type="button" title="Buy the bonus">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M8 7V5.5A4 4 0 0 1 16 5.5V7"/></svg><span>BUY</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="sbBalStrip">
+                <span>BALANCE <b class="mono" id="saBal">0.00</b></span>
+                <span class="sbBalDot"></span>
+                <span>TOTAL BET <b class="mono" id="saTotalBet">1.00</b></span>
+                <span class="sbBalDot"></span>
+                <span class="sbLastWin">LAST WIN <b class="mono" id="saLastWin">0.00</b></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ---------- overlays ---------- -->
+          <div class="sbOverlay" id="saBonusIntro">
+            <div class="sbBonusCard">
+              <div class="sbBonusKick">YOU TRIGGERED</div>
+              <div class="sbBonusName">BOUNTY SPINS</div>
+              <div class="sbBonusBig"><b id="saBonusCount">10</b><span>FREE SPINS</span></div>
+              <div class="sbBonusNote">Coins stick. Every vault empties them and lifts the collect multiplier.</div>
+              <button class="sbBonusGo" id="saBonusGo" type="button">START</button>
+            </div>
+          </div>
+
+          <div class="sbOverlay" id="saBonusOutro">
+            <div class="sbBonusCard sbBonusCardEnd">
+              <div class="sbBonusKick">BOUNTY SPINS COMPLETE</div>
+              <div class="sbBonusName sbBonusWinAmt mono" id="saOutroAmt">0.00</div>
+              <div class="sbBonusNote" id="saOutroSub">from 10 spins</div>
+              <button class="sbBonusGo" id="saOutroGo" type="button">COLLECT</button>
+            </div>
+          </div>
+
+          <div class="sbOverlay sbBigWinOv" id="saBigWin">
+            <div class="sbBigWinInner">
+              <div class="sbBigWinTag" id="saBigWinTag">BIG WIN</div>
+              <div class="sbBigWinAmt mono" id="saBigWinAmt">0.00</div>
+              <div class="sbBigWinMult mono" id="saBigWinMult">0×</div>
+            </div>
+          </div>
+
+          <div class="sbOverlay sbSheetOv" id="saBuyMenu">
+            <div class="sbSheet">
+              <div class="sbSheetHd"><h4>Buy a feature</h4><button class="sbSheetX" id="saBuyClose" type="button">✕</button></div>
+              <div class="sbBuyGrid">
+                <button class="sbBuyOpt" id="saBuyNormal" type="button">
+                  <span class="sbBuyName">BOUNTY SPINS</span>
+                  <span class="sbBuyDesc">10 free spins · collector starts at ×1</span>
+                  <span class="sbBuyPrice mono" id="saBuyPrice1">0.00</span>
+                  <span class="sbBuyMult">106× bet</span>
+                </button>
+                <button class="sbBuyOpt sbBuyOptSuper" id="saBuySuper" type="button">
+                  <span class="sbBuyName">SUPER BOUNTY</span>
+                  <span class="sbBuyDesc">12 free spins · starts at ×2 with 2 coins already stuck</span>
+                  <span class="sbBuyPrice mono" id="saBuyPrice2">0.00</span>
+                  <span class="sbBuyMult">248× bet</span>
+                </button>
+              </div>
+              <div class="sbSheetNote">Buying replaces the spin cost. Feature RTP is the same 96%.</div>
+            </div>
+          </div>
+
+          <div class="sbOverlay sbSheetOv" id="saInfoSheet">
+            <div class="sbSheet sbSheetWide">
+              <div class="sbSheetHd"><h4>Rainbow Heist — paytable &amp; rules</h4><button class="sbSheetX" id="saInfoClose" type="button">✕</button></div>
+              <div class="sbInfoBody" id="saInfoBody"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -4693,7 +5014,7 @@ input[type=number],
           <button class="sbIconBtn sbBack" id="sbBackBtn" type="button" title="Back to lobby">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span>Lobby</span>
           </button>
-          <div class="sbClientName"><b>SILVER BANDIT</b><span>HANDZES Originals</span></div>
+          <div class="sbClientName"><b>RAINBOW HEIST</b><span>HANDZES Originals</span></div>
           <div class="sbClientTools">
             <button class="sbIconBtn" id="sbSoundBtn" type="button" title="Sound"></button>
             <button class="sbIconBtn" id="sbInfoBtn" type="button" title="Game info & paytable">
@@ -4710,8 +5031,8 @@ input[type=number],
           <div class="sbLoader" id="sbLoader">
             <div class="sbLoadInner">
               <div class="sbLoadLogo">
-                <span class="sbLoadLogoTop">SILVER</span>
-                <span class="sbLoadLogoBot">BANDIT</span>
+                <span class="sbLoadLogoTop">RAINBOW</span>
+                <span class="sbLoadLogoBot">HEIST</span>
                 <span class="sbLoadLogoLine"></span>
               </div>
               <div class="sbLoadBarWrap"><div class="sbLoadBar" id="sbLoadBar"></div></div>
@@ -4730,7 +5051,7 @@ input[type=number],
           <div class="sbGame" id="sbGame">
             <div class="sbCab">
               <div class="sbCabTop">
-                <div class="sbBrandMini"><span>SILVER</span><b>BANDIT</b></div>
+                <div class="sbBrandMini"><span>RAINBOW</span><b>HEIST</b></div>
                 <div class="sbFsPanel" id="sbFsPanel">
                   <span class="sbFsTag">BOUNTY SPINS</span>
                   <span class="sbFsLeft"><b id="sbFsLeft">0</b> left</span>
@@ -4741,10 +5062,10 @@ input[type=number],
               </div>
 
               <div class="sbReelsWrap">
-                <div class="sbReels" id="sbReels"></div>
-                <svg class="sbLineArt" id="sbLineArt" viewBox="0 0 500 300" preserveAspectRatio="none"></svg>
+                <div class="sbGrid" id="sbGrid"></div>
+
                 <div class="sbFx" id="sbFx"></div>
-                <div class="sbVault" id="sbVault"></div>
+
               </div>
 
               <div class="sbCabBottom">
@@ -4826,17 +5147,23 @@ input[type=number],
             <div class="sbSheet">
               <div class="sbSheetHd"><h4>Buy a feature</h4><button class="sbSheetX" id="sbBuyClose" type="button">✕</button></div>
               <div class="sbBuyGrid">
-                <button class="sbBuyOpt" id="sbBuyNormal" type="button">
-                  <span class="sbBuyName">BOUNTY SPINS</span>
-                  <span class="sbBuyDesc">10 free spins · collector starts at ×1</span>
-                  <span class="sbBuyPrice mono" id="sbBuyPrice1">0.00</span>
+                <button class="sbBuyOpt" id="sbBuy_normal" type="button">
+                  <span class="sbBuyName">BANDIT SPINS</span>
+                  <span class="sbBuyDesc">10 free spins · coins stick and every pot empties them</span>
+                  <span class="sbBuyPrice mono" id="sbPrice_normal">0.00</span>
                   <span class="sbBuyMult">106× bet</span>
                 </button>
-                <button class="sbBuyOpt sbBuyOptSuper" id="sbBuySuper" type="button">
-                  <span class="sbBuyName">SUPER BOUNTY</span>
-                  <span class="sbBuyDesc">12 free spins · starts at ×2 with 2 coins already stuck</span>
-                  <span class="sbBuyPrice mono" id="sbBuyPrice2">0.00</span>
-                  <span class="sbBuyMult">248× bet</span>
+                <button class="sbBuyOpt sbBuyOptGold" id="sbBuy_golden" type="button">
+                  <span class="sbBuyName">GOLDEN SPINS</span>
+                  <span class="sbBuyDesc">12 free spins · the collect multiplier starts at ×2</span>
+                  <span class="sbBuyPrice mono" id="sbPrice_golden">0.00</span>
+                  <span class="sbBuyMult">241× bet</span>
+                </button>
+                <button class="sbBuyOpt sbBuyOptSuper" id="sbBuy_epic" type="button">
+                  <span class="sbBuyName">EPIC SPINS</span>
+                  <span class="sbBuyDesc">15 free spins · starts at ×2 with 4 coins already stuck</span>
+                  <span class="sbBuyPrice mono" id="sbPrice_epic">0.00</span>
+                  <span class="sbBuyMult">557× bet</span>
                 </button>
               </div>
               <div class="sbSheetNote">Buying replaces the spin cost. Feature RTP is the same 96%.</div>
@@ -13159,36 +13486,36 @@ restoreMinesState();
      One hidden sprite; every cell is a <use>. Each symbol is drawn as a dark
      extrude, the body, then a specular pass, which is what reads as 3D once the
      cell tilts on its Y axis. */
-  const SPRITE = `<svg id="sbSprite" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;pointer-events:none;">
+  const SPRITE = `<svg id="saSprite" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;pointer-events:none;">
 <defs>
-  <linearGradient id="sbgSilver" x1="0" y1="0" x2=".3" y2="1">
+  <linearGradient id="sagSilver" x1="0" y1="0" x2=".3" y2="1">
     <stop offset="0" stop-color="#ffffff"/><stop offset=".24" stop-color="#dfe5f0"/><stop offset=".5" stop-color="#98a1b5"/>
     <stop offset=".68" stop-color="#f2f5fa"/><stop offset="1" stop-color="#6d7488"/></linearGradient>
-  <linearGradient id="sbgGreen" x1="0" y1="0" x2=".3" y2="1">
+  <linearGradient id="sagGreen" x1="0" y1="0" x2=".3" y2="1">
     <stop offset="0" stop-color="#a7f3d0"/><stop offset=".42" stop-color="#34d399"/><stop offset="1" stop-color="#047857"/></linearGradient>
-  <linearGradient id="sbgPurple" x1="0" y1="0" x2=".3" y2="1">
+  <linearGradient id="sagPurple" x1="0" y1="0" x2=".3" y2="1">
     <stop offset="0" stop-color="#e9d5ff"/><stop offset=".42" stop-color="#a855f7"/><stop offset="1" stop-color="#5b21b6"/></linearGradient>
-  <linearGradient id="sbgRose" x1="0" y1="0" x2=".3" y2="1">
+  <linearGradient id="sagRose" x1="0" y1="0" x2=".3" y2="1">
     <stop offset="0" stop-color="#fecdd3"/><stop offset=".42" stop-color="#fb7185"/><stop offset="1" stop-color="#9f1239"/></linearGradient>
-  <linearGradient id="sbgCyan" x1="0" y1="0" x2=".3" y2="1">
+  <linearGradient id="sagCyan" x1="0" y1="0" x2=".3" y2="1">
     <stop offset="0" stop-color="#cffafe"/><stop offset=".42" stop-color="#22d3ee"/><stop offset="1" stop-color="#0e7490"/></linearGradient>
-  <linearGradient id="sbgGold" x1="0" y1="0" x2=".3" y2="1">
+  <linearGradient id="sagGold" x1="0" y1="0" x2=".3" y2="1">
     <stop offset="0" stop-color="#fef3c7"/><stop offset=".38" stop-color="#fbbf24"/><stop offset="1" stop-color="#b45309"/></linearGradient>
-  <linearGradient id="sbgRed" x1="0" y1="0" x2=".35" y2="1">
+  <linearGradient id="sagRed" x1="0" y1="0" x2=".35" y2="1">
     <stop offset="0" stop-color="#fca5a5"/><stop offset=".4" stop-color="#ef4444"/><stop offset="1" stop-color="#7f1d1d"/></linearGradient>
-  <linearGradient id="sbgDarkHat" x1="0" y1="0" x2=".3" y2="1">
+  <linearGradient id="sagDarkHat" x1="0" y1="0" x2=".3" y2="1">
     <stop offset="0" stop-color="#4c3f6b"/><stop offset=".45" stop-color="#2a2140"/><stop offset="1" stop-color="#150f24"/></linearGradient>
-  <linearGradient id="sbgSteel" x1="0" y1="0" x2=".4" y2="1">
+  <linearGradient id="sagSteel" x1="0" y1="0" x2=".4" y2="1">
     <stop offset="0" stop-color="#cbd5e1"/><stop offset=".4" stop-color="#64748b"/><stop offset="1" stop-color="#1e293b"/></linearGradient>
-  <linearGradient id="sbgPaper" x1="0" y1="0" x2=".2" y2="1">
+  <linearGradient id="sagPaper" x1="0" y1="0" x2=".2" y2="1">
     <stop offset="0" stop-color="#fdf0d5"/><stop offset=".55" stop-color="#e7cfa4"/><stop offset="1" stop-color="#c0a173"/></linearGradient>
-  <linearGradient id="sbgSkin" x1="0" y1="0" x2=".3" y2="1">
+  <linearGradient id="sagSkin" x1="0" y1="0" x2=".3" y2="1">
     <stop offset="0" stop-color="#f5d0b0"/><stop offset="1" stop-color="#c08b62"/></linearGradient>
-  <radialGradient id="sbgShine" cx=".33" cy=".24" r=".62">
+  <radialGradient id="sagShine" cx=".33" cy=".24" r=".62">
     <stop offset="0" stop-color="#ffffff" stop-opacity=".85"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
 </defs>
 
-<symbol id="sbs-club" viewBox="0 0 100 100">
+<symbol id="sas-club" viewBox="0 0 100 100">
   <g transform="translate(0,4)" opacity=".45"><circle cx="50" cy="33" r="16" fill="#022c22"/><circle cx="32" cy="55" r="16" fill="#022c22"/><circle cx="68" cy="55" r="16" fill="#022c22"/><path d="M45 60h10l5 26H40z" fill="#022c22"/></g>
   <path d="M45 58h10l5 26H40z" fill="url(#sbgGreen)"/>
   <circle cx="50" cy="31" r="16" fill="url(#sbgGreen)"/><circle cx="32" cy="53" r="16" fill="url(#sbgGreen)"/><circle cx="68" cy="53" r="16" fill="url(#sbgGreen)"/>
@@ -13196,21 +13523,21 @@ restoreMinesState();
   <circle cx="44" cy="25" r="6" fill="#fff" opacity=".5"/><circle cx="27" cy="47" r="5" fill="#fff" opacity=".4"/>
 </symbol>
 
-<symbol id="sbs-spade" viewBox="0 0 100 100">
+<symbol id="sas-spade" viewBox="0 0 100 100">
   <g transform="translate(0,4)" opacity=".45"><path d="M50 16 76 46c9 11 4 24-9 24-6 0-11-3-13-7l4 23H42l4-23c-2 4-7 7-13 7-13 0-18-13-9-24z" fill="#2e1065"/></g>
   <path d="M50 14 76 44c9 11 4 24-9 24-6 0-11-3-13-7l4 23H42l4-23c-2 4-7 7-13 7-13 0-18-13-9-24z" fill="url(#sbgPurple)"/>
   <path d="M50 20 66 39c-6-4-11-5-16-5s-10 1-16 5z" fill="url(#sbgShine)"/>
   <ellipse cx="40" cy="38" rx="6" ry="9" fill="#fff" opacity=".38" transform="rotate(-24 40 38)"/>
 </symbol>
 
-<symbol id="sbs-heart" viewBox="0 0 100 100">
+<symbol id="sas-heart" viewBox="0 0 100 100">
   <g transform="translate(0,4)" opacity=".45"><path d="M50 86C20 64 12 48 20 35c7-12 24-11 30 2 6-13 23-14 30-2 8 13 0 29-30 51z" fill="#4c0519"/></g>
   <path d="M50 84C20 62 12 46 20 33c7-12 24-11 30 2 6-13 23-14 30-2 8 13 0 29-30 51z" fill="url(#sbgRose)"/>
   <path d="M28 30c6-4 14-2 17 6-5-9-13-11-19-7z" fill="#fff" opacity=".5"/>
   <ellipse cx="34" cy="42" rx="7" ry="10" fill="#fff" opacity=".34" transform="rotate(-30 34 42)"/>
 </symbol>
 
-<symbol id="sbs-diam" viewBox="0 0 100 100">
+<symbol id="sas-diam" viewBox="0 0 100 100">
   <g transform="translate(0,4)" opacity=".45"><path d="M50 14 84 50 50 88 16 50z" fill="#083344"/></g>
   <path d="M50 12 84 50 50 86 16 50z" fill="url(#sbgCyan)"/>
   <path d="M50 12 84 50H16z" fill="#fff" opacity=".22"/>
@@ -13218,7 +13545,7 @@ restoreMinesState();
   <path d="M50 18 70 44H30z" fill="url(#sbgShine)"/>
 </symbol>
 
-<symbol id="sbs-horse" viewBox="0 0 100 100">
+<symbol id="sas-horse" viewBox="0 0 100 100">
   <g transform="translate(0,4)" opacity=".45"><path d="M31 22C14 42 17 74 50 76c33-2 36-34 19-54" fill="none" stroke="#0f172a" stroke-width="17" stroke-linecap="round"/></g>
   <path d="M31 22C14 42 17 74 50 76c33-2 36-34 19-54" fill="none" stroke="url(#sbgSilver)" stroke-width="17" stroke-linecap="round"/>
   <path d="M31 22C14 42 17 74 50 76c33-2 36-34 19-54" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" opacity=".38"/>
@@ -13228,7 +13555,7 @@ restoreMinesState();
   </g>
 </symbol>
 
-<symbol id="sbs-hat" viewBox="0 0 100 100">
+<symbol id="sas-hat" viewBox="0 0 100 100">
   <g transform="translate(0,4)" opacity=".45"><ellipse cx="50" cy="66" rx="42" ry="12" fill="#0b0716"/></g>
   <path d="M28 64C28 40 33 26 50 26s22 14 22 38z" fill="url(#sbgDarkHat)"/>
   <ellipse cx="50" cy="64" rx="42" ry="12" fill="url(#sbgDarkHat)"/>
@@ -13238,7 +13565,7 @@ restoreMinesState();
   <path d="M36 40c2-9 6-13 14-13-7 3-10 7-11 14z" fill="#fff" opacity=".3"/>
 </symbol>
 
-<symbol id="sbs-gun" viewBox="0 0 100 100">
+<symbol id="sas-gun" viewBox="0 0 100 100">
   <g transform="translate(0,4)" opacity=".45">
     <rect x="16" y="32" width="78" height="19" rx="5" fill="#0f172a"/><path d="M22 54h22l-9 36-22-6z" fill="#0f172a"/></g>
   <path d="M20 54 44 54 36 90 13 84Z" fill="#7c4a24"/>
@@ -13254,7 +13581,7 @@ restoreMinesState();
   <ellipse cx="34" cy="37" rx="6" ry="4" fill="#fff" opacity=".45" transform="rotate(-30 34 37)"/>
 </symbol>
 
-<symbol id="sbs-tnt" viewBox="0 0 100 100">
+<symbol id="sas-tnt" viewBox="0 0 100 100">
   <g transform="translate(0,4)" opacity=".45"><rect x="20" y="42" width="60" height="44" rx="7" fill="#450a0a"/></g>
   <rect x="20" y="40" width="18" height="44" rx="6" fill="url(#sbgRed)"/>
   <rect x="41" y="36" width="18" height="48" rx="6" fill="url(#sbgRed)"/>
@@ -13266,7 +13593,7 @@ restoreMinesState();
   <rect x="24" y="44" width="4" height="34" rx="2" fill="#fff" opacity=".3"/>
 </symbol>
 
-<symbol id="sbs-bandit" viewBox="0 0 100 100">
+<symbol id="sas-bandit" viewBox="0 0 100 100">
   <g transform="translate(0,4)" opacity=".45"><ellipse cx="50" cy="34" rx="40" ry="11" fill="#0b0716"/></g>
   <circle cx="50" cy="56" r="26" fill="url(#sbgSkin)"/>
   <path d="M24 56a26 26 0 0 0 52 0z" fill="#a855f7"/>
@@ -13282,7 +13609,7 @@ restoreMinesState();
   <path d="M34 20c2-6 6-9 12-9-6 2-9 5-10 10z" fill="#fff" opacity=".28"/>
 </symbol>
 
-<symbol id="sbs-wild" viewBox="0 0 100 100">
+<symbol id="sas-wild" viewBox="0 0 100 100">
   <g transform="translate(0,4)" opacity=".5"><path d="M50 10 62 38l30 3-22 20 6 29-26-15-26 15 6-29L8 41l30-3z" fill="#2e1065"/></g>
   <path d="M50 8 62 36l30 3-22 20 6 29-26-15-26 15 6-29L8 39l30-3z" fill="url(#sbgSilver)"/>
   <path d="M50 8 62 36l30 3-22 20-20-51z" fill="#fff" opacity=".28"/>
@@ -13292,7 +13619,7 @@ restoreMinesState();
   <text x="50" y="66" text-anchor="middle" font-family="'Space Grotesk',Impact,sans-serif" font-weight="700" font-size="15" fill="#fff" letter-spacing="2">WILD</text>
 </symbol>
 
-<symbol id="sbs-coin" viewBox="0 0 100 100">
+<symbol id="sas-coin" viewBox="0 0 100 100">
   <g transform="translate(0,4)" opacity=".5"><circle cx="50" cy="50" r="42" fill="#1e293b"/></g>
   <circle cx="50" cy="50" r="42" fill="url(#sbgSilver)"/>
   <circle cx="50" cy="50" r="35" fill="#aab2c4"/><circle cx="50" cy="50" r="35" fill="url(#sbgShine)" opacity=".7"/>
@@ -13303,7 +13630,7 @@ restoreMinesState();
   <ellipse cx="36" cy="30" rx="13" ry="8" fill="#fff" opacity=".55" transform="rotate(-30 36 30)"/>
 </symbol>
 
-<symbol id="sbs-vault" viewBox="0 0 100 100">
+<symbol id="sas-vault" viewBox="0 0 100 100">
   <g transform="translate(0,4)" opacity=".5"><rect x="8" y="12" width="84" height="78" rx="10" fill="#020617"/></g>
   <rect x="8" y="10" width="84" height="78" rx="10" fill="#1e293b"/>
   <rect x="8" y="10" width="84" height="78" rx="10" fill="url(#sbgShine)" opacity=".2"/>
@@ -13321,7 +13648,7 @@ restoreMinesState();
   <circle cx="50" cy="46" r="2.2" fill="#fff" opacity=".6"/>
 </symbol>
 
-<symbol id="sbs-scat" viewBox="0 0 100 100">
+<symbol id="sas-scat" viewBox="0 0 100 100">
   <g transform="translate(2,5)" opacity=".45"><rect x="14" y="8" width="72" height="84" rx="4" fill="#1c1917"/></g>
   <g transform="rotate(-3 50 50)">
     <rect x="14" y="8" width="72" height="84" rx="4" fill="url(#sbgPaper)"/>
@@ -13336,7 +13663,7 @@ restoreMinesState();
 </symbol>
 </svg>`;
 
-  const symSVG = (sym)=>'<svg class="sbSym" viewBox="0 0 100 100"><use href="#sbs-'+SYM_ID[sym]+'"/></svg>';
+  const symSVG = (sym)=>'<svg class="sbSym" viewBox="0 0 100 100"><use href="#sas-'+SYM_ID[sym]+'"/></svg>';
 
   /* ---------------- tiny synth (no audio files needed) ---------------- */
   let actx = null;
@@ -13374,7 +13701,7 @@ restoreMinesState();
 
   /* ---------------- state ---------------- */
   const BETS = [0.10,0.20,0.30,0.50,0.80,1,2,3,5,8,10,20,30,50,80,100,200,500];
-  const LS = "hz_sb_v1";
+  const LS = "hz_sa_v1";
   const st = {
     bet: 1, ante: false, turbo: false, auto: 0, sound: true,
     busy: false, loaded: false, loading: false, inFeature: false,
@@ -13411,13 +13738,13 @@ restoreMinesState();
   ];
   let pctShown = 0, pctTarget = 0, pctRAF = 0;
   function paintPct(){
-    const bar = el("sbLoadBar"), p = el("sbLoadPct");
+    const bar = el("saLoadBar"), p = el("saLoadPct");
     if(bar) bar.style.width = pctShown.toFixed(1) + "%";
     if(p) p.textContent = pctShown.toFixed(0) + "%";
   }
   function setLoad(pct, label){
     pctTarget = Math.max(pctTarget, Math.min(100, pct));
-    const s = el("sbLoadStage");
+    const s = el("saLoadStage");
     if(s && label) s.textContent = label;
     cancelAnimationFrame(pctRAF);
     (function tick(){
@@ -13428,7 +13755,7 @@ restoreMinesState();
     })();
   }
   function renderTasks(done, running){
-    const box = el("sbLoadTasks"); if(!box) return;
+    const box = el("saLoadTasks"); if(!box) return;
     box.innerHTML = TASKS.map((t,i)=>{
       const cls = i < done ? "sbTask" : (i === running ? "sbTask sbTaskRun" : "sbTask");
       const mark = i < done ? "<b>✓</b>" : (i === running ? "<b style='color:#c99bff'>▸</b>" : "<span style='opacity:.4'>·</span>");
@@ -13442,8 +13769,8 @@ restoreMinesState();
   function decodeSymbol(sym){
     return new Promise((resolve)=>{
       try{
-        const src = document.getElementById("sbs-"+SYM_ID[sym]);
-        const defs = document.querySelector("#sbSprite defs");
+        const src = document.getElementById("sas-"+SYM_ID[sym]);
+        const defs = document.querySelector("#saSprite defs");
         if(!src) return resolve(false);
         const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="160" height="160">'
           + (defs ? new XMLSerializer().serializeToString(defs) : "") + src.innerHTML + '</svg>';
@@ -13489,7 +13816,7 @@ restoreMinesState();
     });
 
     await stage(1, async ()=>{
-      if(!document.getElementById("sbSprite")){
+      if(!document.getElementById("saSprite")){
         const holder = document.createElement("div");
         holder.style.cssText = "position:absolute;width:0;height:0;overflow:hidden;";
         holder.innerHTML = SPRITE;
@@ -13537,13 +13864,13 @@ restoreMinesState();
     await wait(260);
 
     st.loaded = true; st.loading = false;
-    el("sbPlayGate").style.display = "";
+    el("saPlayGate").style.display = "";
   }
 
   /* ---------------- reels ---------------- */
   const reels = [];
   function buildReels(){
-    const wrap = el("sbReels"); if(!wrap) return;
+    const wrap = el("saReels"); if(!wrap) return;
     wrap.innerHTML = "";
     reels.length = 0;
     for(let r=0;r<5;r++){
@@ -13553,12 +13880,12 @@ restoreMinesState();
       reels.push({ reel, strip });
     }
     // sticky-coin layer floats above the reels so stuck coins never move
-    let sl = el("sbStickyLayer");
+    let sl = el("saStickyLayer");
     if(!sl){
       sl = document.createElement("div");
       sl.id = "sbStickyLayer";
       sl.style.cssText = "position:absolute;inset:0;pointer-events:none;z-index:6;";
-      el("sbReels").parentNode.appendChild(sl);
+      el("saReels").parentNode.appendChild(sl);
     }
     sl.innerHTML = "";
     drawLineArt();
@@ -13571,7 +13898,7 @@ restoreMinesState();
      own box instead — sbFx and sbStickyLayer are both inset:0 in the same
      wrapper, so one helper serves both. */
   function cellBox(r, w){
-    const fx = el("sbFx");
+    const fx = el("saFx");
     if(!fx || !reels[r]) return { left:0, top:0, size:0, cx:0, cy:0 };
     const base = fx.getBoundingClientRect(), rr = reels[r].reel.getBoundingClientRect();
     const size = rr.width;
@@ -13663,7 +13990,7 @@ restoreMinesState();
 
   /* ---------------- sticky coin overlay ---------------- */
   function renderSticky(list){
-    const sl = el("sbStickyLayer"); if(!sl) return;
+    const sl = el("saStickyLayer"); if(!sl) return;
     if(!list || !list.length){ sl.innerHTML = ""; return; }
     sl.innerHTML = list.map(c=>{
       const b = cellBox(c.r, c.w);
@@ -13674,7 +14001,7 @@ restoreMinesState();
 
   /* ---------------- payline art ---------------- */
   function drawLineArt(){
-    const svg = el("sbLineArt"); if(!svg) return;
+    const svg = el("saLineArt"); if(!svg) return;
     svg.innerHTML = LINES.map((rows, i)=>{
       const pts = rows.map((w, r)=>((r + .5) * 100) + "," + ((w + .5) * 100)).join(" L ");
       return '<path d="M ' + pts + '" stroke="' + LINE_COLORS[i] + '" data-line="' + i + '"/>';
@@ -13682,7 +14009,7 @@ restoreMinesState();
     svg.setAttribute("viewBox", "0 0 500 300");
   }
   function showLines(list){
-    const svg = el("sbLineArt"); if(!svg) return;
+    const svg = el("saLineArt"); if(!svg) return;
     svg.querySelectorAll("path").forEach(p=>p.classList.remove("sbLineOn"));
     (list||[]).forEach(w=>{
       const p = svg.querySelector('path[data-line="'+w.line+'"]');
@@ -13698,7 +14025,7 @@ restoreMinesState();
 
   /* ---------------- effects ---------------- */
   function chip(r, w, text, gold){
-    const fx = el("sbFx"); if(!fx) return;
+    const fx = el("saFx"); if(!fx) return;
     const b = cellBox(r, w);
     const d = document.createElement("div");
     d.className = "sbChip" + (gold ? " sbChipGold" : "");
@@ -13709,7 +14036,7 @@ restoreMinesState();
     setTimeout(()=>d.remove(), 1250);
   }
   function sparkBurst(r, w, n){
-    const fx = el("sbFx"); if(!fx) return;
+    const fx = el("saFx"); if(!fx) return;
     const b = cellBox(r, w), cx = b.cx, cy = b.cy;
     for(let i=0;i<(n||10);i++){
       const s = document.createElement("div");
@@ -13724,7 +14051,7 @@ restoreMinesState();
   }
   /* coins physically travel to the vault before it pays */
   function flyCoins(coins, toReel, toRow){
-    const fx = el("sbFx"); if(!fx || !coins || !coins.length) return Promise.resolve();
+    const fx = el("saFx"); if(!fx || !coins || !coins.length) return Promise.resolve();
     const t = cellBox(toReel != null ? toReel : 4, toRow != null ? toRow : 1);
     return Promise.all(coins.map((c, i)=>{
       const b = cellBox(c.r, c.w);
@@ -13741,7 +14068,7 @@ restoreMinesState();
         .finished.catch(()=>{}).then(()=>d.remove());
     }));
   }
-  function shake(){ const c = document.querySelector("#sbGame .sbCab"); if(!c) return; c.classList.add("sbShake"); setTimeout(()=>c.classList.remove("sbShake"), 440); }
+  function shake(){ const c = document.querySelector("#saGame .sbCab"); if(!c) return; c.classList.add("sbShake"); setTimeout(()=>c.classList.remove("sbShake"), 440); }
 
   /* ---------------- meters ---------------- */
   function rollTo(node, from, to, ms){
@@ -13757,18 +14084,18 @@ restoreMinesState();
     });
   }
   function setWin(v, hot){
-    const m = el("sbWinMeter");
+    const m = el("saWinMeter");
     if(m) m.classList.toggle("sbWinHot", !!hot && v > 0);
-    const n = el("sbWinVal"); if(n) n.textContent = money(v);
+    const n = el("saWinVal"); if(n) n.textContent = money(v);
   }
   function syncBalance(){
-    const b = el("sbBal");
+    const b = el("saBal");
     if(b) b.textContent = money(Number((typeof meProfile !== "undefined" && meProfile) ? meProfile.pts : 0) || 0);
-    const tb = el("sbTotalBet"); if(tb) tb.textContent = money(totalStake());
-    const bv = el("sbBetVal"); if(bv && document.activeElement !== bv) bv.value = Number(st.bet).toFixed(2);
-    const p1 = el("sbBuyPrice1"); if(p1) p1.textContent = money(st.bet * BUY_PRICE);
-    const p2 = el("sbBuyPrice2"); if(p2) p2.textContent = money(st.bet * SUPER_PRICE);
-    const lw = el("sbLastWin"); if(lw) lw.textContent = money(st.lastWin);
+    const tb = el("saTotalBet"); if(tb) tb.textContent = money(totalStake());
+    const bv = el("saBetVal"); if(bv && document.activeElement !== bv) bv.value = Number(st.bet).toFixed(2);
+    const p1 = el("saBuyPrice1"); if(p1) p1.textContent = money(st.bet * BUY_PRICE);
+    const p2 = el("saBuyPrice2"); if(p2) p2.textContent = money(st.bet * SUPER_PRICE);
+    const lw = el("saLastWin"); if(lw) lw.textContent = money(st.lastWin);
   }
   const totalStake = ()=> Math.round(st.bet * (st.ante ? ANTE_COST : 1) * 100) / 100;
 
@@ -13778,13 +14105,13 @@ restoreMinesState();
     let tag = null;
     for(const [m, t] of WIN_TIERS) if(mult >= m){ tag = t; break; }
     if(!tag) return;
-    const ov = el("sbBigWin");
-    el("sbBigWinTag").textContent = tag;
-    el("sbBigWinMult").textContent = mult.toFixed(2) + "×";
-    el("sbBigWinAmt").textContent = money(0);
+    const ov = el("saBigWin");
+    el("saBigWinTag").textContent = tag;
+    el("saBigWinMult").textContent = mult.toFixed(2) + "×";
+    el("saBigWinAmt").textContent = money(0);
     ov.classList.add("sbOn");
     sfx.big(); shake();
-    await rollTo(el("sbBigWinAmt"), 0, amount, st.turbo ? 900 : 1900);
+    await rollTo(el("saBigWinAmt"), 0, amount, st.turbo ? 900 : 1900);
     await wait(st.turbo ? 500 : 1200);
     ov.classList.remove("sbOn");
   }
@@ -13846,8 +14173,8 @@ restoreMinesState();
     if(opts.collects && opts.collects.length){
       for(const col of opts.collects){
         const coins = opts.collectCoins || [];
-        el("sbVault").classList.add("sbOn");
-        setTimeout(()=>el("sbVault").classList.remove("sbOn"), 720);
+        el("saVault").classList.add("sbOn");
+        setTimeout(()=>el("saVault").classList.remove("sbOn"), 720);
         const vr = col.at ? col.at[0] : 4, vw = col.at ? col.at[1] : 1;
         const vc = cellAt(vr, vw); if(vc) vc.classList.add("sbWin");
         await flyCoins(coins, vr, vw);
@@ -13867,33 +14194,33 @@ restoreMinesState();
   /* ---------------- the Bounty Spins feature ---------------- */
   async function playFeature(feat, count, label){
     st.inFeature = true;
-    const panel = el("sbFsPanel");
-    el("sbBonusCount").textContent = String(count);
-    el("sbBonusIntro").classList.add("sbOn");
+    const panel = el("saFsPanel");
+    el("saBonusCount").textContent = String(count);
+    el("saBonusIntro").classList.add("sbOn");
     sfx.bonus();
     await new Promise(res=>{
-      const go = el("sbBonusGo");
+      const go = el("saBonusGo");
       const done = ()=>{ go.removeEventListener("click", done); res(); };
       go.addEventListener("click", done);
-      setTimeout(()=>{ if(el("sbBonusIntro").classList.contains("sbOn")) done(); }, 6000);
+      setTimeout(()=>{ if(el("saBonusIntro").classList.contains("sbOn")) done(); }, 6000);
     });
-    el("sbBonusIntro").classList.remove("sbOn");
+    el("saBonusIntro").classList.remove("sbOn");
 
     panel.classList.add("sbOn");
-    el("sbFsMult").textContent = "×" + feat.startMult;
-    el("sbFsTotal").textContent = money(0);
+    el("saFsMult").textContent = "×" + feat.startMult;
+    el("saFsTotal").textContent = money(0);
     let running = 0;
     renderSticky(feat.preSticky);
 
     for(const step of feat.steps){
-      el("sbFsLeft").textContent = String(step.spinsLeft + 1);
+      el("saFsLeft").textContent = String(step.spinsLeft + 1);
       clearHighlights();
       setWin(0, false);
 
       // step.sticky carries every coin on the board with its value, new ones included
       await spinReels(step.grid, { strips: STRIPS.feat, turbo: st.turbo, coins: step.sticky });
       renderSticky(step.sticky);
-      el("sbFsLeft").textContent = String(step.spinsLeft);
+      el("saFsLeft").textContent = String(step.spinsLeft);
 
       if(step.newCoins.length){ step.newCoins.forEach(c=>sparkBurst(c.r, c.w, 6)); sfx.coin(); }
 
@@ -13905,12 +14232,12 @@ restoreMinesState();
       // step.mult is the ladder position AFTER this spin resolved, which is what
       // the next collect will pay at. A vault landing on an empty board still
       // climbs the ladder, so this must not be tied to whether anything paid.
-      el("sbFsMult").textContent = "×" + step.mult;
+      el("saFsMult").textContent = "×" + step.mult;
       running = step.runningTotal;
-      el("sbFsTotal").textContent = money(running * st.bet);
+      el("saFsTotal").textContent = money(running * st.bet);
 
       if(step.extra){
-        el("sbBonusCount").textContent = "+" + step.extra;
+        el("saBonusCount").textContent = "+" + step.extra;
         chip(2, 1, "+" + step.extra + " SPINS", true);
         sfx.bonus();
         await wait(st.turbo ? 400 : 900);
@@ -13920,17 +14247,17 @@ restoreMinesState();
 
     renderSticky([]);
     panel.classList.remove("sbOn");
-    el("sbOutroAmt").textContent = money(0);
-    el("sbOutroSub").textContent = "from " + feat.played + " spin" + (feat.played === 1 ? "" : "s") + (feat.capped ? " · MAX WIN" : "");
-    el("sbBonusOutro").classList.add("sbOn");
-    await rollTo(el("sbOutroAmt"), 0, feat.total * st.bet, st.turbo ? 700 : 1500);
+    el("saOutroAmt").textContent = money(0);
+    el("saOutroSub").textContent = "from " + feat.played + " spin" + (feat.played === 1 ? "" : "s") + (feat.capped ? " · MAX WIN" : "");
+    el("saBonusOutro").classList.add("sbOn");
+    await rollTo(el("saOutroAmt"), 0, feat.total * st.bet, st.turbo ? 700 : 1500);
     await new Promise(res=>{
-      const go = el("sbOutroGo");
+      const go = el("saOutroGo");
       const done = ()=>{ go.removeEventListener("click", done); res(); };
       go.addEventListener("click", done);
-      setTimeout(()=>{ if(el("sbBonusOutro").classList.contains("sbOn")) done(); }, 7000);
+      setTimeout(()=>{ if(el("saBonusOutro").classList.contains("sbOn")) done(); }, 7000);
     });
-    el("sbBonusOutro").classList.remove("sbOn");
+    el("saBonusOutro").classList.remove("sbOn");
     st.inFeature = false;
     return feat.total;
   }
@@ -13946,8 +14273,8 @@ restoreMinesState();
     if(Number(meProfile.pts) < cost) return toast("Not enough balance for " + money(cost));
 
     st.busy = true;
-    el("sbSpinBtn").disabled = true;
-    el("sbSpinBtn").classList.add("sbBusy");
+    el("saSpinBtn").disabled = true;
+    el("saSpinBtn").classList.add("sbBusy");
     setWin(0, false);
     clearHighlights();
     renderSticky([]);
@@ -14006,8 +14333,8 @@ restoreMinesState();
       }
     } finally {
       st.busy = false;
-      el("sbSpinBtn").disabled = false;
-      el("sbSpinBtn").classList.remove("sbBusy");
+      el("saSpinBtn").disabled = false;
+      el("saSpinBtn").classList.remove("sbBusy");
       syncBalance();
     }
 
@@ -14015,6 +14342,979 @@ restoreMinesState();
     if(st.auto > 0 && !st.autoStop){
       st.auto--;
       updateAuto();
+      if(st.auto > 0 && Number(meProfile.pts) >= totalStake()){
+        await wait(st.turbo ? 120 : 340);
+        if(st.auto > 0 && !st.autoStop && isOpen()) return play("spin");
+      }
+      if(st.auto <= 0){ st.auto = 0; updateAuto(); }
+    }
+  }
+
+  const isOpen = ()=> el("saClient") && el("saClient").style.display !== "none" && document.getElementById("view-slots").style.display !== "none";
+  function updateAuto(){
+    const b = el("saAutoBtn"), t = el("saAutoTxt");
+    if(!b || !t) return;
+    b.classList.toggle("sbOn", st.auto > 0);
+    t.textContent = st.auto > 0 ? String(st.auto) : "AUTO";
+  }
+
+  /* ---------------- info sheet, generated from the live paytable ---------------- */
+  function buildInfoSheet(){
+    const box = el("saInfoBody"); if(!box) return;
+    const order = [S.BANDIT,S.TNT,S.GUN,S.HAT,S.HORSE,S.DIAM,S.HEART,S.SPADE,S.CLUB];
+    const pays = order.map(s=>{
+      const p = PAY[s];
+      const rows = [[5,p[3]],[4,p[2]],[3,p[1]]].concat(p[0] ? [[2,p[0]]] : [])
+        .map(([n,v])=>'<span>'+n+' × <b>'+v+'</b></span>').join("");
+      return '<div class="sbPayRow"><svg class="sbPayIco" viewBox="0 0 100 100"><use href="#sas-'+SYM_ID[s]+'"/></svg><div class="sbPayNums">'+rows+'</div></div>';
+    }).join("");
+    const coinRows = COIN_VALUES.map(c=>c[0]).join(" · ");
+    box.innerHTML =
+      '<div class="sbInfoSec"><h5>LINE PAYS — × TOTAL BET</h5><div class="sbPayGrid">'+pays+'</div></div>'
+    + '<div class="sbInfoSec"><h5>SPECIAL SYMBOLS</h5><div class="sbPayGrid">'
+      + ['wild','coin','vault','scat'].map((k,i)=>{
+          const desc = [ "Substitutes for every symbol except coins, vaults and Wanted posters. Reels 2, 3 and 4.",
+                         "Lands on reels 1-4 carrying a value in × your bet. Pays nothing on its own.",
+                         "Lands on reel 5 only and empties every coin on screen. Two vaults pay twice.",
+                         "3, 4 or 5 anywhere award 10, 12 or 15 Bounty Spins." ][i];
+          return '<div class="sbPayRow"><svg class="sbPayIco" viewBox="0 0 100 100"><use href="#sas-'+k+'"/></svg><div class="sbPayNums"><span style="line-height:1.45">'+desc+'</span></div></div>';
+        }).join("")
+      + '</div></div>'
+    + '<div class="sbInfoSec"><h5>BOUNTY SPINS</h5><div class="sbRules">'
+      + 'Coins <b>stick</b> where they land for the whole feature. Every vault empties all of them at the current collect multiplier, then the multiplier climbs <b>×1 → ×2 → ×3 → ×5 → ×10</b>. Three more Wanted posters add <b>+5 spins</b>.'
+      + '</div></div>'
+    + '<div class="sbInfoSec"><h5>COIN VALUES (× BET)</h5><div class="sbRules">'+coinRows+'</div></div>'
+    + '<div class="sbInfoSec"><h5>THE NUMBERS</h5><div class="sbStatTable">'
+      + '<span>Return to player — base game</span><b>96.15%</b>'
+      + '<span>Return to player — Bandit Bet</span><b>95.91%</b>'
+      + '<span>Return to player — bought bonus</span><b>95.7 – 96.1%</b>'
+      + '<span>Hit frequency</span><b>25.6%</b>'
+      + '<span>Bonus — base game</span><b>1 in 196</b>'
+      + '<span>Bonus — Bandit Bet (2× stake)</span><b>1 in 70</b>'
+      + '<span>Maximum win</span><b>10 000×</b>'
+      + '<span>Lines · reels</span><b>10 · 5×3</b>'
+      + '</div></div>';
+  }
+
+  /* ---------------- wiring ---------------- */
+  function openClient(){
+    el("sbLobby").style.display = "none";
+    el("saClient").style.display = "";
+    const sug = el("sbSuggest"); if(sug) sug.style.display = "none";
+    if(!st.loaded && !st.loading) boot().catch(e=>{
+      console.error("Rainbow Heist failed to load", e);
+      setLoad(100, "Load failed — go back and try again");
+    });
+  }
+  function closeClient(){
+    st.auto = 0; st.autoStop = true; updateAuto();
+    el("saClient").style.display = "none";
+    el("sbLobby").style.display = "";
+    const sug = el("sbSuggest"); if(sug) sug.style.display = "";
+  }
+  function setSoundIcon(){
+    const b = el("saSoundBtn"); if(!b) return;
+    b.innerHTML = st.sound
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9v6h4l5 4V5L9 9z"/><path d="M17 9a4 4 0 0 1 0 6"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9v6h4l5 4V5L9 9z"/><path d="M17 10l4 4M21 10l-4 4"/></svg>';
+    b.classList.toggle("sbOn", st.sound);
+  }
+  function stepBet(dir){
+    let i = BETS.indexOf(st.bet);
+    if(i < 0){ i = 0; for(let k=0;k<BETS.length;k++) if(BETS[k] <= st.bet) i = k; }
+    i = Math.max(0, Math.min(BETS.length-1, i + dir));
+    st.bet = BETS[i];
+    saveCfg(); syncBalance(); sfx.tick();
+  }
+
+  function wire(){
+    // the lobby lives outside either machine, so its card ids keep the sb prefix
+    const open = el("sbOpenClassic"); if(open) open.onclick = openClient;
+    const back = el("saBackBtn"); if(back) back.onclick = ()=>{ if(st.busy) return toast("Finishing the round…"); closeClient(); };
+    const play0 = el("saPlayBtn");
+    if(play0) play0.onclick = ()=>{
+      audio();                       // the gate tap is our permission to make sound
+      el("saLoader").classList.add("sbGone");
+      el("saGame").classList.add("sbReady");
+      setTimeout(()=>{ const l = el("saLoader"); if(l) l.style.display = "none"; }, 500);
+      syncBalance();
+    };
+    const spin = el("saSpinBtn"); if(spin) spin.onclick = ()=>{ st.autoStop = false; play("spin"); };
+    const up = el("saBetUp"); if(up) up.onclick = ()=>stepBet(1);
+    const dn = el("saBetDown"); if(dn) dn.onclick = ()=>stepBet(-1);
+    const bv = el("saBetVal");
+    if(bv) bv.onchange = ()=>{
+      const v = Number(String(bv.value).replace(/[^\d.]/g, ""));
+      let best = BETS[0];
+      for(const b of BETS) if(Math.abs(b - v) < Math.abs(best - v)) best = b;
+      st.bet = best; saveCfg(); syncBalance();
+    };
+    const ante = el("saAnteBtn");
+    if(ante) ante.onclick = ()=>{
+      if(st.busy) return;
+      st.ante = !st.ante; ante.classList.toggle("sbOn", st.ante);
+      saveCfg(); syncBalance(); sfx.tick();
+    };
+    const turbo = el("saTurboBtn");
+    if(turbo) turbo.onclick = ()=>{ st.turbo = !st.turbo; turbo.classList.toggle("sbOn", st.turbo); saveCfg(); sfx.tick(); };
+    const auto = el("saAutoBtn");
+    if(auto) auto.onclick = ()=>{
+      if(st.auto > 0){ st.auto = 0; st.autoStop = true; updateAuto(); return; }
+      st.auto = 25; st.autoStop = false; updateAuto();
+      if(!st.busy) play("spin");
+    };
+    const snd = el("saSoundBtn"); if(snd) snd.onclick = ()=>{ st.sound = !st.sound; setSoundIcon(); saveCfg(); };
+    const full = el("saFullBtn");
+    if(full) full.onclick = ()=>{
+      const box = el("saClient");
+      try{ document.fullscreenElement ? document.exitFullscreen() : box.requestFullscreen(); }catch(_){ }
+    };
+    const info = el("saInfoBtn"); if(info) info.onclick = ()=>{ buildInfoSheet(); el("saInfoSheet").classList.add("sbOn"); };
+    const infoX = el("saInfoClose"); if(infoX) infoX.onclick = ()=>el("saInfoSheet").classList.remove("sbOn");
+    const buy = el("saBuyBtn"); if(buy) buy.onclick = ()=>{ if(st.busy) return; syncBalance(); el("saBuyMenu").classList.add("sbOn"); };
+    const buyX = el("saBuyClose"); if(buyX) buyX.onclick = ()=>el("saBuyMenu").classList.remove("sbOn");
+    const b1 = el("saBuyNormal"); if(b1) b1.onclick = ()=>{ el("saBuyMenu").classList.remove("sbOn"); play("buy"); };
+    const b2 = el("saBuySuper"); if(b2) b2.onclick = ()=>{ el("saBuyMenu").classList.remove("sbOn"); play("super"); };
+    [el("saBuyMenu"), el("saInfoSheet")].forEach(o=>{ if(o) o.addEventListener("click", (e)=>{ if(e.target === o) o.classList.remove("sbOn"); }); });
+
+    // reels are sized in px off the reel width, so a resize has to redraw them
+    let rz = 0;
+    window.addEventListener("resize", ()=>{
+      clearTimeout(rz);
+      rz = setTimeout(()=>{ if(st.loaded && !st.busy && isOpen()) paintGrid(spinGrid(STRIPS.base).grid, { idle:true }); }, 220);
+    });
+  }
+
+  loadCfg();
+  wire();
+  setSoundIcon();
+  const anteBtn = el("saAnteBtn"); if(anteBtn) anteBtn.classList.toggle("sbOn", st.ante);
+  const turboBtn = el("saTurboBtn"); if(turboBtn) turboBtn.classList.toggle("sbOn", st.turbo);
+  syncBalance();
+
+  // let the rest of the app refresh the machine's balance readout
+  window.saSyncBalance = syncBalance;
+  window.__sa = st;
+  /* Read-only view of the maths so the reel strips and paytable in this file can
+     be checked against the model they were solved from. Everything here is pure
+     and already published in the in-game info sheet. */
+  window.__saMath = {
+    S, PAY, LINES, COIN_VALUES, MULT_LADDER, MAX_WIN, ANTE_COST, BUY_PRICE, SUPER_PRICE, FS_FOR,
+    strips: ()=>STRIPS || (STRIPS = compileStrips()),
+    evalLines, baseSpin, runFeature,
+  };
+})();
+
+
+/* ============================================================================
+   RAINBOW HEIST — 6 reels x 5 rows, pays anywhere, cascading
+
+   Wins are "8 or more of a kind anywhere on the grid". Winning symbols burst,
+   everything above falls into the gap and new symbols drop in from the top,
+   repeating while wins keep landing.
+
+   Coins, the pot, clovers and top hats never form wins and never fall — they
+   are fixed blockers that sit still while the paying symbols cascade around
+   them, which is what makes a coin visibly stick through a tumble.
+
+       COIN    carries a cash value in x bet
+       POT     the collector: empties every coin on the board
+       CLOVER  multiplies that collect (several clovers add up)
+       HAT     the bonus scatter: 3+ awards Bandit Spins
+
+   The maths was solved offline, not guessed. The hat count is i.i.d. per cell
+   so the trigger is an exact binomial; base pays, base collects and the feature
+   were each pinned with their own high-N sample. Verified:
+
+       base                  96.04% RTP (+/-0.62) · hit 23.9% · bonus 1 in 224
+       buy Bandit Spins 106x  96.3%
+       buy Golden Spins 241x  96.1%
+       buy Epic Spins   557x  96.0%
+       max win capped at 10 000x
+
+   Changing any weight, pay or coin value invalidates every figure above.
+   ============================================================================ */
+(function(){
+  "use strict";
+
+  /* ---------------- symbols ---------------- */
+  const S = { TEN:0, J:1, Q:2, K:3, A:4, GLOVE:5, BREAD:6, BEER:7, CHEESE:8, COIN:9, POT:10, CLOVER:11, HAT:12 };
+  const SYM_ID = ["ten","j","q","k","a","glove","bread","beer","cheese","coin","pot","clover","hat"];
+  const SYM_NAME = ["Ten","Jack","Queen","King","Ace","Glove","Baguette","Beer","Cheese","Coin","Pot of Gold","Lucky Clover","Top Hat"];
+  const PAYING = [S.TEN,S.J,S.Q,S.K,S.A,S.GLOVE,S.BREAD,S.BEER,S.CHEESE];
+  const BLOCKER = { 9:1, 10:1, 11:1, 12:1 };
+  const COLS = 6, ROWS = 5;
+
+  /* pay[sym] = [8-9, 10-11, 12+] as multiples of TOTAL bet */
+  const PAY = {
+    [S.CHEESE]:[12,30,60], [S.BEER]:[6,12,30], [S.BREAD]:[5,10,25], [S.GLOVE]:[3.75,7.5,18],
+    [S.A]:[1.6,3.3,12], [S.K]:[1.5,2.5,10], [S.Q]:[1.25,1.8,7.5], [S.J]:[1,1.5,6], [S.TEN]:[0.7,1.25,5],
+  };
+  const tierOf = (n)=> n < 8 ? -1 : n < 10 ? 0 : n < 12 ? 1 : 2;
+
+  /* symbol weights — first drop of a spin, cascade refills, and the feature */
+  const W_DROP = { 0:150, 1:140, 2:130, 3:120, 4:110, 5:90, 6:80, 7:70, 8:60, 9:22, 10:3, 11:3, 12:11 };
+  const W_FILL = { 0:150, 1:140, 2:130, 3:120, 4:110, 5:90, 6:80, 7:70, 8:60 };
+  const W_DROP_FS = { 0:150, 1:140, 2:130, 3:120, 4:110, 5:90, 6:80, 7:70, 8:60, 9:34, 10:9, 11:5, 12:6 };
+  /* Bandit Bet: the same reels with more top hats. The 3-of-30 trigger is close
+     to cubic in hat density, so x1.45 on the weight lifts it about x3 — exactly
+     the multiple that keeps RTP at 96% when the spin costs twice as much. */
+  const W_DROP_ANTE = { 0:150, 1:140, 2:130, 3:120, 4:110, 5:90, 6:80, 7:70, 8:60, 9:22, 10:3, 11:3, 12:16.42 };
+  const ANTE_COST = 2;
+  function mkPicker(w){
+    const syms = Object.keys(w).map(Number), tot = syms.reduce((a,s)=>a+w[s],0);
+    return ()=>{ let r = rnd()*tot; for(const s of syms){ r -= w[s]; if(r<=0) return s; } return syms[0]; };
+  }
+
+  const COIN_VALUES = [[0.5,3400],[1,2900],[1.5,1600],[2,1000],[3,600],[5,320],[10,130],[20,45],[50,15],[100,5],[250,1.1],[500,0.35],[1000,0.11]];
+  const COIN_W = COIN_VALUES.reduce((a,c)=>a+c[1],0);
+  const CLOVER_VALUES = [[2,60],[3,25],[5,10],[10,4],[25,1]];
+  const CLOVER_W = CLOVER_VALUES.reduce((a,c)=>a+c[1],0);
+
+  const MULT_LADDER = [1,2,3,5,10];
+  const MAX_WIN = 10000;
+  const HATS_FOR = { 3:10, 4:12, 5:15, 6:20 };
+  const RETRIGGER = 5;
+  const BUYS = {
+    normal: { price:106, spins:10, opts:{},                            name:"BANDIT SPINS", desc:"10 free spins · coins stick, every pot empties them" },
+    golden: { price:241, spins:12, opts:{startMult:2},                 name:"GOLDEN SPINS", desc:"12 free spins · the collect multiplier starts at ×2" },
+    epic:   { price:557, spins:15, opts:{startMult:2, preCoins:4},     name:"EPIC SPINS",   desc:"15 free spins · starts at ×2 with 4 coins already stuck" },
+  };
+
+  /* ---------------- randomness ---------------- */
+  let rndBuf = null, rndAt = 0;
+  function rnd(){
+    try{
+      if(!rndBuf || rndAt >= rndBuf.length){ rndBuf = new Uint32Array(512); crypto.getRandomValues(rndBuf); rndAt = 0; }
+      return rndBuf[rndAt++] / 4294967296;
+    }catch(_){ return Math.random(); }
+  }
+  const pickDrop = mkPicker(W_DROP), pickFill = mkPicker(W_FILL), pickDropFS = mkPicker(W_DROP_FS), pickDropAnte = mkPicker(W_DROP_ANTE);
+  function drawCoin(){ let r = rnd()*COIN_W; for(const [v,w] of COIN_VALUES){ r -= w; if(r<=0) return v; } return 0.5; }
+  function drawClover(){ let r = rnd()*CLOVER_W; for(const [v,w] of CLOVER_VALUES){ r -= w; if(r<=0) return v; } return 2; }
+
+  /* ---------------- spin maths ---------------- */
+  function dropGrid(picker){
+    const g = [];
+    for(let c=0;c<COLS;c++){ const col=[]; for(let r=0;r<ROWS;r++) col.push(picker()); g.push(col); }
+    return g;
+  }
+  function countSyms(grid){
+    const n = new Array(13).fill(0);
+    for(let c=0;c<COLS;c++) for(let r=0;r<ROWS;r++) n[grid[c][r]]++;
+    return n;
+  }
+  function findWins(grid){
+    const n = countSyms(grid), wins = [];
+    for(const s of PAYING){
+      const t = tierOf(n[s]);
+      if(t < 0) continue;
+      const cells = [];
+      for(let c=0;c<COLS;c++) for(let r=0;r<ROWS;r++) if(grid[c][r]===s) cells.push([c,r]);
+      wins.push({ sym:s, count:n[s], pay:PAY[s][t], cells });
+    }
+    return wins;
+  }
+  /* clear the winning cells; each column falls around its blockers */
+  function tumble(grid, cells, picker){
+    const dead = {};
+    for(const [c,r] of cells){ (dead[c] || (dead[c] = new Set())).add(r); }
+    for(const c in dead){
+      const col = grid[c], gone = dead[c], segs = [];
+      let cur = [];
+      for(let r=0;r<ROWS;r++){
+        if(BLOCKER[col[r]]){ if(cur.length) segs.push(cur); cur = []; }
+        else cur.push(r);
+      }
+      if(cur.length) segs.push(cur);
+      for(const seg of segs){
+        const kept = seg.filter(r=>!gone.has(r)).map(r=>col[r]);
+        const fresh = [];
+        for(let i=seg.length-kept.length;i>0;i--) fresh.push(picker());
+        const merged = fresh.concat(kept);      // new symbols enter at the top
+        seg.forEach((r,i)=>{ col[r] = merged[i]; });
+      }
+    }
+  }
+  function baseSpin(opts){
+    opts = opts || {};
+    const grid = dropGrid(opts.fs ? pickDropFS : opts.ante ? pickDropAnte : pickDrop);
+    const coins = [], clovers = [], pots = [], hats = [];
+    for(let c=0;c<COLS;c++) for(let r=0;r<ROWS;r++){
+      const s = grid[c][r];
+      if(s===S.COIN) coins.push({ c, r, v: drawCoin() });
+      else if(s===S.CLOVER) clovers.push({ c, r, v: drawClover() });
+      else if(s===S.POT) pots.push({ c, r });
+      else if(s===S.HAT) hats.push({ c, r });
+    }
+    const steps = [];
+    let symWin = 0, guard = 0;
+    const work = grid.map(col=>col.slice());
+    for(;;){
+      const wins = findWins(work);
+      if(!wins.length || ++guard > 40) break;
+      const before = work.map(col=>col.slice());
+      symWin += wins.reduce((a,w)=>a+w.pay, 0);
+      const cells = [].concat.apply([], wins.map(w=>w.cells));
+      tumble(work, cells, pickFill);
+      steps.push({ before, wins, after: work.map(col=>col.slice()) });
+    }
+    const cloverMult = clovers.length ? clovers.reduce((a,x)=>a+x.v, 0) : 1;
+    let collect = 0;
+    if(pots.length && coins.length) collect = coins.reduce((a,x)=>a+x.v, 0) * cloverMult * pots.length;
+    return {
+      grid, final: work, steps, coins, clovers, pots, hats, cloverMult,
+      symWin: Math.round(symWin*1e6)/1e6,
+      collect: Math.round(collect*100)/100,
+      trigger: hats.length >= 3 ? Math.min(6, hats.length) : 0,
+    };
+  }
+  /* Bandit Spins: coins stick for the whole feature; every pot empties them at
+     the running collect multiplier and then the ladder climbs. */
+  function runFeature(spins, opts){
+    opts = opts || {};
+    const sticky = [], stickyAt = Object.create(null), steps = [];
+    let mult = opts.startMult || 1;
+    let mi = MULT_LADDER.indexOf(mult); if(mi < 0) mi = 0;
+    let total = 0, left = spins, played = 0, retriggers = 0;
+
+    if(opts.preCoins){
+      for(let i=0;i<opts.preCoins;i++){
+        let c, r, k, guard = 0;
+        do{ c = Math.floor(rnd()*COLS); r = Math.floor(rnd()*ROWS); k = c+","+r; }while(stickyAt[k] && guard++ < 80);
+        if(stickyAt[k]) continue;
+        stickyAt[k] = true; sticky.push({ c, r, v: drawCoin() });
+      }
+    }
+    const preSticky = sticky.map(x=>({...x}));
+
+    while(left > 0 && total < MAX_WIN){
+      left--; played++;
+      const sp = baseSpin({ fs:true });
+      for(const s of sticky){ sp.grid[s.c][s.r] = S.COIN; sp.final[s.c][s.r] = S.COIN; }
+      const newCoins = [];
+      for(const cn of sp.coins){
+        const k = cn.c+","+cn.r;
+        if(stickyAt[k]) continue;
+        stickyAt[k] = true; sticky.push(cn); newCoins.push(cn);
+      }
+      let spinWin = sp.symWin;
+      const collects = [];
+      for(let i=0;i<sp.pots.length;i++){
+        const sum = sticky.reduce((a,x)=>a+x.v, 0) * (sp.cloverMult || 1);
+        const amt = Math.round(sum*mult*100)/100;
+        if(amt > 0){ spinWin += amt; collects.push({ at: sp.pots[i], mult, amount: amt }); }
+        if(mi < MULT_LADDER.length-1){ mi++; mult = MULT_LADDER[mi]; }
+      }
+      let extra = 0;
+      if(sp.hats.length >= 3){ extra = RETRIGGER; left += extra; retriggers++; }
+      total += spinWin;
+      steps.push({ spin:sp, newCoins, sticky: sticky.map(x=>({...x})), collects, extra, mult,
+                   spinWin: Math.round(spinWin*100)/100, spinsLeft:left, index:played,
+                   runningTotal: Math.round(Math.min(total, MAX_WIN)*100)/100 });
+      if(total >= MAX_WIN) break;
+    }
+    return { total: Math.min(Math.round(total*100)/100, MAX_WIN), steps, played, retriggers,
+             preSticky, startMult: opts.startMult || 1, capped: total >= MAX_WIN };
+  }
+
+  /* ---------------- cartoon symbol art ----------------
+     Comic-book styling: every shape gets a heavy ink outline and a flat fill
+     with one highlight, which is what makes it read at reel size. */
+  const SPRITE = `<svg id="sbSprite" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;pointer-events:none;">
+<defs>
+  <linearGradient id="sbgCream" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6dc"/><stop offset="1" stop-color="#e8c98d"/></linearGradient>
+  <linearGradient id="sbgCheese" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#ffe37a"/><stop offset=".55" stop-color="#f5b625"/><stop offset="1" stop-color="#c8830a"/></linearGradient>
+  <linearGradient id="sbgBeer" x1="0" y1="0" x2=".2" y2="1"><stop offset="0" stop-color="#ffcf5c"/><stop offset=".6" stop-color="#e8910f"/><stop offset="1" stop-color="#a85c05"/></linearGradient>
+  <linearGradient id="sbgBread" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#f0c07a"/><stop offset=".55" stop-color="#c9853c"/><stop offset="1" stop-color="#8b5320"/></linearGradient>
+  <linearGradient id="sbgGloveG" x1="0" y1="0" x2=".2" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#cdd3de"/></linearGradient>
+  <linearGradient id="sbgCopper" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#ffd9a0"/><stop offset=".45" stop-color="#f08a2c"/><stop offset="1" stop-color="#a3480a"/></linearGradient>
+  <linearGradient id="sbgSilverC" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#a9c8e6"/><stop offset="1" stop-color="#5d7fa3"/></linearGradient>
+  <linearGradient id="sbgGoldC" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset=".45" stop-color="#f5c518"/><stop offset="1" stop-color="#a97a04"/></linearGradient>
+  <linearGradient id="sbgClover" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#a6ef6f"/><stop offset=".5" stop-color="#3fae2a"/><stop offset="1" stop-color="#1d6b13"/></linearGradient>
+  <linearGradient id="sbgHat" x1="0" y1="0" x2=".25" y2="1"><stop offset="0" stop-color="#4a4557"/><stop offset=".5" stop-color="#22202c"/><stop offset="1" stop-color="#100e17"/></linearGradient>
+  <linearGradient id="sbgPot" x1="0" y1="0" x2=".25" y2="1"><stop offset="0" stop-color="#4c4859"/><stop offset=".5" stop-color="#241f2e"/><stop offset="1" stop-color="#0d0b12"/></linearGradient>
+  <radialGradient id="sbgGloss" cx=".32" cy=".24" r=".6"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+</defs>
+
+<symbol id="sbs-ten" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Bangers,Luckiest Guy,Impact,Haettenschweiler,sans-serif" font-size="52" paint-order="stroke" stroke="#3a2412" stroke-width="12" stroke-linejoin="round" fill="url(#sbgCream)">10</text></symbol>
+<symbol id="sbs-j" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Bangers,Luckiest Guy,Impact,Haettenschweiler,sans-serif" font-size="66" paint-order="stroke" stroke="#3a2412" stroke-width="12" stroke-linejoin="round" fill="url(#sbgCream)">J</text></symbol>
+<symbol id="sbs-q" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Bangers,Luckiest Guy,Impact,Haettenschweiler,sans-serif" font-size="66" paint-order="stroke" stroke="#3a2412" stroke-width="12" stroke-linejoin="round" fill="url(#sbgCream)">Q</text></symbol>
+<symbol id="sbs-k" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Bangers,Luckiest Guy,Impact,Haettenschweiler,sans-serif" font-size="66" paint-order="stroke" stroke="#3a2412" stroke-width="12" stroke-linejoin="round" fill="url(#sbgCream)">K</text></symbol>
+<symbol id="sbs-a" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Bangers,Luckiest Guy,Impact,Haettenschweiler,sans-serif" font-size="66" paint-order="stroke" stroke="#3a2412" stroke-width="12" stroke-linejoin="round" fill="url(#sbgCream)">A</text></symbol>
+
+<symbol id="sbs-cheese" viewBox="0 0 100 100">
+  <path d="M10 68 82 34c6-3 10 0 10 6v22c0 5-3 8-8 8H16c-4 0-6-2-6-6z" fill="#8b5a05"/>
+  <path d="M10 64 82 30c6-3 10 0 10 6v22c0 5-3 8-8 8H16c-4 0-6-2-6-6z" fill="url(#sbgCheese)" stroke="#4a2c05" stroke-width="4.5" stroke-linejoin="round"/>
+  <circle cx="34" cy="52" r="7" fill="#c8830a"/><circle cx="58" cy="45" r="5.5" fill="#c8830a"/><circle cx="74" cy="55" r="4.5" fill="#c8830a"/><circle cx="46" cy="60" r="3.5" fill="#c8830a"/>
+  <path d="M16 60 78 33" stroke="#fff" stroke-width="4" opacity=".4" stroke-linecap="round"/>
+</symbol>
+
+<symbol id="sbs-beer" viewBox="0 0 100 100">
+  <rect x="22" y="34" width="44" height="54" rx="6" fill="#a85c05"/>
+  <rect x="22" y="30" width="44" height="54" rx="6" fill="url(#sbgBeer)" stroke="#3d2405" stroke-width="4.5"/>
+  <path d="M66 44h9a11 11 0 0 1 0 22h-9" fill="none" stroke="#3d2405" stroke-width="4.5"/>
+  <path d="M22 34c6-12 16-14 22-8 5-8 18-8 22 4v6H22z" fill="#fffdf5" stroke="#3d2405" stroke-width="4.5" stroke-linejoin="round"/>
+  <circle cx="31" cy="24" r="6" fill="#fffdf5" stroke="#3d2405" stroke-width="4"/>
+  <circle cx="56" cy="20" r="7.5" fill="#fffdf5" stroke="#3d2405" stroke-width="4"/>
+  <rect x="28" y="46" width="6" height="30" rx="3" fill="#fff" opacity=".45"/>
+</symbol>
+
+<symbol id="sbs-bread" viewBox="0 0 100 100">
+  <g transform="rotate(-32 50 50)">
+    <rect x="14" y="40" width="72" height="26" rx="13" fill="#6d3f16"/>
+    <rect x="14" y="36" width="72" height="26" rx="13" fill="url(#sbgBread)" stroke="#4a2a0c" stroke-width="4.5"/>
+    <g stroke="#7a4718" stroke-width="4" stroke-linecap="round">
+      <path d="M30 44 26 54M45 43 41 55M60 43 56 55M74 45 70 54"/></g>
+    <rect x="22" y="41" width="40" height="4" rx="2" fill="#fff" opacity=".35"/>
+  </g>
+</symbol>
+
+<symbol id="sbs-glove" viewBox="0 0 100 100">
+  <path d="M28 46c0-16 4-24 10-24s9 6 9 14V26c0-5 4-8 8-8s8 3 8 8v10c0-5 4-7 7-7s7 3 7 8v30c0 14-10 23-24 23S28 84 28 70z" fill="#9aa2b0"/>
+  <path d="M26 44c0-16 4-24 10-24s9 6 9 14V24c0-5 4-8 8-8s8 3 8 8v10c0-5 4-7 7-7s7 3 7 8v30c0 14-10 23-24 23S26 82 26 68z" fill="url(#sbgGloveG)" stroke="#2f3542" stroke-width="4.5" stroke-linejoin="round"/>
+  <path d="M30 62h44" stroke="#2f3542" stroke-width="4" stroke-linecap="round"/>
+  <path d="M34 30c2-6 4-8 6-8" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+</symbol>
+
+<symbol id="sbs-coin" viewBox="0 0 100 100">
+  <ellipse cx="50" cy="56" rx="40" ry="38" fill="#7a3c06"/>
+  <circle cx="50" cy="50" r="40" fill="var(--sbCoinFace,url(#sbgCopper))" stroke="#3a1f04" stroke-width="5"/>
+  <circle cx="50" cy="50" r="31" fill="none" stroke="#3a1f04" stroke-width="3" opacity=".55"/>
+  <ellipse cx="36" cy="30" rx="12" ry="7" fill="#fff" opacity=".5" transform="rotate(-28 36 30)"/>
+</symbol>
+
+<symbol id="sbs-pot" viewBox="0 0 100 100">
+  <path d="M20 84 14 40h72l-6 44z" fill="#0d0b12"/>
+  <path d="M18 46a32 32 0 0 0 64 0z" fill="url(#sbgPot)" stroke="#000" stroke-width="4.5" stroke-linejoin="round"/>
+  <rect x="12" y="36" width="76" height="12" rx="6" fill="url(#sbgPot)" stroke="#000" stroke-width="4.5"/>
+  <g fill="url(#sbgGoldC)" stroke="#7a5504" stroke-width="3">
+    <circle cx="36" cy="32" r="9"/><circle cx="56" cy="30" r="10"/><circle cx="70" cy="35" r="7.5"/><circle cx="46" cy="22" r="7.5"/></g>
+  <path d="M22 42a28 28 0 0 0 10 16" stroke="#fff" stroke-width="4" opacity=".22" fill="none" stroke-linecap="round"/>
+</symbol>
+
+<symbol id="sbs-clover" viewBox="0 0 100 100">
+  <path d="M50 88c0-16-6-26-16-32" stroke="#1d6b13" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <g stroke="#12490c" stroke-width="4.5" fill="url(#sbgClover)">
+    <path d="M50 50c-8-14-2-26 8-26s14 12 6 24z" transform="rotate(0 50 50)"/>
+    <path d="M50 50c-8-14-2-26 8-26s14 12 6 24z" transform="rotate(90 50 50)"/>
+    <path d="M50 50c-8-14-2-26 8-26s14 12 6 24z" transform="rotate(180 50 50)"/>
+    <path d="M50 50c-8-14-2-26 8-26s14 12 6 24z" transform="rotate(270 50 50)"/></g>
+  <circle cx="42" cy="34" r="5" fill="#fff" opacity=".45"/>
+</symbol>
+
+<symbol id="sbs-hat" viewBox="0 0 100 100">
+  <ellipse cx="50" cy="80" rx="44" ry="11" fill="#0a0810"/>
+  <path d="M32 74V30c0-6 4-10 18-10s18 4 18 10v44z" fill="url(#sbgHat)" stroke="#000" stroke-width="4.5" stroke-linejoin="round"/>
+  <ellipse cx="50" cy="74" rx="44" ry="12" fill="url(#sbgHat)" stroke="#000" stroke-width="4.5"/>
+  <rect x="32" y="56" width="36" height="12" fill="#b8232f"/>
+  <path d="M32 56h36v12H32z" fill="none" stroke="#000" stroke-width="3.5"/>
+  <path d="M38 32c1-6 3-9 7-10" stroke="#fff" stroke-width="4" opacity=".3" stroke-linecap="round" fill="none"/>
+</symbol>
+</svg>`;
+
+  const symSVG = (sym)=>'<svg class="sbSym" viewBox="0 0 100 100"><use href="#sbs-'+SYM_ID[sym]+'"/></svg>';
+  /* coin face colour follows its value, like the copper/silver/gold tiers */
+  const coinTier = (v)=> v >= 50 ? "url(#sbgGoldC)" : v >= 5 ? "url(#sbgSilverC)" : "url(#sbgCopper)";
+
+  /* ---------------- tiny synth ---------------- */
+  let actx = null;
+  function audio(){ if(actx) return actx; try{ actx = new (window.AudioContext||window.webkitAudioContext)(); }catch(_){ actx = null; } return actx; }
+  function beep(freq, dur, type, vol, slideTo){
+    if(!st.sound) return;
+    const a = audio(); if(!a) return;
+    try{
+      if(a.state === "suspended") a.resume();
+      const o = a.createOscillator(), g = a.createGain();
+      o.type = type || "triangle";
+      o.frequency.setValueAtTime(freq, a.currentTime);
+      if(slideTo) o.frequency.exponentialRampToValueAtTime(Math.max(30, slideTo), a.currentTime + dur);
+      g.gain.setValueAtTime(0.0001, a.currentTime);
+      g.gain.exponentialRampToValueAtTime(vol || 0.06, a.currentTime + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + dur);
+      o.connect(g); g.connect(a.destination);
+      o.start(); o.stop(a.currentTime + dur + 0.02);
+    }catch(_){ }
+  }
+  const sfx = {
+    click(){ beep(420,.06,"square",.035); },
+    drop(i){ beep(150 + i*18,.07,"triangle",.04,110 + i*14); },
+    pop(n){ beep(520 + Math.min(6,n)*70,.1,"triangle",.055); },
+    coin(){ beep(1180,.07,"sine",.05,1600); },
+    collect(){ beep(300,.5,"sawtooth",.05,1400); },
+    bonus(){ [0,140,280,460].forEach((d,i)=>setTimeout(()=>beep(440*Math.pow(1.26,i),.3,"triangle",.07), d)); },
+    big(){ [0,90,180,300,440].forEach((d,i)=>setTimeout(()=>beep(392*Math.pow(1.2,i),.35,"sawtooth",.05), d)); },
+  };
+
+  /* ---------------- state ---------------- */
+  const BETS = [0.10,0.20,0.30,0.50,0.80,1,2,3,5,8,10,20,30,50,80,100,200,500];
+  const LS = "hz_sb_v2";
+  const st = { bet:1, ante:false, turbo:false, auto:0, sound:true, busy:false, loaded:false, loading:false, lastWin:0, autoStop:false };
+  function saveCfg(){ try{ localStorage.setItem(LS, JSON.stringify({ bet:st.bet, ante:st.ante, turbo:st.turbo, sound:st.sound })); }catch(_){ } }
+  function loadCfg(){
+    try{
+      const c = JSON.parse(localStorage.getItem(LS)||"{}");
+      if(BETS.indexOf(Number(c.bet)) >= 0) st.bet = Number(c.bet);
+      st.ante = !!c.ante; st.turbo = !!c.turbo; st.sound = c.sound !== false;
+    }catch(_){ }
+  }
+
+  const el = (id)=>document.getElementById(id);
+  const wait = (ms)=>new Promise(r=>setTimeout(r, ms));
+  const frame = ()=>new Promise(r=>requestAnimationFrame(()=>r()));
+  const money = (n)=>(typeof fmtN === "function" ? fmtN(n) : Number(n||0).toFixed(2));
+
+  /* ---------------- loader ---------------- */
+  const TASKS = [
+    ["Connecting to game server", 8, 340],
+    ["Loading symbol atlas", 22, 420],
+    ["Decoding textures", 30, 780],
+    ["Building the grid", 14, 360],
+    ["Dressing the alley", 16, 420],
+    ["Warming up renderer", 10, 340],
+  ];
+  let pctShown = 0, pctTarget = 0, pctRAF = 0;
+  function paintPct(){
+    const bar = el("sbLoadBar"), p = el("sbLoadPct");
+    if(bar) bar.style.width = pctShown.toFixed(1) + "%";
+    if(p) p.textContent = pctShown.toFixed(0) + "%";
+  }
+  function setLoad(pct, label){
+    pctTarget = Math.max(pctTarget, Math.min(100, pct));
+    const s = el("sbLoadStage");
+    if(s && label) s.textContent = label;
+    cancelAnimationFrame(pctRAF);
+    (function tick(){
+      pctShown += (pctTarget - pctShown) * 0.16;
+      if(pctTarget - pctShown < 0.12) pctShown = pctTarget;
+      paintPct();
+      if(pctShown < pctTarget) pctRAF = requestAnimationFrame(tick);
+    })();
+  }
+  function renderTasks(done, running){
+    const box = el("sbLoadTasks"); if(!box) return;
+    box.innerHTML = TASKS.map((t,i)=>{
+      const cls = i === running ? "sbTask sbTaskRun" : "sbTask";
+      const mark = i < done ? "<b>✓</b>" : (i === running ? "<b style='color:#ffd166'>▸</b>" : "<span style='opacity:.4'>·</span>");
+      return '<div class="'+cls+'">'+mark+'<span>'+t[0]+'</span></div>';
+    }).join("");
+  }
+  const rasterCache = [];
+  function decodeSymbol(sym){
+    return new Promise((resolve)=>{
+      try{
+        const src = document.getElementById("sbs-"+SYM_ID[sym]);
+        const defs = document.querySelector("#sbSprite defs");
+        if(!src) return resolve(false);
+        const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="160" height="160">'
+          + (defs ? new XMLSerializer().serializeToString(defs) : "") + src.innerHTML + '</svg>';
+        const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+        const img = new Image();
+        const finish = ()=>{
+          try{
+            const cv = document.createElement("canvas");
+            cv.width = cv.height = 160;
+            cv.getContext("2d").drawImage(img, 0, 0, 160, 160);
+            rasterCache[sym] = cv;
+          }catch(_){ }
+          resolve(true);
+        };
+        img.onload = ()=>{ if(img.decode) img.decode().then(finish).catch(finish); else finish(); };
+        img.onerror = ()=>resolve(false);
+        img.src = url;
+      }catch(_){ resolve(false); }
+    });
+  }
+  async function boot(){
+    if(st.loaded || st.loading) return;
+    st.loading = true;
+    let acc = 0;
+    const stage = async (i, work)=>{
+      const t0 = performance.now();
+      renderTasks(i, i);
+      setLoad(acc + TASKS[i][1]*0.15, TASKS[i][0]);
+      await frame();
+      if(work) await work();
+      acc += TASKS[i][1];
+      setLoad(acc, TASKS[i][0]);
+      const left = TASKS[i][2] - (performance.now() - t0);
+      if(left > 0) await wait(left);
+    };
+
+    await stage(0, async ()=>{ try{ if(typeof ensureActionReady === "function") await ensureActionReady(false); }catch(_){ } });
+    await stage(1, async ()=>{
+      if(!document.getElementById("sbSprite")){
+        const holder = document.createElement("div");
+        holder.style.cssText = "position:absolute;width:0;height:0;overflow:hidden;";
+        holder.innerHTML = SPRITE;
+        document.body.appendChild(holder);
+      }
+      await frame();
+    });
+    {
+      const t0 = performance.now();
+      renderTasks(2, 2);
+      const per = TASKS[2][1] / SYM_ID.length, minEach = TASKS[2][2] / SYM_ID.length;
+      for(let i=0;i<SYM_ID.length;i++){
+        await decodeSymbol(i);
+        acc += per;
+        setLoad(acc, "Decoding textures · " + SYM_NAME[i]);
+        const behind = minEach*(i+1) - (performance.now() - t0);
+        if(behind > 0) await wait(behind);
+      }
+    }
+    await stage(3, async ()=>{ buildGrid(); });
+    await stage(4, async ()=>{ buildInfoSheet(); try{ await document.fonts.ready; }catch(_){ } });
+    await stage(5, async ()=>{
+      paintGrid(dropGrid(pickFill), {});
+      for(let i=0;i<5;i++) await frame();
+    });
+
+    renderTasks(TASKS.length, -1);
+    setLoad(100, "Ready");
+    await wait(260);
+    st.loaded = true; st.loading = false;
+    el("sbPlayGate").style.display = "";
+  }
+
+  /* ---------------- grid rendering ----------------
+     A fixed 6x5 of cells. A cascade repaints and animates only the cells whose
+     symbol actually changed, so blockers visibly stay put while the rest falls. */
+  let cellEls = [];
+  function buildGrid(){
+    const g = el("sbGrid"); if(!g) return;
+    let html = "";
+    for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) html += '<div class="sbCell" data-c="'+c+'" data-r="'+r+'"></div>';
+    g.innerHTML = html;
+    cellEls = [];
+    for(let c=0;c<COLS;c++){ cellEls[c] = []; for(let r=0;r<ROWS;r++) cellEls[c][r] = g.children[r*COLS + c]; }
+  }
+  const cellAt = (c,r)=> (cellEls[c] && cellEls[c][r]) || null;
+
+  /* values for the coins/clovers currently on the board */
+  let faceVals = {};
+  function setFaces(spin, sticky){
+    faceVals = {};
+    (spin.coins||[]).forEach(x=>{ faceVals[x.c+","+x.r] = { kind:"coin", v:x.v }; });
+    (spin.clovers||[]).forEach(x=>{ faceVals[x.c+","+x.r] = { kind:"clover", v:x.v }; });
+    (sticky||[]).forEach(x=>{ faceVals[x.c+","+x.r] = { kind:"coin", v:x.v }; });
+  }
+  function paintCell(c, r, sym, animate, delay){
+    const cell = cellAt(c,r); if(!cell) return;
+    const face = faceVals[c+","+r];
+    let inner = '<div class="sbSymWrap">' + symSVG(sym) + '</div>';
+    if(sym === S.COIN && face && face.kind === "coin"){
+      inner = '<div class="sbSymWrap" style="--sbCoinFace:'+coinTier(face.v)+'">' + symSVG(sym) + '</div>'
+            + '<span class="sbFace sbFaceCoin">'+face.v+'</span>';
+    }else if(sym === S.CLOVER && face && face.kind === "clover"){
+      inner += '<span class="sbFace sbFaceClover">×'+face.v+'</span>';
+    }
+    cell.innerHTML = inner;
+    cell.className = "sbCell" + (BLOCKER[sym] ? " sbBlock" : "");
+    if(animate){
+      cell.classList.add("sbDropIn");
+      cell.style.setProperty("--sbD", (delay||0) + "ms");
+      setTimeout(()=>{ cell.classList.remove("sbDropIn"); cell.style.removeProperty("--sbD"); }, 900 + (delay||0));
+    }
+  }
+  function paintGrid(grid, opts){
+    opts = opts || {};
+    const prev = opts.prev;
+    for(let c=0;c<COLS;c++) for(let r=0;r<ROWS;r++){
+      const sym = grid[c][r];
+      const changed = !prev || prev[c][r] !== sym;
+      // left column lands first: a strong per-column stagger with a small
+      // per-row trail, so the board visibly fills 1 -> 6
+      paintCell(c, r, sym, opts.animate && changed, opts.animate ? (c*95 + r*34) : 0);
+    }
+  }
+
+  /* ---------------- effects ---------------- */
+  function cellBox(c, r){
+    const fx = el("sbFx"), cell = cellAt(c,r);
+    if(!fx || !cell) return { cx:0, cy:0, size:0 };
+    const base = fx.getBoundingClientRect(), b = cell.getBoundingClientRect();
+    return { cx: b.left - base.left + b.width/2, cy: b.top - base.top + b.height/2, size: b.width };
+  }
+  function chip(c, r, text, gold){
+    const fx = el("sbFx"); if(!fx) return;
+    const b = cellBox(c,r);
+    const d = document.createElement("div");
+    d.className = "sbChip" + (gold ? " sbChipGold" : "");
+    d.style.left = b.cx + "px"; d.style.top = b.cy + "px";
+    d.textContent = text;
+    fx.appendChild(d);
+    setTimeout(()=>d.remove(), 1250);
+  }
+  function sparkBurst(c, r, n){
+    const fx = el("sbFx"); if(!fx) return;
+    const b = cellBox(c,r);
+    for(let i=0;i<(n||10);i++){
+      const s = document.createElement("div");
+      s.className = "sbSpark";
+      s.style.left = b.cx + "px"; s.style.top = b.cy + "px";
+      fx.appendChild(s);
+      const ang = rnd()*Math.PI*2, dist = 24 + rnd()*54;
+      s.animate([{ transform:"translate(-50%,-50%) scale(1)", opacity:1 },
+                 { transform:"translate("+(Math.cos(ang)*dist-6)+"px,"+(Math.sin(ang)*dist-6)+"px) scale(.2)", opacity:0 }],
+                { duration: 460 + rnd()*340, easing:"cubic-bezier(.2,.8,.4,1)" }).finished.catch(()=>{}).then(()=>s.remove());
+    }
+  }
+  function flyCoins(coins, to){
+    const fx = el("sbFx"); if(!fx || !coins || !coins.length) return Promise.resolve();
+    const t = cellBox(to.c, to.r);
+    return Promise.all(coins.map((cn, i)=>{
+      const b = cellBox(cn.c, cn.r);
+      const d = document.createElement("div");
+      d.className = "sbFlyCoin";
+      d.style.left = b.cx + "px"; d.style.top = b.cy + "px";
+      fx.appendChild(d);
+      setTimeout(()=>sfx.coin(), i*45);
+      return d.animate([
+        { transform:"translate(-50%,-50%) scale(1)", opacity:1 },
+        { transform:"translate("+(t.cx-b.cx)+"px,"+(t.cy-b.cy)+"px) scale(.4)", opacity:.15 },
+      ], { duration:460, delay:i*45, easing:"cubic-bezier(.5,0,.75,.4)", fill:"forwards" })
+        .finished.catch(()=>{}).then(()=>d.remove());
+    }));
+  }
+  function shake(){ const c = document.querySelector("#sbGame .sbCab"); if(!c) return; c.classList.add("sbShake"); setTimeout(()=>c.classList.remove("sbShake"), 440); }
+
+  /* ---------------- meters ---------------- */
+  function rollTo(node, from, to, ms){
+    if(!node) return Promise.resolve();
+    const t0 = performance.now();
+    return new Promise(res=>{
+      (function tick(now){
+        const k = Math.min(1, (now - t0)/ms), e = 1 - Math.pow(1-k, 3);
+        node.textContent = money(from + (to-from)*e);
+        if(k < 1) requestAnimationFrame(tick); else { node.textContent = money(to); res(); }
+      })(t0);
+    });
+  }
+  function setWin(v, hot){
+    const m = el("sbWinMeter"); if(m) m.classList.toggle("sbWinHot", !!hot && v > 0);
+    const n = el("sbWinVal"); if(n) n.textContent = money(v);
+  }
+  function syncBalance(){
+    const b = el("sbBal");
+    if(b) b.textContent = money(Number((typeof meProfile !== "undefined" && meProfile) ? meProfile.pts : 0) || 0);
+    const tb = el("sbTotalBet"); if(tb) tb.textContent = money(totalStake());
+    const bv = el("sbBetVal"); if(bv && document.activeElement !== bv) bv.value = Number(st.bet).toFixed(2);
+    for(const k in BUYS){ const n = el("sbPrice_"+k); if(n) n.textContent = money(st.bet * BUYS[k].price); }
+    const lw = el("sbLastWin"); if(lw) lw.textContent = money(st.lastWin);
+  }
+
+  const totalStake = ()=> Math.round(st.bet * (st.ante ? ANTE_COST : 1) * 100) / 100;
+
+  /* ---------------- win presentation ---------------- */
+  async function playCascades(spin, sticky){
+    const fast = st.turbo;
+    let shown = 0;
+    setFaces(spin, sticky);
+    paintGrid(spin.grid, { animate:true });
+    for(let c=0;c<6;c++) setTimeout(()=>sfx.drop(c), fast ? c*38 : c*95);
+    await wait(fast ? 460 : 1150);
+
+    for(const step of spin.steps){
+      const winCells = {};
+      step.wins.forEach(w=>w.cells.forEach(([c,r])=>{ winCells[c+","+r] = true; }));
+      for(const k in winCells){
+        const [c,r] = k.split(",").map(Number);
+        const cell = cellAt(c,r); if(cell) cell.classList.add("sbHit");
+      }
+      sfx.pop(step.wins.length);
+      const top = step.wins[step.wins.length-1];
+      if(top) chip(top.cells[0][0], top.cells[0][1], "+" + money(step.wins.reduce((a,w)=>a+w.pay,0) * st.bet));
+      shown += step.wins.reduce((a,w)=>a+w.pay, 0);
+      setWin(shown * st.bet, true);
+      await wait(fast ? 200 : 460);
+      for(const k in winCells){
+        const [c,r] = k.split(",").map(Number);
+        const cell = cellAt(c,r); if(cell){ cell.classList.remove("sbHit"); cell.classList.add("sbBurst"); }
+      }
+      await wait(fast ? 110 : 200);
+      paintGrid(step.after, { prev: step.before, animate:true });
+      await wait(fast ? 190 : 420);
+    }
+    return shown;
+  }
+  async function playCollect(spin, coinsOnBoard, mult){
+    if(!spin.pots.length || !coinsOnBoard.length) return 0;
+    const fast = st.turbo;
+    let gained = 0;
+    for(const pot of spin.pots){
+      const cell = cellAt(pot.c, pot.r); if(cell) cell.classList.add("sbHit");
+      await flyCoins(coinsOnBoard, pot);
+      sfx.collect();
+      sparkBurst(pot.c, pot.r, 18);
+      const sum = coinsOnBoard.reduce((a,x)=>a+x.v, 0) * (spin.cloverMult || 1) * (mult || 1);
+      gained += sum;
+      chip(pot.c, pot.r, "+" + money(sum * st.bet) + ((spin.cloverMult||1) > 1 ? "  ×"+spin.cloverMult : ""), true);
+      if(cell) setTimeout(()=>cell.classList.remove("sbHit"), 600);
+      await wait(fast ? 280 : 640);
+    }
+    return gained;
+  }
+
+  /* ---------------- big win ---------------- */
+  const WIN_TIERS = [[500,"EPIC WIN"],[100,"MEGA WIN"],[40,"HUGE WIN"],[15,"BIG WIN"]];
+  async function bigWin(amount, mult){
+    let tag = null;
+    for(const [m,t] of WIN_TIERS) if(mult >= m){ tag = t; break; }
+    if(!tag) return;
+    const ov = el("sbBigWin");
+    el("sbBigWinTag").textContent = tag;
+    el("sbBigWinMult").textContent = mult.toFixed(2) + "×";
+    el("sbBigWinAmt").textContent = money(0);
+    ov.classList.add("sbOn");
+    sfx.big(); shake();
+    await rollTo(el("sbBigWinAmt"), 0, amount, st.turbo ? 900 : 1900);
+    await wait(st.turbo ? 500 : 1200);
+    ov.classList.remove("sbOn");
+  }
+
+  /* ---------------- balance ---------------- */
+  async function debit(amount){
+    await addWagerAndPayout(amount, 0, { noStats:true });
+    syncBalance();
+  }
+  async function credit(payout){
+    if(!(payout > 0)) return;
+    try{
+      const newPts = clamp2(Number(meProfile.pts) + payout);
+      const { error } = await withTimeout(supabase.from("profiles").update({ pts:newPts }).eq("id", session.user.id), 12000);
+      if(error) throw error;
+      setHostBalance(newPts);
+    }catch(e){
+      console.error("slots credit failed", e);
+      toast(/timeout/i.test(String(e && e.message)) ? "Win payout timed out — check your connection" : "Win payout failed (DB/RLS)");
+    }
+    syncBalance();
+  }
+  const settle = (stake, payout)=>{ try{ hzRecord("slots", stake, payout); }catch(_){ } };
+
+  /* ---------------- the feature ---------------- */
+  async function playFeature(feat, count){
+    el("sbBonusCount").textContent = String(count);
+    el("sbBonusIntro").classList.add("sbOn");
+    sfx.bonus();
+    await new Promise(res=>{
+      const go = el("sbBonusGo");
+      const done = ()=>{ go.removeEventListener("click", done); res(); };
+      go.addEventListener("click", done);
+      setTimeout(()=>{ if(el("sbBonusIntro").classList.contains("sbOn")) done(); }, 6000);
+    });
+    el("sbBonusIntro").classList.remove("sbOn");
+
+    const panel = el("sbFsPanel");
+    panel.classList.add("sbOn");
+    el("sbFsMult").textContent = "×" + feat.startMult;
+    el("sbFsTotal").textContent = money(0);
+
+    for(const step of feat.steps){
+      el("sbFsLeft").textContent = String(step.spinsLeft + 1);
+      setWin(0, false);
+      await playCascades(step.spin, step.sticky);
+      el("sbFsLeft").textContent = String(step.spinsLeft);
+      if(step.newCoins.length){ step.newCoins.forEach(x=>sparkBurst(x.c, x.r, 6)); sfx.coin(); }
+      if(step.collects.length){
+        for(const col of step.collects){
+          const cell = cellAt(col.at.c, col.at.r); if(cell) cell.classList.add("sbHit");
+          await flyCoins(step.sticky, col.at);
+          sfx.collect(); sparkBurst(col.at.c, col.at.r, 18);
+          chip(col.at.c, col.at.r, "+" + money(col.amount * st.bet) + (col.mult > 1 ? "  ×"+col.mult : ""), true);
+          if(cell) setTimeout(()=>cell.classList.remove("sbHit"), 600);
+          await wait(st.turbo ? 280 : 640);
+        }
+      }
+      el("sbFsMult").textContent = "×" + step.mult;
+      el("sbFsTotal").textContent = money(step.runningTotal * st.bet);
+      if(step.extra){
+        chip(2, 2, "+" + step.extra + " SPINS", true);
+        sfx.bonus();
+        await wait(st.turbo ? 400 : 900);
+      }
+      await wait(st.turbo ? 80 : 220);
+    }
+
+    panel.classList.remove("sbOn");
+    el("sbOutroAmt").textContent = money(0);
+    el("sbOutroSub").textContent = "from " + feat.played + " spin" + (feat.played === 1 ? "" : "s") + (feat.capped ? " · MAX WIN" : "");
+    el("sbBonusOutro").classList.add("sbOn");
+    await rollTo(el("sbOutroAmt"), 0, feat.total * st.bet, st.turbo ? 700 : 1500);
+    await new Promise(res=>{
+      const go = el("sbOutroGo");
+      const done = ()=>{ go.removeEventListener("click", done); res(); };
+      go.addEventListener("click", done);
+      setTimeout(()=>{ if(el("sbBonusOutro").classList.contains("sbOn")) done(); }, 7000);
+    });
+    el("sbBonusOutro").classList.remove("sbOn");
+    return feat.total;
+  }
+
+  /* ---------------- a round ---------------- */
+  async function play(mode){
+    if(st.busy || !st.loaded) return;
+    if(typeof ensureActionReady === "function" && !(await ensureActionReady())) return;
+    if(!meProfile) return toast("Profile not ready");
+
+    const bet = st.bet;
+    const buy = BUYS[mode];
+    const cost = buy ? bet * buy.price : totalStake();
+    if(Number(meProfile.pts) < cost) return toast("Not enough balance for " + money(cost));
+
+    st.busy = true;
+    el("sbSpinBtn").disabled = true;
+    el("sbSpinBtn").classList.add("sbBusy");
+    setWin(0, false);
+    sfx.click();
+
+    try{
+      try{ await debit(cost); }
+      catch(e){
+        const msg = String((e && e.message) || e);
+        toast(/balance/.test(msg) ? "Not enough balance" : /timeout/i.test(msg) ? "Bet timed out — try again" : "Bet failed (DB/RLS)");
+        return;
+      }
+
+      let totalX = 0;
+      if(buy){
+        const feat = runFeature(buy.spins, buy.opts);
+        totalX = await playFeature(feat, buy.spins);
+      }else{
+        const spin = baseSpin({ ante: st.ante });
+        totalX = await playCascades(spin, null);
+        totalX += await playCollect(spin, spin.coins, 1);
+        setWin(totalX * bet, totalX > 0);
+        if(spin.trigger){
+          spin.hats.forEach(h=>{ const cell = cellAt(h.c,h.r); if(cell) cell.classList.add("sbHit"); sparkBurst(h.c,h.r,14); });
+          shake();
+          await wait(st.turbo ? 350 : 800);
+          const spins = HATS_FOR[spin.trigger] || 10;
+          totalX += await playFeature(runFeature(spins, {}), spins);
+        }
+      }
+
+      if(totalX > MAX_WIN) totalX = MAX_WIN;
+      const payout = Math.round(totalX * bet * 100)/100;
+      st.lastWin = payout;
+      setWin(payout, payout > 0);
+      settle(cost, payout);
+      if(payout > 0){
+        await bigWin(payout, payout / cost);
+        await credit(payout);
+      }else{
+        syncBalance();
+      }
+    } finally {
+      st.busy = false;
+      el("sbSpinBtn").disabled = false;
+      el("sbSpinBtn").classList.remove("sbBusy");
+      syncBalance();
+    }
+
+    if(st.auto > 0 && !st.autoStop){
+      st.auto--; updateAuto();
       if(st.auto > 0 && Number(meProfile.pts) >= totalStake()){
         await wait(st.turbo ? 120 : 340);
         if(st.auto > 0 && !st.autoStop && isOpen()) return play("spin");
@@ -14031,41 +15331,34 @@ restoreMinesState();
     t.textContent = st.auto > 0 ? String(st.auto) : "AUTO";
   }
 
-  /* ---------------- info sheet, generated from the live paytable ---------------- */
+  /* ---------------- info sheet, generated from the live tables ---------------- */
   function buildInfoSheet(){
     const box = el("sbInfoBody"); if(!box) return;
-    const order = [S.BANDIT,S.TNT,S.GUN,S.HAT,S.HORSE,S.DIAM,S.HEART,S.SPADE,S.CLUB];
+    const order = [S.CHEESE,S.BEER,S.BREAD,S.GLOVE,S.A,S.K,S.Q,S.J,S.TEN];
     const pays = order.map(s=>{
       const p = PAY[s];
-      const rows = [[5,p[3]],[4,p[2]],[3,p[1]]].concat(p[0] ? [[2,p[0]]] : [])
-        .map(([n,v])=>'<span>'+n+' × <b>'+v+'</b></span>').join("");
+      const rows = [["12+",p[2]],["10-11",p[1]],["8-9",p[0]]].map(([n,v])=>'<span>'+n+' <b>×'+v+'</b></span>').join("");
       return '<div class="sbPayRow"><svg class="sbPayIco" viewBox="0 0 100 100"><use href="#sbs-'+SYM_ID[s]+'"/></svg><div class="sbPayNums">'+rows+'</div></div>';
     }).join("");
-    const coinRows = COIN_VALUES.map(c=>c[0]).join(" · ");
+    const specials = [["coin","Lands carrying a cash value in × your bet. It never forms a win and it never falls."],
+                      ["pot","The collector. When it lands it empties every coin on the screen."],
+                      ["clover","Multiplies the collect. Several clovers add together."],
+                      ["hat","3 or more anywhere award 10, 12, 15 or 20 Bandit Spins."]]
+      .map(([k,d])=>'<div class="sbPayRow"><svg class="sbPayIco" viewBox="0 0 100 100"><use href="#sbs-'+k+'"/></svg><div class="sbPayNums"><span style="line-height:1.45">'+d+'</span></div></div>').join("");
     box.innerHTML =
-      '<div class="sbInfoSec"><h5>LINE PAYS — × TOTAL BET</h5><div class="sbPayGrid">'+pays+'</div></div>'
-    + '<div class="sbInfoSec"><h5>SPECIAL SYMBOLS</h5><div class="sbPayGrid">'
-      + ['wild','coin','vault','scat'].map((k,i)=>{
-          const desc = [ "Substitutes for every symbol except coins, vaults and Wanted posters. Reels 2, 3 and 4.",
-                         "Lands on reels 1-4 carrying a value in × your bet. Pays nothing on its own.",
-                         "Lands on reel 5 only and empties every coin on screen. Two vaults pay twice.",
-                         "3, 4 or 5 anywhere award 10, 12 or 15 Bounty Spins." ][i];
-          return '<div class="sbPayRow"><svg class="sbPayIco" viewBox="0 0 100 100"><use href="#sbs-'+k+'"/></svg><div class="sbPayNums"><span style="line-height:1.45">'+desc+'</span></div></div>';
-        }).join("")
-      + '</div></div>'
-    + '<div class="sbInfoSec"><h5>BOUNTY SPINS</h5><div class="sbRules">'
-      + 'Coins <b>stick</b> where they land for the whole feature. Every vault empties all of them at the current collect multiplier, then the multiplier climbs <b>×1 → ×2 → ×3 → ×5 → ×10</b>. Three more Wanted posters add <b>+5 spins</b>.'
-      + '</div></div>'
-    + '<div class="sbInfoSec"><h5>COIN VALUES (× BET)</h5><div class="sbRules">'+coinRows+'</div></div>'
+      '<div class="sbInfoSec"><h5>PAYS ANYWHERE — × TOTAL BET</h5><div class="sbRules" style="margin-bottom:8px">Land <b>8 or more</b> of a symbol anywhere on the 6×5 grid. Winners burst, the rest falls, new symbols drop in — and it pays again if another win lands.</div><div class="sbPayGrid">'+pays+'</div></div>'
+    + '<div class="sbInfoSec"><h5>SPECIAL SYMBOLS</h5><div class="sbPayGrid">'+specials+'</div></div>'
+    + '<div class="sbInfoSec"><h5>BANDIT SPINS</h5><div class="sbRules">Coins <b>stick</b> for the whole feature. Every pot empties all of them at the current collect multiplier, then the multiplier climbs <b>×1 → ×2 → ×3 → ×5 → ×10</b>. Three more top hats add <b>+5 spins</b>.</div></div>'
+    + '<div class="sbInfoSec"><h5>COIN VALUES (× BET)</h5><div class="sbRules">'+COIN_VALUES.map(c=>c[0]).join(" · ")+'</div></div>'
     + '<div class="sbInfoSec"><h5>THE NUMBERS</h5><div class="sbStatTable">'
-      + '<span>Return to player — base game</span><b>96.15%</b>'
-      + '<span>Return to player — Bandit Bet</span><b>95.91%</b>'
-      + '<span>Return to player — bought bonus</span><b>95.7 – 96.1%</b>'
-      + '<span>Hit frequency</span><b>25.6%</b>'
-      + '<span>Bonus — base game</span><b>1 in 196</b>'
-      + '<span>Bonus — Bandit Bet (2× stake)</span><b>1 in 70</b>'
+      + '<span>Return to player — base game</span><b>96.04%</b>'
+      + '<span>Return to player — Bandit Bet</span><b>96.1%</b>'
+      + '<span>Return to player — bought features</span><b>96.0 – 96.3%</b>'
+      + '<span>Hit frequency</span><b>23.9%</b>'
+      + '<span>Bonus frequency</span><b>1 in 224</b>'
       + '<span>Maximum win</span><b>10 000×</b>'
-      + '<span>Lines · reels</span><b>10 · 5×3</b>'
+      + '<span>Grid</span><b>6×5 · pays anywhere</b>'
+      + '<span>Volatility</span><b>Very high</b>'
       + '</div></div>';
   }
 
@@ -14097,15 +15390,14 @@ restoreMinesState();
     if(i < 0){ i = 0; for(let k=0;k<BETS.length;k++) if(BETS[k] <= st.bet) i = k; }
     i = Math.max(0, Math.min(BETS.length-1, i + dir));
     st.bet = BETS[i];
-    saveCfg(); syncBalance(); sfx.tick();
+    saveCfg(); syncBalance(); sfx.click();
   }
-
   function wire(){
     const open = el("sbOpenBandit"); if(open) open.onclick = openClient;
     const back = el("sbBackBtn"); if(back) back.onclick = ()=>{ if(st.busy) return toast("Finishing the round…"); closeClient(); };
     const play0 = el("sbPlayBtn");
     if(play0) play0.onclick = ()=>{
-      audio();                       // the gate tap is our permission to make sound
+      audio();
       el("sbLoader").classList.add("sbGone");
       el("sbGame").classList.add("sbReady");
       setTimeout(()=>{ const l = el("sbLoader"); if(l) l.style.display = "none"; }, 500);
@@ -14125,10 +15417,10 @@ restoreMinesState();
     if(ante) ante.onclick = ()=>{
       if(st.busy) return;
       st.ante = !st.ante; ante.classList.toggle("sbOn", st.ante);
-      saveCfg(); syncBalance(); sfx.tick();
+      saveCfg(); syncBalance(); sfx.click();
     };
     const turbo = el("sbTurboBtn");
-    if(turbo) turbo.onclick = ()=>{ st.turbo = !st.turbo; turbo.classList.toggle("sbOn", st.turbo); saveCfg(); sfx.tick(); };
+    if(turbo) turbo.onclick = ()=>{ st.turbo = !st.turbo; turbo.classList.toggle("sbOn", st.turbo); saveCfg(); sfx.click(); };
     const auto = el("sbAutoBtn");
     if(auto) auto.onclick = ()=>{
       if(st.auto > 0){ st.auto = 0; st.autoStop = true; updateAuto(); return; }
@@ -14137,24 +15429,16 @@ restoreMinesState();
     };
     const snd = el("sbSoundBtn"); if(snd) snd.onclick = ()=>{ st.sound = !st.sound; setSoundIcon(); saveCfg(); };
     const full = el("sbFullBtn");
-    if(full) full.onclick = ()=>{
-      const box = el("sbClient");
-      try{ document.fullscreenElement ? document.exitFullscreen() : box.requestFullscreen(); }catch(_){ }
-    };
+    if(full) full.onclick = ()=>{ const box = el("sbClient"); try{ document.fullscreenElement ? document.exitFullscreen() : box.requestFullscreen(); }catch(_){ } };
     const info = el("sbInfoBtn"); if(info) info.onclick = ()=>{ buildInfoSheet(); el("sbInfoSheet").classList.add("sbOn"); };
     const infoX = el("sbInfoClose"); if(infoX) infoX.onclick = ()=>el("sbInfoSheet").classList.remove("sbOn");
-    const buy = el("sbBuyBtn"); if(buy) buy.onclick = ()=>{ if(st.busy) return; syncBalance(); el("sbBuyMenu").classList.add("sbOn"); };
+    const buyBtn = el("sbBuyBtn"); if(buyBtn) buyBtn.onclick = ()=>{ if(st.busy) return; syncBalance(); el("sbBuyMenu").classList.add("sbOn"); };
     const buyX = el("sbBuyClose"); if(buyX) buyX.onclick = ()=>el("sbBuyMenu").classList.remove("sbOn");
-    const b1 = el("sbBuyNormal"); if(b1) b1.onclick = ()=>{ el("sbBuyMenu").classList.remove("sbOn"); play("buy"); };
-    const b2 = el("sbBuySuper"); if(b2) b2.onclick = ()=>{ el("sbBuyMenu").classList.remove("sbOn"); play("super"); };
-    [el("sbBuyMenu"), el("sbInfoSheet")].forEach(o=>{ if(o) o.addEventListener("click", (e)=>{ if(e.target === o) o.classList.remove("sbOn"); }); });
-
-    // reels are sized in px off the reel width, so a resize has to redraw them
-    let rz = 0;
-    window.addEventListener("resize", ()=>{
-      clearTimeout(rz);
-      rz = setTimeout(()=>{ if(st.loaded && !st.busy && isOpen()) paintGrid(spinGrid(STRIPS.base).grid, { idle:true }); }, 220);
-    });
+    for(const k in BUYS){
+      const b = el("sbBuy_"+k);
+      if(b) b.onclick = ()=>{ el("sbBuyMenu").classList.remove("sbOn"); play(k); };
+    }
+    [el("sbBuyMenu"), el("sbInfoSheet")].forEach(o=>{ if(o) o.addEventListener("click",(e)=>{ if(e.target === o) o.classList.remove("sbOn"); }); });
   }
 
   loadCfg();
@@ -14164,17 +15448,12 @@ restoreMinesState();
   const turboBtn = el("sbTurboBtn"); if(turboBtn) turboBtn.classList.toggle("sbOn", st.turbo);
   syncBalance();
 
-  // let the rest of the app refresh the machine's balance readout
   window.sbSyncBalance = syncBalance;
   window.__sb = st;
-  /* Read-only view of the maths so the reel strips and paytable in this file can
-     be checked against the model they were solved from. Everything here is pure
-     and already published in the in-game info sheet. */
-  window.__sbMath = {
-    S, PAY, LINES, COIN_VALUES, MULT_LADDER, MAX_WIN, ANTE_COST, BUY_PRICE, SUPER_PRICE, FS_FOR,
-    strips: ()=>STRIPS || (STRIPS = compileStrips()),
-    evalLines, baseSpin, runFeature,
-  };
+  /* read-only view of the maths, so the tables that shipped can be checked
+     against the model they were solved from */
+  window.__sbMath = { S, PAY, COIN_VALUES, CLOVER_VALUES, MULT_LADDER, MAX_WIN, HATS_FOR, BUYS,
+                      W_DROP, W_FILL, W_DROP_FS, W_DROP_ANTE, ANTE_COST, COLS, ROWS, baseSpin, runFeature, findWins, tierOf };
 })();
 
 /* AUTH */
