@@ -4147,97 +4147,133 @@ input[type=number],
   clip-path:polygon(20% 100%,0 62%,14% 30%,34% 12%,62% 8%,86% 26%,96% 56%,84% 100%);}
 .lvCard:hover .lvCardMark{transform:translateY(-52%);transition:.25s;}
 
-/* ---------- stage: the alley ---------- */
-.lvStage{
-  background:
-    radial-gradient(110% 70% at 50% -8%, rgba(255,214,150,.20), transparent 58%),
-    linear-gradient(180deg,#6b5238 0%,#4a3728 44%,#2b1f18 100%);
-}
-.lvAlley{position:absolute;inset:0;pointer-events:none;opacity:.30;border-radius:12px;
-  background:repeating-linear-gradient(0deg,rgba(0,0,0,.20) 0 2px,transparent 2px 30px),
-             repeating-linear-gradient(90deg,rgba(0,0,0,.16) 0 2px,transparent 2px 62px);}
+/* ---------- the painted scene ---------- */
+/* Board geometry is taken straight off the artwork: the grid drawn into the
+   1681x936 background starts at x=384 / y=108 with 6 cells of 151.6 and 5 of
+   143.4, so these percentages line the live board up with the painted one. */
+.lvStage{background:#1a120c;padding:10px;}
 .lvGame{position:relative;z-index:1;}
-.lvRat{position:absolute;right:1%;bottom:0;width:min(210px,20%);height:76%;pointer-events:none;z-index:2;
-  background-repeat:no-repeat;background-position:bottom right;background-size:contain;opacity:.96;
-  filter:drop-shadow(0 10px 22px rgba(0,0,0,.5));}
-@media(max-width:1100px){ .lvRat{display:none;} }
-
-/* A 6x5 board is 0.83 tall per unit of width, so width has to be capped against
-   the viewport height or the control deck drops off the bottom of the screen. */
-.lvCab{position:relative;z-index:3;max-width:min(720px,66vh);margin:0 auto;padding:6px 10px 10px;}
-.lvTitle{
-  text-align:center;font-family:"Bangers",Impact,sans-serif;font-size:clamp(30px,4.4vw,46px);
-  letter-spacing:.05em;color:#f4dca8;line-height:1;margin-bottom:6px;
-  text-shadow:0 3px 0 #4a2f16, 0 8px 18px rgba(0,0,0,.55);
+.lvScene{
+  position:relative;width:100%;max-width:1100px;margin:0 auto;aspect-ratio:1681/936;
+  background-image:url("assets/le-voleur-bg.jpg");
+  background-size:100% 100%;background-repeat:no-repeat;
+  border-radius:10px;overflow:hidden;box-shadow:0 18px 44px rgba(0,0,0,.55);
 }
-.lvBoardFrame{
-  position:relative;border-radius:10px;padding:8px;
-  background:linear-gradient(180deg,#7b6042,#4b3826);
-  box-shadow:inset 0 0 0 3px #c8a86c, inset 0 0 0 6px #6b4f30, 0 18px 44px rgba(0,0,0,.5);
-}
-.lvBoard{position:relative;width:100%;aspect-ratio:6/5;background:rgba(24,15,8,.72);border-radius:5px;overflow:hidden;}
+/* clipped like a real reel window: symbols entering from above and falling out
+   of the bottom are masked at the painted frame's edge */
+.lvBoard{position:absolute;left:22.844%;top:11.538%;width:54.104%;height:76.603%;
+  overflow:hidden;border-radius:8px;}
+#lvFx{position:absolute;left:22.844%;top:11.538%;width:54.104%;height:76.603%;
+  pointer-events:none;z-index:7;overflow:visible;border-radius:0;}
 
 .lvCell{
   position:absolute;width:16.6667%;height:20%;display:grid;place-items:center;
-  box-sizing:border-box;padding:3%;
+  box-sizing:border-box;padding:1%;
 }
-.lvCell::before{content:"";position:absolute;inset:1px;border-radius:4px;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.045);pointer-events:none;}
+.lvCell::before{content:"";position:absolute;inset:2px;border-radius:5px;pointer-events:none;}
 /* a square that took part in a win and is waiting for the rainbow */
-.lvCell.lvGold::before{background:linear-gradient(180deg,rgba(246,196,69,.30),rgba(181,126,20,.20));
-  box-shadow:inset 0 0 0 2px rgba(246,196,69,.75), inset 0 0 16px rgba(246,196,69,.28);}
-.lvSym{width:88%;height:88%;display:block;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5));}
-.lvCell.lvDrop{animation:lvDrop .3s cubic-bezier(.3,1.5,.5,1);}
-@keyframes lvDrop{from{transform:translateY(var(--fall,-100%))}to{transform:translateY(0)}}
+.lvCell.lvGold::before{background:linear-gradient(180deg,rgba(246,196,69,.34),rgba(181,126,20,.22));
+  box-shadow:inset 0 0 0 2px rgba(246,196,69,.8), inset 0 0 18px rgba(246,196,69,.3);}
+.lvSym{width:100%;height:100%;display:block;filter:drop-shadow(0 4px 5px rgba(0,0,0,.55));}
+
+/* Columns drop one after another, left to right — the delay is set per cell in
+   JS as --d, and `backwards` keeps each one parked off-screen until its turn. */
+.lvCell.lvDrop{animation:lvDrop .34s cubic-bezier(.25,1.25,.5,1) backwards;animation-delay:var(--d,0ms);}
+@keyframes lvDrop{from{transform:translateY(var(--fall,-120%));opacity:.25}to{transform:translateY(0);opacity:1}}
+.lvCell.lvFall{animation:lvFall .3s cubic-bezier(.5,0,.85,.5) forwards;animation-delay:var(--d,0ms);}
+@keyframes lvFall{from{transform:translateY(0);opacity:1}to{transform:translateY(560%);opacity:0}}
 .lvCell.lvHit .lvSym{animation:lvHit .42s ease-in-out;}
-@keyframes lvHit{0%{transform:scale(1)}35%{transform:scale(1.22) rotate(-6deg)}70%{transform:scale(1.1) rotate(5deg)}100%{transform:scale(1)}}
+@keyframes lvHit{0%{transform:scale(1)}35%{transform:scale(1.2) rotate(-6deg)}70%{transform:scale(1.09) rotate(5deg)}100%{transform:scale(1)}}
 .lvCell.lvPop .lvSym{animation:lvPop .26s ease-in forwards;}
 @keyframes lvPop{to{transform:scale(.1) rotate(90deg);opacity:0}}
 .lvCell.lvDim .lvSym{filter:grayscale(.75) brightness(.55);}
 
 /* coin / clover / pot revealed on a golden square */
 .lvVal{
-  position:absolute;z-index:3;left:50%;top:53%;transform:translate(-50%,-50%);
-  font-family:"Bangers",Impact,sans-serif;font-size:clamp(11px,2.1vw,20px);letter-spacing:.02em;
-  color:#4a2f16;text-shadow:0 1px 0 rgba(255,255,255,.5);pointer-events:none;
+  position:absolute;z-index:3;left:50%;top:54%;transform:translate(-50%,-50%);
+  font-family:"Bangers",Impact,sans-serif;font-size:clamp(12px,2.4vw,26px);letter-spacing:.02em;
+  color:#4a2f16;text-shadow:0 1px 0 rgba(255,255,255,.55);pointer-events:none;
 }
-.lvCell.lvReveal{animation:lvReveal .38s cubic-bezier(.2,1.5,.4,1);}
-@keyframes lvReveal{from{transform:scale(.3) rotate(-30deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
 
-/* ---------- HUD ---------- */
-.lvHud{display:flex;align-items:center;gap:10px;margin-top:9px;justify-content:space-between;}
-.lvFsPanel{display:none;align-items:center;gap:12px;padding:6px 13px;border-radius:9px;
-  background:linear-gradient(180deg,rgba(246,196,69,.26),rgba(181,126,20,.18));
-  border:1px solid rgba(246,196,69,.5);}
+/* the win banner that lands after the coins finish dropping */
+.lvBanner{
+  position:absolute;left:22.844%;top:11.538%;width:54.104%;height:76.603%;
+  display:none;place-items:center;pointer-events:none;z-index:9;
+}
+.lvBanner.lvOn{display:grid;}
+.lvBanner span{
+  font-family:"Bangers",Impact,sans-serif;font-size:clamp(30px,5.2vw,62px);color:#ffe6a5;
+  text-shadow:0 4px 0 #6b3f08, 0 0 34px rgba(246,196,69,.75);
+  animation:lvBanner .9s cubic-bezier(.2,1.5,.4,1);
+}
+@keyframes lvBanner{0%{transform:scale(.3);opacity:0}55%{transform:scale(1.12);opacity:1}100%{transform:scale(1);opacity:1}}
+
+/* ---------- control deck, floating over the alley floor ---------- */
+.lvDeck{
+  position:absolute;left:4%;right:4%;bottom:1.6%;z-index:8;
+  display:flex;align-items:center;justify-content:center;gap:clamp(4px,.9vw,12px);
+  padding:4px clamp(8px,1.4vw,16px);border-radius:13px;
+  background:rgba(22,13,7,.74);border:1px solid rgba(246,196,69,.26);
+  box-shadow:0 8px 24px rgba(0,0,0,.5);
+}
+.lvDeckBtn{
+  display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;
+  padding:5px 8px;border-radius:9px;background:rgba(255,255,255,.06);
+  border:1px solid rgba(246,196,69,.22);color:#f0d9a8;
+  font-size:8.5px;font-weight:800;letter-spacing:.1em;transition:.16s;
+}
+.lvDeckBtn svg{width:15px;height:15px;}
+.lvDeckBtn:hover{border-color:rgba(246,196,69,.6);color:#fff;}
+.lvDeckBtn.sbOn{background:rgba(78,162,74,.26);border-color:rgba(78,162,74,.6);color:#bff0bb;}
+.lvBuyBtn{background:linear-gradient(180deg,rgba(246,196,69,.32),rgba(181,126,20,.2));border-color:rgba(246,196,69,.5);color:#ffe6a5;}
+.lvMeter{display:flex;flex-direction:column;line-height:1.15;padding:0 4px;}
+.lvMeter span{font-size:8px;font-weight:800;letter-spacing:.16em;color:#c9ac7c;}
+.lvMeter b{font-size:clamp(11px,1.25vw,15px);color:#ffe6a5;font-variant-numeric:tabular-nums;}
+.lvMeterWin b{color:#ffd76a;}
+.lvFsPanel{display:none;}
 .lvFsPanel.lvOn{display:flex;}
-.lvFsName{font-family:"Bangers",Impact,sans-serif;font-size:14px;letter-spacing:.06em;color:#ffe6a5;}
-.lvFsLeft{font-size:11px;font-weight:800;letter-spacing:.1em;color:#f0d9a8;}
-.lvFsLeft b{font-family:var(--mono);font-size:15px;color:#fff;margin-left:4px;}
-.lvWin{margin-left:auto;display:flex;align-items:center;gap:9px;padding:6px 14px;border-radius:9px;
-  background:rgba(20,12,6,.55);border:1px solid rgba(246,196,69,.28);}
-.lvWin span{font-size:9.5px;font-weight:800;letter-spacing:.2em;color:#c9ac7c;}
-.lvWin b{font-size:19px;color:#ffe6a5;font-variant-numeric:tabular-nums;}
-
-/* ---------- controls ---------- */
-.lvBottom{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px;flex-wrap:wrap;}
+.lvFsPanel span{color:#ffd76a;}
+.lvBetBox{display:flex;align-items:center;gap:5px;padding:3px 6px;border-radius:9px;
+  background:rgba(0,0,0,.32);border:1px solid rgba(246,196,69,.22);}
+.lvBetCol{display:flex;flex-direction:column;align-items:center;line-height:1.1;}
+.lvBetCol em{font-style:normal;font-size:8px;font-weight:800;letter-spacing:.16em;color:#c9ac7c;}
+/* the site's global input rule pads every field to ~40px tall, which alone made
+   the deck too tall to sit in the strip of floor below the board */
+.lvBetVal{width:64px;text-align:center;background:transparent;border:none;color:#ffe6a5;
+  font-size:clamp(12px,1.4vw,16px);font-weight:800;font-variant-numeric:tabular-nums;outline:none;
+  padding:0;margin:0;height:auto;line-height:1.15;border-radius:0;}
+.lvStep{width:22px;height:22px;border-radius:6px;cursor:pointer;font-size:15px;line-height:1;
+  background:rgba(255,255,255,.09);border:1px solid rgba(246,196,69,.28);color:#ffe6a5;}
+.lvStep:hover{background:rgba(246,196,69,.28);}
 .lvSpin{
-  position:relative;width:80px;height:80px;border-radius:50%;cursor:pointer;border:none;display:grid;place-items:center;
+  position:relative;width:clamp(42px,4.6vw,54px);aspect-ratio:1;border-radius:50%;cursor:pointer;border:none;
+  display:grid;place-items:center;margin-top:-14px;flex:0 0 auto;
   background:radial-gradient(circle at 50% 32%,#ffd977,#e8a72a 55%,#9c6a10 100%);color:#3a2412;
-  box-shadow:0 10px 26px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.55), inset 0 -6px 12px rgba(0,0,0,.28);
+  box-shadow:0 8px 22px rgba(0,0,0,.55), inset 0 2px 0 rgba(255,255,255,.55), inset 0 -5px 10px rgba(0,0,0,.3);
   transition:transform .14s cubic-bezier(.2,.9,.3,1),filter .16s;
 }
-.lvSpin:hover:not(:disabled){transform:scale(1.05);filter:brightness(1.07);}
+.lvSpin:hover:not(:disabled){transform:scale(1.06);filter:brightness(1.07);}
 .lvSpin:active:not(:disabled){transform:scale(.95);}
 .lvSpin:disabled{cursor:not-allowed;filter:grayscale(.5) brightness(.72);}
-.lvSpinIco svg{width:34px;height:34px;}
+.lvSpinIco svg{width:60%;height:60%;}
 .lvSpin.lvBusy .lvSpinIco{animation:sbSpinIco .9s linear infinite;}
-.lvBuyBtn{background:linear-gradient(180deg,rgba(246,196,69,.3),rgba(181,126,20,.2));
-  border-color:rgba(246,196,69,.5);color:#ffe6a5;}
-.lvClient .sbBetBox,.lvClient .sbMini{background:rgba(20,12,6,.5);border-color:rgba(246,196,69,.24);color:#f0d9a8;}
-.lvClient .sbBetLbl,.lvClient .sbBalStrip{color:#c9ac7c;}
-.lvClient .sbBalStrip b{color:#ffe6a5;}
-.lvClient .sbStep{background:rgba(255,255,255,.09);border-color:rgba(246,196,69,.28);color:#ffe6a5;}
-.lvClient .sbMini.sbOn{background:rgba(78,162,74,.24);border-color:rgba(78,162,74,.55);color:#bff0bb;}
+
+/* Portrait can't use the painted frame: the art is 16:9, so honouring it would
+   leave a 190px board on a phone. Below 860px the background becomes a cropped
+   backdrop and the board gets its own frame with square cells. The deck stays
+   absolutely positioned — it is a child of the scene, so going static would put
+   it at the top of the scene, straight over the board. */
+@media(max-width:860px){
+  .lvStage{padding:6px;}
+  .lvScene{aspect-ratio:13/15;background-size:cover;background-position:52% 26%;border-radius:12px;}
+  .lvBoard,#lvFx,.lvBanner{left:3%;top:3.5%;width:94%;height:68%;}
+  .lvBoard{border-radius:10px;background:rgba(18,11,6,.5);
+    box-shadow:inset 0 0 0 2px rgba(246,196,69,.45), 0 10px 26px rgba(0,0,0,.55);}
+  .lvDeck{bottom:3%;left:2.5%;right:2.5%;flex-wrap:wrap;row-gap:5px;justify-content:space-around;}
+  .lvSpin{margin-top:-10px;width:52px;}
+  .lvDeckBtn span{display:none;}
+  .lvMeter span{font-size:7.5px;}
+}
 
 /* ---------- loader + overlays ---------- */
 .lvLoader{background:radial-gradient(80% 70% at 50% 26%, rgba(255,214,150,.14), transparent 62%), #241a12;}
@@ -5070,51 +5106,35 @@ input[type=number],
           </div>
 
           <div class="sbGame lvGame" id="lvGame">
-            <div class="lvAlley"></div>
-            <div class="lvRat" id="lvRat"></div>
-            <div class="lvCab">
-              <div class="lvTitle">LE VOLEUR</div>
-              <div class="lvBoardFrame">
-                <div class="lvBoard" id="lvBoard"></div>
-                <div class="sbFx" id="lvFx"></div>
-              </div>
-              <div class="lvHud">
-                <div class="lvFsPanel" id="lvFsPanel">
-                  <span class="lvFsName" id="lvFsName">BONUS</span>
-                  <span class="lvFsLeft">SPINS <b id="lvFsLeft">0</b></span>
-                </div>
-                <div class="lvWin"><span>TOTAL WIN</span><b class="mono" id="lvWinVal">0.00</b></div>
-              </div>
+            <!-- the painted scene is the game: the board sits exactly over the
+                 grid drawn into the art (6 x 151.6px from x=384, 5 x 143.4px
+                 from y=108, in a 1681x936 image) -->
+            <div class="lvScene" id="lvScene">
+              <div class="lvBoard" id="lvBoard"></div>
+              <div class="sbFx" id="lvFx"></div>
+              <div class="lvBanner" id="lvBanner"></div>
 
-              <div class="lvBottom">
-                <button class="sbMini lvBuyBtn" id="lvBuyBtn" type="button" title="Buy a feature">
+              <div class="lvDeck">
+                <button class="lvDeckBtn lvBuyBtn" id="lvBuyBtn" type="button" title="Buy a feature">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M8 7V5.5A4 4 0 0 1 16 5.5V7"/></svg><span>BUY</span>
                 </button>
-                <div class="sbBetBox">
-                  <span class="sbBetLbl">BET</span>
-                  <div class="sbBetRow">
-                    <button class="sbStep" id="lvBetDown" type="button">−</button>
-                    <input class="sbBetVal mono" id="lvBetVal" type="text" inputmode="decimal" value="1.00"/>
-                    <button class="sbStep" id="lvBetUp" type="button">+</button>
-                  </div>
+                <div class="lvMeter"><span>BALANCE</span><b class="mono" id="lvBal">0.00</b></div>
+                <div class="lvBetBox">
+                  <button class="lvStep" id="lvBetDown" type="button">−</button>
+                  <span class="lvBetCol"><em>BET</em><input class="lvBetVal mono" id="lvBetVal" type="text" inputmode="decimal" value="1.00"/></span>
+                  <button class="lvStep" id="lvBetUp" type="button">+</button>
                 </div>
                 <button class="lvSpin" id="lvSpinBtn" type="button">
                   <span class="lvSpinIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3.2-6.9"/><path d="M21 4v5h-5"/></svg></span>
                 </button>
-                <button class="sbMini" id="lvTurboBtn" type="button" title="Turbo">
+                <button class="lvDeckBtn" id="lvTurboBtn" type="button" title="Turbo">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M13 2L4.5 13.5H11L9.5 22 19 10h-6.5z"/></svg><span>TURBO</span>
                 </button>
-                <button class="sbMini" id="lvAutoBtn" type="button" title="Autoplay">
+                <button class="lvDeckBtn" id="lvAutoBtn" type="button" title="Autoplay">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg><span id="lvAutoTxt">AUTO</span>
                 </button>
-              </div>
-
-              <div class="sbBalStrip">
-                <span>BALANCE <b class="mono" id="lvBal">0.00</b></span>
-                <span class="sbBalDot"></span>
-                <span>BET <b class="mono" id="lvTotalBet">1.00</b></span>
-                <span class="sbBalDot"></span>
-                <span class="sbLastWin">LAST WIN <b class="mono" id="lvLastWin">0.00</b></span>
+                <div class="lvMeter lvMeterWin"><span>TOTAL WIN</span><b class="mono" id="lvWinVal">0.00</b></div>
+                <div class="lvMeter lvFsPanel" id="lvFsPanel"><span id="lvFsName">BONUS</span><b class="mono" id="lvFsLeft">0</b></div>
               </div>
             </div>
           </div>
@@ -14737,10 +14757,10 @@ restoreMinesState();
   + cardArt(S.A, "#cfc0ec")
   /* bear trap */
   + '<symbol id="lvs-trap" viewBox="0 0 100 100">'
-  + '<ellipse cx="50" cy="58" rx="40" ry="31" fill="#2f3846" stroke="#1a2029" stroke-width="4"/>'
-  + '<ellipse cx="50" cy="58" rx="27" ry="19" fill="#10151c"/>'
-  + '<path d="M12 58 A38 29 0 0 1 88 58 L88 58 L83 69 L78 58 L73 69 L68 58 L63 69 L58 58 L53 69 L48 58 L43 69 L38 58 L33 69 L28 58 L23 69 L18 58 L12 58Z" fill="url(#lvgSteel)" stroke="#1a2029" stroke-width="3.5" stroke-linejoin="round"/>'
-  + '<path d="M12 58 A38 29 0 0 0 88 58 L88 58 L83 47 L78 58 L73 47 L68 58 L63 47 L58 58 L53 47 L48 58 L43 47 L38 58 L33 47 L28 58 L23 47 L18 58 L12 58Z" fill="url(#lvgSteel)" stroke="#1a2029" stroke-width="3.5" stroke-linejoin="round"/>'
+  + '<ellipse cx="50" cy="58" rx="40" ry="31" fill="#59667a" stroke="#1a2029" stroke-width="4"/>'
+  + '<ellipse cx="50" cy="58" rx="27" ry="19" fill="#161c26"/>'
+  + '<path d="M12 58 A38 29 0 0 1 88 58 L88 58 L82 72 L76 58 L70 72 L64 58 L58 72 L52 58 L46 72 L40 58 L34 72 L28 58 L22 72 L16 58 L12 58Z" fill="url(#lvgSteel)" stroke="#1a2029" stroke-width="3.5" stroke-linejoin="round"/>'
+  + '<path d="M12 58 A38 29 0 0 0 88 58 L88 58 L82 44 L76 58 L70 44 L64 58 L58 44 L52 58 L46 44 L40 58 L34 44 L28 58 L22 44 L16 58 L12 58Z" fill="url(#lvgSteel)" stroke="#1a2029" stroke-width="3.5" stroke-linejoin="round"/>'
   + '<circle cx="50" cy="58" r="6" fill="#9ca3af" stroke="#1a2029" stroke-width="3"/>'
   + '<path d="M6 58h-4M98 58h-4" stroke="#1a2029" stroke-width="5" stroke-linecap="round"/></symbol>'
   /* cheese */
@@ -14806,24 +14826,6 @@ restoreMinesState();
   + '<g fill="url(#lvgGold)" stroke="#7a5206" stroke-width="3">'
   + '<circle cx="34" cy="34" r="10"/><circle cx="52" cy="28" r="11"/><circle cx="68" cy="35" r="9"/></g></symbol>'
   + '</svg>';
-
-  const RAT = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240">'
-    + '<g stroke="#2b2118" stroke-width="6" stroke-linejoin="round">'
-    + '<path d="M150 60c22-6 34 10 30 28-4 16-20 22-30 18z" fill="#8d8377"/>'
-    + '<path d="M60 236c-16-30-18-70-6-104 10-30 34-48 60-48s48 18 58 46c12 34 8 76-8 106z" fill="#9a938a"/>'
-    + '<ellipse cx="106" cy="96" rx="52" ry="44" fill="#a8a29a"/>'
-    + '<path d="M62 74c-10-16-4-30 10-30 10 0 16 8 18 16z" fill="#8d8377"/>'
-    + '<path d="M150 74c10-16 4-30-10-30-10 0-16 8-18 16z" fill="#8d8377"/>'
-    + '<path d="M54 96c22-12 46-14 52-4 6-10 30-8 52 4-14 16-32 24-52 24s-38-8-52-24z" fill="#3d372f"/>'
-    + '<ellipse cx="82" cy="92" rx="9" ry="10" fill="#fff"/><ellipse cx="130" cy="92" rx="9" ry="10" fill="#fff"/>'
-    + '<path d="M76 122c12 8 44 8 56 0-8 14-48 14-56 0z" fill="#c9744f"/>'
-    + '<path d="M40 40 168 8" stroke="#6b6259" stroke-width="9" stroke-linecap="round" fill="none"/>'
-    + '<path d="M150 4c26-2 40 12 34 30-6 16-30 20-42 8z" fill="#b7ad9e"/>'
-    + '</g>'
-    + '<circle cx="84" cy="93" r="4.6" fill="#1d1a16"/><circle cx="132" cy="93" r="4.6" fill="#1d1a16"/>'
-    + '<ellipse cx="106" cy="112" rx="9" ry="6" fill="#1d1a16"/>'
-    + '</svg>');
 
   const symSVG = (id)=>'<svg class="lvSym" viewBox="0 0 100 100"><use href="#lvs-'+id+'"/></svg>';
 
@@ -14930,7 +14932,6 @@ restoreMinesState();
         h.innerHTML=SPRITE;
         document.body.appendChild(h);
       }
-      const r=el("lvRat"); if(r) r.style.backgroundImage="url('"+RAT+"')";
       await frame();
     });
     {
@@ -14963,16 +14964,21 @@ restoreMinesState();
     const c=(i/ROWS)|0, r=i%ROWS;
     return "left:"+(c*100/COLS)+"%;top:"+(r*100/ROWS)+"%;";
   };
-  /* one render pass. `fall` gives each cell a starting offset in whole rows so
-     the cascade reads as gravity; `reveal` swaps golden squares for their prize */
-  function render(grid, golden, fall, reveal){
+  /* One render pass. `fall` gives each cell a starting offset in whole rows and
+     `stagger` delays it by its column, so the board fills left to right the way
+     a real cascade machine does. `reveal` swaps golden squares for their prize. */
+  const COL_STEP = ()=> st.turbo ? 26 : 62;   // ms between columns
+  function render(grid, golden, fall, reveal, stagger){
     const b=el("lvBoard"); if(!b) return;
+    const step = stagger ? COL_STEP() : 0;
     let html="";
     for(let i=0;i<CELLS;i++){
-      const f = fall && fall[i] ? fall[i] : 0;
+      const col=(i/ROWS)|0;
+      const f = fall && fall[i] ? fall[i] : (stagger ? ROWS - (i%ROWS) : 0);
       const isGold = golden && golden[i];
       const rv = reveal && reveal.kind && reveal.kind[i];
-      let cls="lvCell"+(isGold?" lvGold":"")+(f?" lvDrop":"")+(rv?" lvReveal":"");
+      const drop = f > 0;
+      let cls="lvCell"+(isGold?" lvGold":"")+(drop?" lvDrop":"");
       let inner;
       if(rv){
         if(rv.kind==="coin"){
@@ -14986,10 +14992,28 @@ restoreMinesState();
       }else{
         inner = symSVG(ID[grid[i]]);
       }
-      html += '<div class="'+cls+'" style="'+cellStyle(i)+(f?"--fall:"+(-f*100)+"%;":"")+'">'+inner+'</div>';
+      const vars = (drop ? "--fall:"+(-f*110)+"%;" : "") + (step ? "--d:"+(col*step)+"ms;" : "");
+      html += '<div class="'+cls+'" style="'+cellStyle(i)+vars+'">'+inner+'</div>';
     }
     b.innerHTML=html;
   }
+  /* how long a staggered fill takes to finish its last column */
+  const fillTime = ()=> COL_STEP()*(COLS-1) + (st.turbo?200:360);
+
+  /* the whole board falls away, column by column, before a fresh spin lands */
+  async function dropOut(){
+    const nodes=cellNodes();
+    if(!nodes.length) return;
+    const step=COL_STEP();
+    for(let i=0;i<CELLS;i++){
+      const n=nodes[i]; if(!n) continue;
+      n.classList.remove("lvDrop");
+      n.style.setProperty("--d", (((i/ROWS)|0)*step)+"ms");
+      n.classList.add("lvFall");
+    }
+    await wait(step*(COLS-1) + (st.turbo?180:300));
+  }
+
   const cellNodes=()=> el("lvBoard") ? el("lvBoard").children : [];
 
   function chip(i, text, gold){
@@ -15008,11 +15032,15 @@ restoreMinesState();
   let shownWin=0;
   function setWin(v){ shownWin=v; const n=el("lvWinVal"); if(n) n.textContent=money(v); }
 
-  async function animateSpin(res){
+  async function animateSpin(res, opts){
+    opts = opts || {};
     const fast=st.turbo;
     let g = res.steps.length ? res.steps[0].grid : res.grid;
-    render(g, res.goldenStart, null, null);
-    await wait(fast?60:140);
+
+    // the previous board falls away first, then the new one drops in
+    if(opts.fresh !== false) await dropOut();
+    render(g, res.goldenStart, null, null, true);
+    await wait(fillTime());
 
     for(let i=0;i<res.steps.length;i++){
       const step=res.steps[i];
@@ -15029,19 +15057,19 @@ restoreMinesState();
 
       const next = (i+1<res.steps.length) ? res.steps[i+1].grid : res.grid;
       const fall = computeFall(step.grid, dead);
-      render(next, step.golden, fall, null);
+      render(next, step.golden, fall, null, true);
       sfx.drop(i);
-      await wait(fast?150:300);
+      await wait(fillTime());
     }
 
-    /* the rainbow sets off every golden square */
+    /* the rainbow sets off every golden square: the coins drop in left to right,
+       then the spin's take lands as a banner */
     if(res.reveal){
       sfx.rainbow();
-      render(res.grid, res.goldenEnd.map((v,i)=>res.reveal.kind[i]?1:v), null, res.reveal);
+      const goldMask = res.goldenEnd.map((v,i)=>res.reveal.kind[i]?1:v);
+      render(res.grid, goldMask, null, res.reveal, true);
+      await wait(fillTime());
       const nodes=cellNodes();
-      let d=0;
-      for(let i=0;i<CELLS;i++) if(res.reveal.kind[i] && nodes[i]){ nodes[i].style.animationDelay=(d*(fast?12:26))+"ms"; d++; }
-      await wait(fast?260:520);
       if(res.reveal.boosted.length){
         res.reveal.boosted.forEach(i=>{ if(nodes[i]) nodes[i].classList.add("lvHit"); });
         sfx.coin();
@@ -15053,9 +15081,19 @@ restoreMinesState();
         await wait(fast?220:460);
       }
       setWin(shownWin + res.collectWin*st.bet);
-      chip(12, "+"+money(res.collectWin*st.bet), true);
-      await wait(fast?260:600);
+      await banner(res.collectWin*st.bet);
     }
+  }
+
+  /* the collected total, thrown up over the board */
+  async function banner(amount){
+    const b=el("lvBanner"); if(!b || !(amount>0)) return;
+    b.innerHTML='<span>'+money(amount)+'</span>';
+    b.classList.add("lvOn");
+    sfx.coin();
+    await wait(st.turbo?520:1050);
+    b.classList.remove("lvOn");
+    b.innerHTML="";
   }
 
   /* ---------------- free spins ---------------- */
@@ -15155,7 +15193,9 @@ restoreMinesState();
 
   function syncBalance(){
     const b=el("lvBal"); if(b) b.textContent=money(Number((typeof meProfile!=="undefined"&&meProfile)?meProfile.pts:0)||0);
-    const t=el("lvTotalBet"); if(t) t.textContent=money(spinCost());
+    // with a FeatureSpins mode on, a spin costs a multiple of the bet — say so
+    const lbl=document.querySelector("#lvClient .lvBetCol em");
+    if(lbl) lbl.textContent = (st.hunt||st.rainbowSpins) ? ("TOTAL "+money(spinCost())) : "BET";
     const v=el("lvBetVal"); if(v && document.activeElement!==v) v.value=Number(st.bet).toFixed(2);
     const l=el("lvLastWin"); if(l) l.textContent=money(st.lastWin);
     document.querySelectorAll("#lvBuyGrid .lvBuyPrice").forEach(n=>{
