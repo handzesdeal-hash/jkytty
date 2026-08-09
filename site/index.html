@@ -4166,15 +4166,25 @@ input[type=number],
 #lvFx{position:absolute;left:22.844%;top:11.538%;width:54.104%;height:76.603%;
   pointer-events:none;z-index:7;overflow:visible;border-radius:0;}
 
+/* markers sit in their own layer under the symbols, so a square that has been
+   marked stays exactly where it is while everything falls through it */
+.lvMarkLayer{position:absolute;inset:0;z-index:0;pointer-events:none;}
+.lvCells{position:absolute;inset:0;z-index:1;}
+.lvMark{
+  position:absolute;width:16.6667%;height:20%;box-sizing:border-box;
+  background:linear-gradient(180deg,rgba(168,85,247,.38),rgba(91,33,182,.26));
+  box-shadow:inset 0 0 0 2px rgba(196,132,252,.85), inset 0 0 20px rgba(168,85,247,.4);
+  border-radius:5px;animation:lvMarkIn .3s cubic-bezier(.2,1.4,.4,1);
+}
+@keyframes lvMarkIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+
 .lvCell{
   position:absolute;width:16.6667%;height:20%;display:grid;place-items:center;
-  box-sizing:border-box;padding:1%;
+  box-sizing:border-box;padding:0;
 }
-.lvCell::before{content:"";position:absolute;inset:2px;border-radius:5px;pointer-events:none;}
-/* a square that took part in a win and is waiting for the rainbow */
-.lvCell.lvGold::before{background:linear-gradient(180deg,rgba(246,196,69,.34),rgba(181,126,20,.22));
-  box-shadow:inset 0 0 0 2px rgba(246,196,69,.8), inset 0 0 18px rgba(246,196,69,.3);}
-.lvSym{width:100%;height:100%;display:block;filter:drop-shadow(0 4px 5px rgba(0,0,0,.55));}
+.lvSym{width:106%;height:106%;display:block;filter:drop-shadow(0 4px 5px rgba(0,0,0,.55));}
+/* the slow one-at-a-time drop while a bonus trigger is still live */
+.lvCell.lvAnt .lvSym{filter:drop-shadow(0 0 12px rgba(255,214,106,.9)) drop-shadow(0 4px 5px rgba(0,0,0,.55));}
 
 /* Columns drop one after another, left to right — the delay is set per cell in
    JS as --d, and `backwards` keeps each one parked off-screen until its turn. */
@@ -14604,17 +14614,38 @@ restoreMinesState();
     return t.rows[0];
   }
 
+  /* One rainbow per board, never two. A second changes nothing — the collect
+     only asks whether any rainbow is present — so extras are re-rolled. Has to
+     run after every refill, not just the first fill. */
+  function capRain(g, picker){
+    let found=false;
+    for(let i=0;i<CELLS;i++){
+      if(g[i]!==S.RAIN) continue;
+      if(!found){ found=true; continue; }
+      let r; do { r=pick(picker); } while(r===S.RAIN);
+      g[i]=r;
+    }
+  }
+  /* Rainbow Spins promise a rainbow every spin, so put a real one on the board
+     instead of just flagging the collect. */
+  function forceRainbow(g){
+    for(let i=0;i<CELLS;i++) if(g[i]===S.RAIN) return;
+    let i, guard=0;
+    do { i=Math.floor(rnd()*CELLS); } while(g[i]===S.SCAT && guard++ < 60);
+    g[i]=S.RAIN;
+  }
+
   const MAX_WIN = 10000;
   const FS_FOR = { 3:"luck", 4:"glitter", 5:"treasure" };
   const FS_SPINS = { luck:12, glitter:12, treasure:8 };
   const FS_NAME = { luck:"LUCK OF THE BANDIT", glitter:"ALL THAT GLITTERS IS GOLD", treasure:"TREASURE AT THE END OF THE RAINBOW" };
   const FS_NOTE = {
-    luck:"Golden Squares stay on the board between spins until a Rainbow sets them off.",
-    glitter:"Golden Squares never switch off — every Rainbow pays a bigger board.",
-    treasure:"A Rainbow lands on every spin, Golden Squares never switch off, and bronze coins are gone.",
+    luck:"Marked Squares stay on the board between spins until a Rainbow sets them off.",
+    glitter:"Marked Squares never switch off — every Rainbow pays a bigger board.",
+    treasure:"A Rainbow lands on every spin, Marked Squares never switch off, and bronze coins are gone.",
   };
   const RETRIGGER = 5;
-  const BUY = { hunt:3.5, rainbow:6, luck:49, glitter:132 };
+  const BUY = { hunt:3.3, rainbow:5.1, luck:50, glitter:134 };
 
   /* ---------------- maths ---------------- */
   function findClusters(g){
@@ -14647,6 +14678,7 @@ restoreMinesState();
       for(let r=ROWS-1;r>=0;r--){ const i=c*ROWS+r; if(!dead[i]) keep.push(g[i]); }
       for(let r=ROWS-1,k=0;r>=0;r--,k++){ const i=c*ROWS+r; g[i]= k<keep.length?keep[k]:pick(p); }
     }
+    capRain(g, p);
   }
   /* how far each cell of the NEW grid fell, for the drop animation */
   function computeFall(oldGrid, deadSet){
@@ -14665,6 +14697,8 @@ restoreMinesState();
     const goldenStart = Array.from(golden);   // the feature carries these between spins
     const g = new Int8Array(CELLS);
     for(let i=0;i<CELLS;i++) g[i]=pick(picker);
+    capRain(g, picker);
+    if(opts.forceRain) forceRainbow(g);
 
     let scatters=0; const scatMask=new Uint8Array(CELLS);
     const countScat=()=>{ for(let i=0;i<CELLS;i++) if(g[i]===S.SCAT && !scatMask[i]){ scatMask[i]=1; scatters++; } };
@@ -14684,8 +14718,8 @@ restoreMinesState();
       countScat();
     }
 
-    let hasRain = opts.forceRain === true;
-    if(!hasRain) for(let i=0;i<CELLS;i++) if(g[i]===S.RAIN){ hasRain=true; break; }
+    let hasRain = false;
+    for(let i=0;i<CELLS;i++) if(g[i]===S.RAIN){ hasRain=true; break; }
 
     let collectWin=0, reveal=null;
     if(hasRain){
@@ -14954,31 +14988,80 @@ restoreMinesState();
   }
 
   /* ---------------- board ---------------- */
-  function buildBoard(){ const b=el("lvBoard"); if(b) b.innerHTML=""; }
+  /* The marker layer is separate from the cells so a re-render never touches it:
+     marked squares must sit still while symbols fall through them. */
+  function buildBoard(){
+    const b=el("lvBoard"); if(!b) return;
+    b.innerHTML = '<div class="lvMarkLayer" id="lvMarkLayer"></div><div class="lvCells" id="lvCells"></div>';
+  }
+  function renderMarks(mask){
+    const m=el("lvMarkLayer"); if(!m) return;
+    if(!mask){ m.innerHTML=""; return; }
+    let html="";
+    for(let i=0;i<CELLS;i++) if(mask[i]) html += '<div class="lvMark" style="'+cellStyle(i)+'"></div>';
+    m.innerHTML=html;
+  }
   function idleBoard(){
     const g=new Int8Array(CELLS);
     for(let i=0;i<CELLS;i++) g[i]=pick(P_BASE);
-    render(Array.from(g), null, null, null);
+    render(Array.from(g), null, null, null, null);
   }
   const cellStyle=(i)=>{
     const c=(i/ROWS)|0, r=i%ROWS;
     return "left:"+(c*100/COLS)+"%;top:"+(r*100/ROWS)+"%;";
   };
-  /* One render pass. `fall` gives each cell a starting offset in whole rows and
-     `stagger` delays it by its column, so the board fills left to right the way
-     a real cascade machine does. `reveal` swaps golden squares for their prize. */
-  const COL_STEP = ()=> st.turbo ? 26 : 62;   // ms between columns
-  function render(grid, golden, fall, reveal, stagger){
-    const b=el("lvBoard"); if(!b) return;
-    const step = stagger ? COL_STEP() : 0;
+  /* Timing for a fill. Normally a whole column lands at once and the columns go
+     left to right. But once two Photo Bonus symbols are already on the board a
+     third would trigger, so from the next column on the symbols drop one at a
+     time, top to bottom, before moving to the next column. */
+  const COL_STEP  = ()=> st.turbo ? 26 : 62;
+  const ANT_CELL  = ()=> st.turbo ? 42 : 95;
+  const ANT_GAP   = ()=> st.turbo ? 60 : 130;
+  const DROP_MS   = ()=> st.turbo ? 200 : 360;
+  function dropDelays(grid){
+    const step=COL_STEP(), cell=ANT_CELL(), gap=ANT_GAP();
+    const d=new Array(CELLS).fill(0), ant=new Array(CELLS).fill(false);
+    let scat=0, slow=false, t=0;
+    for(let c=0;c<COLS;c++){
+      for(let r=0;r<ROWS;r++){
+        const i=c*ROWS+r;
+        d[i]=t; ant[i]=slow;
+        if(slow) t+=cell;
+      }
+      t += slow ? gap : step;
+      for(let r=0;r<ROWS;r++) if(grid[c*ROWS+r]===S.SCAT) scat++;
+      if(scat>=2) slow=true;
+    }
+    return { d, ant, total: t + DROP_MS() };
+  }
+  /* the rainbow reveal: a wave running left to right, cell by cell */
+  function revealDelays(){
+    const cs = st.turbo ? 42 : 105, rs = st.turbo ? 16 : 44;
+    const d=new Array(CELLS).fill(0);
+    let max=0;
+    for(let i=0;i<CELLS;i++){
+      d[i] = ((i/ROWS)|0)*cs + (i%ROWS)*rs;
+      if(d[i]>max) max=d[i];
+    }
+    return { d, ant:new Array(CELLS).fill(false), total: max + DROP_MS() + 120 };
+  }
+
+  let lastFill = 0;
+  const fillTime = ()=> lastFill;
+
+  /* One render pass into the cell layer. `fall` gives a cell a starting offset in
+     whole rows; `timing` supplies its delay. Markers are drawn separately so they
+     never move. */
+  function render(grid, marks, fall, reveal, timing){
+    const b=el("lvCells"); if(!b) return;
+    renderMarks(marks);
+    lastFill = timing ? timing.total : 0;
     let html="";
     for(let i=0;i<CELLS;i++){
-      const col=(i/ROWS)|0;
-      const f = fall && fall[i] ? fall[i] : (stagger ? ROWS - (i%ROWS) : 0);
-      const isGold = golden && golden[i];
+      const f = fall && fall[i] ? fall[i] : (timing ? ROWS - (i%ROWS) : 0);
       const rv = reveal && reveal.kind && reveal.kind[i];
-      const drop = f > 0;
-      let cls="lvCell"+(isGold?" lvGold":"")+(drop?" lvDrop":"");
+      const drop = f > 0 && !!timing;
+      let cls="lvCell"+(drop?" lvDrop":"")+(timing && timing.ant[i]?" lvAnt":"");
       let inner;
       if(rv){
         if(rv.kind==="coin"){
@@ -14992,13 +15075,11 @@ restoreMinesState();
       }else{
         inner = symSVG(ID[grid[i]]);
       }
-      const vars = (drop ? "--fall:"+(-f*110)+"%;" : "") + (step ? "--d:"+(col*step)+"ms;" : "");
+      const vars = (drop ? "--fall:"+(-f*110)+"%;" : "") + (timing ? "--d:"+timing.d[i]+"ms;" : "");
       html += '<div class="'+cls+'" style="'+cellStyle(i)+vars+'">'+inner+'</div>';
     }
     b.innerHTML=html;
   }
-  /* how long a staggered fill takes to finish its last column */
-  const fillTime = ()=> COL_STEP()*(COLS-1) + (st.turbo?200:360);
 
   /* the whole board falls away, column by column, before a fresh spin lands */
   async function dropOut(){
@@ -15014,7 +15095,7 @@ restoreMinesState();
     await wait(step*(COLS-1) + (st.turbo?180:300));
   }
 
-  const cellNodes=()=> el("lvBoard") ? el("lvBoard").children : [];
+  const cellNodes=()=> el("lvCells") ? el("lvCells").children : [];
 
   function chip(i, text, gold){
     const fx=el("lvFx"); if(!fx) return;
@@ -15039,7 +15120,7 @@ restoreMinesState();
 
     // the previous board falls away first, then the new one drops in
     if(opts.fresh !== false) await dropOut();
-    render(g, res.goldenStart, null, null, true);
+    render(g, res.goldenStart, null, null, dropDelays(g));
     await wait(fillTime());
 
     for(let i=0;i<res.steps.length;i++){
@@ -15057,7 +15138,7 @@ restoreMinesState();
 
       const next = (i+1<res.steps.length) ? res.steps[i+1].grid : res.grid;
       const fall = computeFall(step.grid, dead);
-      render(next, step.golden, fall, null, true);
+      render(next, step.golden, fall, null, dropDelays(next));
       sfx.drop(i);
       await wait(fillTime());
     }
@@ -15067,7 +15148,7 @@ restoreMinesState();
     if(res.reveal){
       sfx.rainbow();
       const goldMask = res.goldenEnd.map((v,i)=>res.reveal.kind[i]?1:v);
-      render(res.grid, goldMask, null, res.reveal, true);
+      render(res.grid, goldMask, null, res.reveal, revealDelays());
       await wait(fillTime());
       const nodes=cellNodes();
       if(res.reveal.boosted.length){
@@ -15276,11 +15357,11 @@ restoreMinesState();
       { k:"hunt", toggle:true, name:"BONUSHUNT SPINS", vol:"Volatility: High",
         desc:"Every spin is about 3.6× more likely to land the bonus." },
       { k:"rainbow", toggle:true, name:"RAINBOW SPINS", vol:"Volatility: Medium",
-        desc:"Every spin guarantees a Rainbow, so any Golden Square pays out." },
+        desc:"Every spin guarantees a Rainbow, so any Marked Square pays out." },
       { k:"luck", name:"LUCK OF THE BANDIT", vol:"Volatility: Medium",
-        desc:"12 free spins. Golden Squares stay between spins." },
+        desc:"12 free spins. Marked Squares stay between spins." },
       { k:"glitter", name:"ALL THAT GLITTERS", vol:"Volatility: Medium",
-        desc:"12 free spins. Golden Squares never switch off." },
+        desc:"12 free spins. Marked Squares never switch off." },
     ];
     g.innerHTML=opts.map(o=>
       '<button class="lvBuyOpt'+(o.toggle?" lvBuyToggle":"")+'" data-buy="'+o.k+'" type="button">'
@@ -15323,7 +15404,7 @@ restoreMinesState();
       '<div class="sbPayRow"><svg class="sbPayIco" viewBox="0 0 100 100"><use href="#lvs-'+ID[s]+'"/></svg>'
       + '<div class="sbPayNums">'+sizes.map(n=>'<span>'+n+(n===15?"+":"")+' × <b>'+(clusterPay(s,n)).toFixed(2)+'</b></span>').join("")+'</div></div>').join("");
     const specials=[["wild","Wanted Wild","Stands in for every paying symbol. It never forms a cluster on its own."],
-                    ["rain","Rainbow","Sets off every Golden Square on the board, turning each into a coin, a clover or a pot."],
+                    ["rain","Rainbow","Sets off every Marked Square on the board, turning each into a coin, a clover or a pot."],
                     ["scat","Photo Bonus","3, 4 or 5 anywhere open Luck of the Bandit, All That Glitters or Treasure at the End of the Rainbow."]];
     box.innerHTML =
       '<div class="sbInfoSec"><h5>CLUSTER PAYS — × TOTAL BET</h5>'
@@ -15332,12 +15413,12 @@ restoreMinesState();
       + '<div class="sbInfoSec"><h5>SPECIAL SYMBOLS</h5><div class="sbPayGrid">'
       + specials.map(([k,n,d])=>'<div class="sbPayRow"><svg class="sbPayIco" viewBox="0 0 100 100"><use href="#lvs-'+k+'"/></svg><div class="sbPayNums"><span style="line-height:1.45"><b>'+n+'</b><br>'+d+'</span></div></div>').join("")
       + '</div></div>'
-      + '<div class="sbInfoSec"><h5>GOLDEN SQUARES</h5><div class="sbRules">'
-      + 'Golden Squares wait until a Rainbow lands. Then each one reveals a <b>coin</b> (1× to 1000× your bet), a <b>clover</b> that multiplies every coin next to it by ×2, ×3 or ×5, or a <b>pot of gold</b> that <b>doubles the whole haul</b>.'
+      + '<div class="sbInfoSec"><h5>MARKED SQUARES</h5><div class="sbRules">'
+      + 'Marked Squares wait until a Rainbow lands. Then each one reveals a <b>coin</b> (1× to 1000× your bet), a <b>clover</b> that multiplies every coin next to it by ×2, ×3 or ×5, or a <b>pot of gold</b> that <b>doubles the whole haul</b>.'
       + '</div></div>'
       + '<div class="sbInfoSec"><h5>THE THREE HEISTS</h5><div class="sbRules">'
-      + '<b>Luck of the Bandit</b> — 3 photos, 12 spins. Golden Squares stay between spins.<br>'
-      + '<b>All That Glitters Is Gold</b> — 4 photos, 12 spins. Golden Squares never switch off, so each Rainbow pays a bigger board.<br>'
+      + '<b>Luck of the Bandit</b> — 3 photos, 12 spins. Marked Squares stay between spins.<br>'
+      + '<b>All That Glitters Is Gold</b> — 4 photos, 12 spins. Marked Squares never switch off, so each Rainbow pays a bigger board.<br>'
       + '<b>Treasure at the End of the Rainbow</b> — 5 photos, 8 spins. A Rainbow every spin, squares never switch off, and bronze coins are gone.'
       + '</div></div>'
       + '<div class="sbInfoSec"><h5>THE NUMBERS</h5><div class="sbStatTable">'
@@ -15429,7 +15510,7 @@ restoreMinesState();
     S, PAYING, PAY_BASE, PAY_SCALE, SIZE_CURVE, W_BASE, W_FEAT, W_HUNT,
     COINS_BRONZE, COINS_SILVER, COINS_GOLD, FS_BRONZE, FS_SILVER, FS_GOLD, CLOVERS, POT_W,
     MAX_WIN, FS_SPINS, FS_FOR, BUY, COLS, ROWS, CELLS,
-    clusterPay, findClusters, playSpin, runFeature,
+    clusterPay, findClusters, playSpin, runFeature, dropDelays, revealDelays, capRain,
     P_BASE, P_FEAT, P_HUNT,
   };
 })();
