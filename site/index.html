@@ -4202,7 +4202,19 @@ input[type=number],
 .lvVal{
   position:absolute;z-index:3;left:50%;top:54%;transform:translate(-50%,-50%);
   font-family:"Bangers",Impact,sans-serif;font-size:clamp(12px,2.4vw,26px);letter-spacing:.02em;
-  color:#4a2f16;text-shadow:0 1px 0 rgba(255,255,255,.55);pointer-events:none;
+  color:#4a2f16;text-shadow:0 1px 0 rgba(255,255,255,.55);pointer-events:none;white-space:nowrap;
+}
+/* a value a clover has lifted reads green, so you can see what got multiplied */
+.lvVal.lvValUp{
+  color:#17862f;text-shadow:0 1px 0 rgba(255,255,255,.75), 0 0 12px rgba(46,204,90,.7);
+  animation:lvValUp .45s cubic-bezier(.2,1.6,.4,1);
+}
+@keyframes lvValUp{0%{transform:translate(-50%,-50%) scale(1)}45%{transform:translate(-50%,-50%) scale(1.55)}100%{transform:translate(-50%,-50%) scale(1)}}
+/* the x2 / x3 / x5 tag a clover throws at what it is lifting */
+.lvBoostTag{
+  position:absolute;z-index:9;transform:translate(-50%,-50%);pointer-events:none;
+  font-family:"Bangers",Impact,sans-serif;font-size:clamp(16px,2.6vw,30px);color:#eafff0;
+  text-shadow:0 2px 0 #1c6b2c, 0 0 16px rgba(78,220,120,.85);
 }
 
 /* the win banner that lands after the coins finish dropping */
@@ -14558,7 +14570,7 @@ restoreMinesState();
   const PAYING = [S.T10,S.J,S.Q,S.K,S.A,S.TRAP,S.CHEESE,S.BEER,S.HAT];
 
   const COLS = 6, ROWS = 5, CELLS = 30;
-  const PAY_SCALE = 6.67;
+  const PAY_SCALE = 6.39;
   const PAY_BASE = { [S.T10]:0.05, [S.J]:0.06, [S.Q]:0.07, [S.K]:0.09, [S.A]:0.11,
                      [S.TRAP]:0.18, [S.CHEESE]:0.26, [S.BEER]:0.38, [S.HAT]:0.60 };
   const SIZE_CURVE = { 5:1, 6:1.5, 7:2.1, 8:3, 9:4.2, 10:5.5, 11:7, 12:9, 13:11.5, 14:14 };
@@ -14645,7 +14657,7 @@ restoreMinesState();
     treasure:"A Rainbow lands on every spin, Marked Squares never switch off, and bronze coins are gone.",
   };
   const RETRIGGER = 5;
-  const BUY = { hunt:3.3, rainbow:5.1, luck:50, glitter:134 };
+  const BUY = { hunt:3.45, rainbow:5, luck:50, glitter:135 };
 
   /* ---------------- maths ---------------- */
   function findClusters(g){
@@ -14692,6 +14704,57 @@ restoreMinesState();
     return fall;
   }
 
+  function neighbours(i){
+    const c=(i/ROWS)|0, r=i%ROWS, out=[];
+    if(r>0) out.push(i-1);
+    if(r<ROWS-1) out.push(i+1);
+    if(c>0) out.push(i-ROWS);
+    if(c<COLS-1) out.push(i+ROWS);
+    return out;
+  }
+  const MAX_WAVES = 6;
+  /* Every marked square reveals a coin, a clover or a bag.
+     A clover multiplies each coin it touches — and a bag it touches too.
+     A bag SWEEPS every coin on the board into itself and pays that sum; the
+     squares those coins came from then refill and the whole thing runs again,
+     so a bag can be followed by another bag or clover. The first wave without a
+     bag ends it, which is what bounds the loop. */
+  function resolveCollect(mark, opts){
+    const active=new Uint8Array(CELLS);
+    for(let i=0;i<CELLS;i++) active[i]= mark[i]?1:0;
+    const waves=[]; let total=0;
+    for(let w=0; w<MAX_WAVES; w++){
+      let any=false;
+      for(let i=0;i<CELLS;i++) if(active[i]){ any=true; break; }
+      if(!any) break;
+      const kind=new Array(CELLS).fill(null);
+      for(let i=0;i<CELLS;i++) if(active[i]) kind[i]=drawReveal(opts.noBronze, opts.richCoins);
+      const base=new Float64Array(CELLS), val=new Float64Array(CELLS);
+      for(let i=0;i<CELLS;i++) if(kind[i] && kind[i].kind==="coin"){ base[i]=kind[i].v; val[i]=kind[i].v; }
+      const boosts=[];
+      for(let i=0;i<CELLS;i++){
+        if(!kind[i] || kind[i].kind!=="clover") continue;
+        for(const j of neighbours(i)) if(kind[j] && kind[j].kind==="coin"){ val[j]*=kind[i].v; boosts.push({from:i,to:j,mult:kind[i].v}); }
+      }
+      let coinSum=0; for(let i=0;i<CELLS;i++) coinSum+=val[i];
+      const bags=[];
+      for(let i=0;i<CELLS;i++){
+        if(!kind[i] || kind[i].kind!=="pot") continue;
+        let m=1;
+        for(const j of neighbours(i)) if(kind[j] && kind[j].kind==="clover"){ m*=kind[j].v; boosts.push({from:j,to:i,mult:kind[j].v}); }
+        bags.push({ at:i, mult:m, amount: coinSum*m });
+      }
+      const paid = bags.length ? bags.reduce((a,x)=>a+x.amount,0) : coinSum;
+      total += paid;
+      waves.push({ kind, base:Array.from(base), val:Array.from(val), boosts, bags, coinSum, paid, cells:Array.from(active) });
+      if(!bags.length) break;
+      const next=new Uint8Array(CELLS);
+      for(let i=0;i<CELLS;i++) if(kind[i] && kind[i].kind==="coin") next[i]=1;
+      active.set(next);
+    }
+    return { waves, total, bagCount: waves.reduce((a,x)=>a+x.bags.length,0) };
+  }
+
   function playSpin(picker, golden, opts){
     opts = opts || {};
     const goldenStart = Array.from(golden);   // the feature carries these between spins
@@ -14725,27 +14788,12 @@ restoreMinesState();
     if(hasRain){
       let gc=0; for(let i=0;i<CELLS;i++) if(golden[i]) gc++;
       if(gc>0){
-        const kind=new Array(CELLS).fill(null);
-        for(let i=0;i<CELLS;i++) if(golden[i]) kind[i]=drawReveal(opts.noBronze, opts.richCoins);
-        const base=new Float64Array(CELLS), val=new Float64Array(CELLS);
-        for(let i=0;i<CELLS;i++) if(kind[i] && kind[i].kind==="coin"){ base[i]=kind[i].v; val[i]=kind[i].v; }
-        const boosted=[];
-        for(let i=0;i<CELLS;i++){
-          if(!kind[i] || kind[i].kind!=="clover") continue;
-          const c=(i/ROWS)|0, r=i%ROWS;
-          const hit=(j)=>{ if(kind[j] && kind[j].kind==="coin"){ val[j]*=kind[i].v; boosted.push(j); } };
-          if(r>0) hit(i-1);
-          if(r<ROWS-1) hit(i+1);
-          if(c>0) hit(i-ROWS);
-          if(c<COLS-1) hit(i+ROWS);
-        }
-        let sum=0, pots=0;
-        for(let i=0;i<CELLS;i++){ sum+=val[i]; if(kind[i] && kind[i].kind==="pot") pots++; }
-        collectWin = sum * Math.pow(2, pots);
-        reveal = { kind, base:Array.from(base), val:Array.from(val), boosted, pots, sum, total:collectWin };
+        reveal = resolveCollect(golden, opts);
+        collectWin = reveal.total;
         if(!opts.keepGolden) golden.fill(0);
       }
     }
+
     return { grid: Array.from(g), steps, clusterWin, collectWin, hasRain, reveal, scatters,
              win: clusterWin + collectWin, goldenStart, goldenEnd: Array.from(golden) };
   }
@@ -14885,6 +14933,10 @@ restoreMinesState();
     drop(i){ beep(200+i*18,.07,"triangle",.04,150); },
     pop(n){ beep(420+Math.min(6,n)*70,.1,"square",.045); },
     coin(){ beep(1150,.07,"sine",.045,1650); },
+    land(i){ beep(150+i*22,.085,"triangle",.05,105+i*14); },
+    tick(){ beep(660,.05,"square",.035,520); },
+    boost(){ beep(720,.16,"triangle",.05,1180); },
+    bag(){ beep(190,.42,"sawtooth",.055,880); },
     rainbow(){ [0,110,220,330].forEach((d,i)=>setTimeout(()=>beep(520*Math.pow(1.22,i),.26,"triangle",.055),d)); },
     bonus(){ [0,140,280,430].forEach((d,i)=>setTimeout(()=>beep(430*Math.pow(1.26,i),.3,"triangle",.06),d)); },
     big(){ [0,90,180,300,430].forEach((d,i)=>setTimeout(()=>beep(380*Math.pow(1.2,i),.34,"sawtooth",.05),d)); },
@@ -15020,30 +15072,52 @@ restoreMinesState();
   const DROP_MS   = ()=> st.turbo ? 200 : 360;
   function dropDelays(grid){
     const step=COL_STEP(), cell=ANT_CELL(), gap=ANT_GAP();
-    const d=new Array(CELLS).fill(0), ant=new Array(CELLS).fill(false);
+    const d=new Array(CELLS).fill(0), ant=new Array(CELLS).fill(false), fall=new Array(CELLS).fill(0);
     let scat=0, slow=false, t=0;
     for(let c=0;c<COLS;c++){
-      for(let r=0;r<ROWS;r++){
-        const i=c*ROWS+r;
-        d[i]=t; ant[i]=slow;
-        if(slow) t+=cell;
+      if(slow){
+        // one symbol at a time, each falling the whole way from above the board.
+        // Bottom row lands first so the column stacks up the way gravity would.
+        for(let r=ROWS-1;r>=0;r--){
+          const i=c*ROWS+r;
+          d[i]=t; ant[i]=true; fall[i]=r+1;
+          t+=cell;
+        }
+        t+=gap;
+      }else{
+        // the whole column arrives as one block, so it reads as a single drop
+        for(let r=0;r<ROWS;r++){ const i=c*ROWS+r; d[i]=t; fall[i]=ROWS+1; }
+        t+=step;
       }
-      t += slow ? gap : step;
       for(let r=0;r<ROWS;r++) if(grid[c*ROWS+r]===S.SCAT) scat++;
       if(scat>=2) slow=true;
     }
-    return { d, ant, total: t + DROP_MS() };
+    return { d, ant, fall, total: t + DROP_MS() };
   }
-  /* the rainbow reveal: a wave running left to right, cell by cell */
-  function revealDelays(){
+  /* the collect wave: cell by cell, left to right */
+  function revealDelays(cells){
     const cs = st.turbo ? 42 : 105, rs = st.turbo ? 16 : 44;
-    const d=new Array(CELLS).fill(0);
+    const d=new Array(CELLS).fill(0), fall=new Array(CELLS).fill(0);
     let max=0;
     for(let i=0;i<CELLS;i++){
+      if(cells && !cells[i]) continue;
       d[i] = ((i/ROWS)|0)*cs + (i%ROWS)*rs;
+      fall[i] = (i%ROWS)+1;
       if(d[i]>max) max=d[i];
     }
-    return { d, ant:new Array(CELLS).fill(false), total: max + DROP_MS() + 120 };
+    return { d, ant:new Array(CELLS).fill(false), fall, total: max + DROP_MS() + 120 };
+  }
+  /* a tick as each column (or each symbol, when anticipating) lands */
+  function scheduleDropSounds(timing){
+    if(!st.sound || !timing) return;
+    const seen={};
+    for(let i=0;i<CELLS;i++){
+      const key = timing.ant[i] ? i : ((i/ROWS)|0);
+      if(seen[key]) continue;
+      seen[key]=1;
+      const t=timing.d[i]+DROP_MS()*0.72, ant=timing.ant[i];
+      setTimeout(()=>{ ant ? sfx.tick() : sfx.land(((i/ROWS)|0)); }, t);
+    }
   }
 
   let lastFill = 0;
@@ -15058,19 +15132,19 @@ restoreMinesState();
     lastFill = timing ? timing.total : 0;
     let html="";
     for(let i=0;i<CELLS;i++){
-      const f = fall && fall[i] ? fall[i] : (timing ? ROWS - (i%ROWS) : 0);
+      const f = (fall && fall[i]) ? fall[i] : (timing && timing.fall[i] ? timing.fall[i] : 0);
       const rv = reveal && reveal.kind && reveal.kind[i];
       const drop = f > 0 && !!timing;
       let cls="lvCell"+(drop?" lvDrop":"")+(timing && timing.ant[i]?" lvAnt":"");
       let inner;
       if(rv){
         if(rv.kind==="coin"){
-          const shown = reveal.val[i] || rv.v;
-          inner = symSVG("coin-"+tierOf(rv.v)) + '<span class="lvVal" data-i="'+i+'">'+shown+'</span>';
+          const shown = rv._val != null ? rv._val : rv.v;
+          inner = symSVG("coin-"+tierOf(shown)) + '<span class="lvVal'+(rv._up?" lvValUp":"")+'" data-i="'+i+'">'+shown+'</span>';
         }else if(rv.kind==="clover"){
           inner = symSVG("clover") + '<span class="lvVal">×'+rv.v+'</span>';
         }else{
-          inner = symSVG("pot") + '<span class="lvVal">×2</span>';
+          inner = symSVG("pot") + '<span class="lvVal'+(rv._bag?" lvValUp":"")+'">'+(rv._bag!=null?rv._bag:"BAG")+'</span>';
         }
       }else{
         inner = symSVG(ID[grid[i]]);
@@ -15143,27 +15217,121 @@ restoreMinesState();
       await wait(fillTime());
     }
 
-    /* the rainbow sets off every golden square: the coins drop in left to right,
-       then the spin's take lands as a banner */
+    /* the rainbow sets off every marked square */
     if(res.reveal){
       sfx.rainbow();
-      const goldMask = res.goldenEnd.map((v,i)=>res.reveal.kind[i]?1:v);
-      render(res.grid, goldMask, null, res.reveal, revealDelays());
+      await playCollect(res);
+    }
+  }
+
+  /* ---------------- the collect, wave by wave ---------------- */
+  function cellCentre(i){
+    const fx=el("lvFx"); if(!fx) return {x:0,y:0};
+    const r=fx.getBoundingClientRect();
+    const c=(i/ROWS)|0, w=i%ROWS;
+    return { x:(c+0.5)*r.width/COLS, y:(w+0.5)*r.height/ROWS };
+  }
+  /* a x2 / x3 / x5 tag thrown from a clover onto whatever it is lifting */
+  function flyBoost(from, to, mult){
+    const fx=el("lvFx"); if(!fx) return Promise.resolve();
+    const a=cellCentre(from), b=cellCentre(to);
+    const d=document.createElement("div");
+    d.className="lvBoostTag";
+    d.textContent="×"+mult;
+    d.style.left=a.x+"px"; d.style.top=a.y+"px";
+    fx.appendChild(d);
+    return d.animate([
+      { transform:"translate(-50%,-50%) scale(.5)", opacity:0 },
+      { transform:"translate(-50%,-50%) scale(1.25)", opacity:1, offset:.28 },
+      { transform:"translate("+(b.x-a.x)+"px,"+(b.y-a.y)+"px) translate(-50%,-50%) scale(.8)", opacity:0 },
+    ], { duration: st.turbo?260:520, easing:"cubic-bezier(.3,.9,.4,1)" })
+      .finished.catch(()=>{}).then(()=>d.remove());
+  }
+  /* coins pouring into the bag */
+  function flyCoinsToBag(cells, bagAt){
+    const fx=el("lvFx"); if(!fx || !cells.length) return Promise.resolve();
+    const t=cellCentre(bagAt);
+    return Promise.all(cells.map((i,k)=>{
+      const a=cellCentre(i);
+      const d=document.createElement("div");
+      d.className="sbFlyCoin";
+      d.style.left=a.x+"px"; d.style.top=a.y+"px";
+      fx.appendChild(d);
+      setTimeout(()=>sfx.coin(), k*(st.turbo?18:46));
+      return d.animate([
+        { transform:"translate(-50%,-50%) scale(1)", opacity:1 },
+        { transform:"translate("+(t.x-a.x)+"px,"+(t.y-a.y)+"px) translate(-50%,-50%) scale(.35)", opacity:.15 },
+      ], { duration: st.turbo?260:520, delay:k*(st.turbo?18:46), easing:"cubic-bezier(.5,0,.75,.4)", fill:"forwards" })
+        .finished.catch(()=>{}).then(()=>d.remove());
+    }));
+  }
+  function paintCoin(node, value, up){
+    if(!node) return;
+    const use=node.querySelector("use");
+    if(use) use.setAttribute("href", "#lvs-coin-"+tierOf(value));
+    const v=node.querySelector(".lvVal");
+    if(v){ v.textContent=value; if(up) v.classList.add("lvValUp"); }
+    node.classList.add("lvHit");
+    setTimeout(()=>node.classList.remove("lvHit"), 430);
+  }
+
+  async function playCollect(res){
+    const fast=st.turbo;
+    const base=shownWin;
+    const shown=new Array(CELLS).fill(null);
+    let running=0;
+
+    for(let w=0; w<res.reveal.waves.length; w++){
+      const wave=res.reveal.waves[w];
+      for(let i=0;i<CELLS;i++) if(wave.cells[i]) shown[i]=Object.assign({}, wave.kind[i], { _val: wave.base[i] });
+      const mask=shown.map(x=>x?1:0);
+      const timing=revealDelays(wave.cells);
+      render(res.grid, mask, null, { kind: shown }, timing);
+      scheduleDropSounds(timing);
       await wait(fillTime());
       const nodes=cellNodes();
-      if(res.reveal.boosted.length){
-        res.reveal.boosted.forEach(i=>{ if(nodes[i]) nodes[i].classList.add("lvHit"); });
-        sfx.coin();
-        await wait(fast?200:420);
+
+      // clovers lift what they touch, one at a time
+      for(const b of wave.boosts){
+        if(nodes[b.from]) nodes[b.from].classList.add("lvHit");
+        await flyBoost(b.from, b.to, b.mult);
+        const k=wave.kind[b.to];
+        if(k && k.kind==="coin"){
+          paintCoin(nodes[b.to], wave.val[b.to], true);
+          if(shown[b.to]) { shown[b.to]._val = wave.val[b.to]; shown[b.to]._up = true; }
+        }else if(nodes[b.to]) nodes[b.to].classList.add("lvHit");
+        sfx.boost();
+        await wait(fast?110:240);
+        if(nodes[b.from]) nodes[b.from].classList.remove("lvHit");
       }
-      if(res.reveal.pots){
-        for(let i=0;i<CELLS;i++) if(res.reveal.kind[i] && res.reveal.kind[i].kind==="pot" && nodes[i]) nodes[i].classList.add("lvHit");
-        sfx.big();
-        await wait(fast?220:460);
+
+      if(wave.bags.length){
+        const coins=[];
+        for(let i=0;i<CELLS;i++) if(wave.kind[i] && wave.kind[i].kind==="coin") coins.push(i);
+        for(const bag of wave.bags){
+          await flyCoinsToBag(coins, bag.at);
+          const n=nodes[bag.at];
+          if(n){
+            const v=n.querySelector(".lvVal");
+            if(v){ v.textContent=money(bag.amount*st.bet); v.classList.add("lvValUp"); }
+            n.classList.add("lvHit");
+          }
+          if(shown[bag.at]){ shown[bag.at]._bag = money(bag.amount*st.bet); shown[bag.at]._up = true; }
+          sfx.bag();
+          running += bag.amount;
+          setWin(base + running*st.bet);
+          await wait(fast?260:560);
+        }
+        // the swept coins are gone; their squares come back in the next wave
+        coins.forEach(i=>{ if(nodes[i]) nodes[i].classList.add("lvPop"); shown[i]=null; });
+        await wait(fast?150:320);
+      }else{
+        running += wave.coinSum;
+        setWin(base + running*st.bet);
       }
-      setWin(shownWin + res.collectWin*st.bet);
-      await banner(res.collectWin*st.bet);
+      if(w+1 < res.reveal.waves.length) await wait(fast?160:340);
     }
+    await banner(res.collectWin*st.bet);
   }
 
   /* the collected total, thrown up over the board */
@@ -15404,7 +15572,7 @@ restoreMinesState();
       '<div class="sbPayRow"><svg class="sbPayIco" viewBox="0 0 100 100"><use href="#lvs-'+ID[s]+'"/></svg>'
       + '<div class="sbPayNums">'+sizes.map(n=>'<span>'+n+(n===15?"+":"")+' × <b>'+(clusterPay(s,n)).toFixed(2)+'</b></span>').join("")+'</div></div>').join("");
     const specials=[["wild","Wanted Wild","Stands in for every paying symbol. It never forms a cluster on its own."],
-                    ["rain","Rainbow","Sets off every Marked Square on the board, turning each into a coin, a clover or a pot."],
+                    ["rain","Rainbow","Sets off every Marked Square on the board, turning each into a coin, a clover or a bag."],
                     ["scat","Photo Bonus","3, 4 or 5 anywhere open Luck of the Bandit, All That Glitters or Treasure at the End of the Rainbow."]];
     box.innerHTML =
       '<div class="sbInfoSec"><h5>CLUSTER PAYS — × TOTAL BET</h5>'
@@ -15414,7 +15582,9 @@ restoreMinesState();
       + specials.map(([k,n,d])=>'<div class="sbPayRow"><svg class="sbPayIco" viewBox="0 0 100 100"><use href="#lvs-'+k+'"/></svg><div class="sbPayNums"><span style="line-height:1.45"><b>'+n+'</b><br>'+d+'</span></div></div>').join("")
       + '</div></div>'
       + '<div class="sbInfoSec"><h5>MARKED SQUARES</h5><div class="sbRules">'
-      + 'Marked Squares wait until a Rainbow lands. Then each one reveals a <b>coin</b> (1× to 1000× your bet), a <b>clover</b> that multiplies every coin next to it by ×2, ×3 or ×5, or a <b>pot of gold</b> that <b>doubles the whole haul</b>.'
+      + 'Marked Squares wait until a Rainbow lands. Then each one reveals a <b>coin</b> worth 1× to 1000× your bet, a <b>clover</b>, or a <b>bag</b>.<br><br>'
+      + 'A <b>clover</b> lifts every coin it touches by ×2, ×3 or ×5 — the lifted value turns green, and a coin can climb from bronze to silver or gold.<br>'
+      + 'A <b>bag</b> sweeps every coin on the board into itself and pays the lot. The squares those coins came from then fill again, so a bag can be followed by another bag or clover. A clover touching a bag multiplies the whole sweep.'
       + '</div></div>'
       + '<div class="sbInfoSec"><h5>THE THREE HEISTS</h5><div class="sbRules">'
       + '<b>Luck of the Bandit</b> — 3 photos, 12 spins. Marked Squares stay between spins.<br>'
@@ -15422,7 +15592,7 @@ restoreMinesState();
       + '<b>Treasure at the End of the Rainbow</b> — 5 photos, 8 spins. A Rainbow every spin, squares never switch off, and bronze coins are gone.'
       + '</div></div>'
       + '<div class="sbInfoSec"><h5>THE NUMBERS</h5><div class="sbStatTable">'
-      + '<span>Return to player</span><b>96.27%</b>'
+      + '<span>Return to player</span><b>96.3%</b>'
       + '<span>Hit frequency</span><b>37.4%</b>'
       + '<span>Volatility</span><b>Medium</b>'
       + '<span>Bonus — 3 photos</span><b>1 in 345</b>'
