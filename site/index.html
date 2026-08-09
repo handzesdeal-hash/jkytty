@@ -4111,6 +4111,43 @@ input[type=number],
   .sbBalDot{display:none;}
 }
 
+/* ---------- shared autoplay picker + in-menu bet editing (both slots) ---------- */
+.spAutoBody{display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px 16px 18px;}
+.spAutoCount{display:flex;flex-direction:column;align-items:center;line-height:1;}
+.spAutoCount b{font-size:44px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;}
+.spAutoCount span{font-size:9.5px;font-weight:800;letter-spacing:.26em;color:var(--muted);margin-top:5px;}
+.spRange{
+  -webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:99px;outline:none;
+  background:linear-gradient(90deg,#a855f7 var(--fill,5%),rgba(255,255,255,.12) var(--fill,5%));
+}
+.spRange::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;cursor:pointer;
+  background:radial-gradient(circle at 40% 32%,#fff,#c4b5fd 45%,#7c3aed);box-shadow:0 3px 10px rgba(0,0,0,.5);
+}
+.spRange::-moz-range-thumb{width:20px;height:20px;border:none;border-radius:50%;cursor:pointer;
+  background:radial-gradient(circle at 40% 32%,#fff,#c4b5fd 45%,#7c3aed);}
+.spAutoPresets{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+.spAutoPresets button{
+  padding:6px 11px;border-radius:8px;cursor:pointer;font-size:11.5px;font-weight:800;
+  background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--text);transition:.15s;
+}
+.spAutoPresets button:hover{border-color:rgba(168,85,247,.5);}
+.spAutoPresets button.on{background:rgba(168,85,247,.26);border-color:rgba(168,85,247,.6);}
+.spAutoBet{display:flex;align-items:center;gap:9px;padding:7px 11px;border-radius:11px;
+  background:rgba(0,0,0,.3);border:1px solid var(--line);}
+.spAutoBet span{display:flex;flex-direction:column;align-items:center;line-height:1.1;min-width:74px;}
+.spAutoBet em{font-style:normal;font-size:8.5px;font-weight:800;letter-spacing:.18em;color:var(--muted);}
+.spAutoBet b{font-size:16px;color:var(--text);font-variant-numeric:tabular-nums;}
+.spStep{width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:17px;line-height:1;
+  background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--text);}
+.spStep:hover{background:rgba(168,85,247,.28);}
+.spBuyBet{margin:14px 14px 0;}
+.lvClient .spAutoBet,.lvClient .spStep{border-color:rgba(246,196,69,.28);}
+.lvClient .spAutoBet b,.lvClient .spStep{color:#ffe6a5;}
+.lvClient .spRange{background:linear-gradient(90deg,#f6c445 var(--fill,5%),rgba(255,255,255,.12) var(--fill,5%));}
+.lvClient .spRange::-webkit-slider-thumb{background:radial-gradient(circle at 40% 32%,#fff,#ffe08a 45%,#b57e14);}
+.lvClient .spAutoPresets button.on{background:rgba(246,196,69,.26);border-color:rgba(246,196,69,.6);}
+
 /* respect people who don't want motion: keep the game playable, drop the loops */
 @media(prefers-reduced-motion:reduce){
   .sbCell.sbIdle .sbSymWrap,.sbCell.sbWin .sbSymWrap,.sbSpin .sbSpinRing,
@@ -5075,6 +5112,11 @@ input[type=number],
           <div class="sbOverlay sbSheetOv" id="sbBuyMenu">
             <div class="sbSheet">
               <div class="sbSheetHd"><h4>Buy a feature</h4><button class="sbSheetX" id="sbBuyClose" type="button">✕</button></div>
+              <div class="spAutoBet spBuyBet">
+                <button class="spStep" id="sbBuyBetDown" type="button">−</button>
+                <span><em>BET</em><b class="mono" id="sbBuyBetVal">1.00</b></span>
+                <button class="spStep" id="sbBuyBetUp" type="button">+</button>
+              </div>
               <div class="sbBuyGrid">
                 <button class="sbBuyOpt" id="sbBuyNormal" type="button">
                   <span class="sbBuyName">BOUNTY SPINS</span>
@@ -5093,6 +5135,22 @@ input[type=number],
             </div>
           </div>
 
+          <div class="sbOverlay sbSheetOv" id="sbAutoMenu">
+            <div class="sbSheet">
+              <div class="sbSheetHd"><h4>Autoplay</h4><button class="sbSheetX" id="sbAutoClose" type="button">✕</button></div>
+              <div class="spAutoBody">
+                <div class="spAutoCount"><b class="mono" id="sbAutoNum">50</b><span>SPINS</span></div>
+                <input class="spRange" id="sbAutoRange" type="range" min="1" max="1000" step="1" value="50"/>
+                <div class="spAutoPresets" id="sbAutoPresets"></div>
+                <div class="spAutoBet">
+                  <button class="spStep" id="sbAutoBetDown" type="button">−</button>
+                  <span><em>BET</em><b class="mono" id="sbAutoBetVal">1.00</b></span>
+                  <button class="spStep" id="sbAutoBetUp" type="button">+</button>
+                </div>
+                <button class="sbBonusGo" id="sbAutoStart" type="button">START</button>
+              </div>
+            </div>
+          </div>
           <div class="sbOverlay sbSheetOv" id="sbInfoSheet">
             <div class="sbSheet sbSheetWide">
               <div class="sbSheetHd"><h4>Silver Bandit — paytable & rules</h4><button class="sbSheetX" id="sbInfoClose" type="button">✕</button></div>
@@ -5200,11 +5258,32 @@ input[type=number],
           <div class="sbOverlay sbSheetOv" id="lvBuyMenu">
             <div class="sbSheet sbSheetWide">
               <div class="sbSheetHd"><h4>Bonus buy</h4><button class="sbSheetX" id="lvBuyClose" type="button">✕</button></div>
+              <div class="spAutoBet spBuyBet">
+                <button class="spStep" id="lvBuyBetDown" type="button">−</button>
+                <span><em>BET</em><b class="mono" id="lvBuyBetVal">1.00</b></span>
+                <button class="spStep" id="lvBuyBetUp" type="button">+</button>
+              </div>
               <div class="lvBuyGrid" id="lvBuyGrid"></div>
               <div class="sbSheetNote">Every option is priced from its measured average return, so the RTP matches the base game.</div>
             </div>
           </div>
 
+          <div class="sbOverlay sbSheetOv" id="lvAutoMenu">
+            <div class="sbSheet">
+              <div class="sbSheetHd"><h4>Autoplay</h4><button class="sbSheetX" id="lvAutoClose" type="button">✕</button></div>
+              <div class="spAutoBody">
+                <div class="spAutoCount"><b class="mono" id="lvAutoNum">50</b><span>SPINS</span></div>
+                <input class="spRange" id="lvAutoRange" type="range" min="1" max="1000" step="1" value="50"/>
+                <div class="spAutoPresets" id="lvAutoPresets"></div>
+                <div class="spAutoBet">
+                  <button class="spStep" id="lvAutoBetDown" type="button">−</button>
+                  <span><em>BET</em><b class="mono" id="lvAutoBetVal">1.00</b></span>
+                  <button class="spStep" id="lvAutoBetUp" type="button">+</button>
+                </div>
+                <button class="sbBonusGo" id="lvAutoStart" type="button">START</button>
+              </div>
+            </div>
+          </div>
           <div class="sbOverlay sbSheetOv" id="lvInfoSheet">
             <div class="sbSheet sbSheetWide">
               <div class="sbSheetHd"><h4>Le Voleur — paytable & rules</h4><button class="sbSheetX" id="lvInfoClose" type="button">✕</button></div>
@@ -14131,6 +14210,7 @@ restoreMinesState();
     const n = el("sbWinVal"); if(n) n.textContent = money(v);
   }
   function syncBalance(){
+    try{ paintAutoMenu(); }catch(_){ }
     const b = el("sbBal");
     if(b) b.textContent = money(Number((typeof meProfile !== "undefined" && meProfile) ? meProfile.pts : 0) || 0);
     const tb = el("sbTotalBet"); if(tb) tb.textContent = money(totalStake());
@@ -14501,9 +14581,9 @@ restoreMinesState();
     const auto = el("sbAutoBtn");
     if(auto) auto.onclick = ()=>{
       if(st.auto > 0){ st.auto = 0; st.autoStop = true; updateAuto(); return; }
-      st.auto = 25; st.autoStop = false; updateAuto();
-      if(!st.busy) play("spin");
+      openAutoMenu();
     };
+    wireAuto();
     const snd = el("sbSoundBtn"); if(snd) snd.onclick = ()=>{ st.sound = !st.sound; setSoundIcon(); saveCfg(); };
     const full = el("sbFullBtn");
     if(full) full.onclick = ()=>{
@@ -14524,6 +14604,39 @@ restoreMinesState();
       clearTimeout(rz);
       rz = setTimeout(()=>{ if(st.loaded && !st.busy && isOpen()) paintGrid(spinGrid(STRIPS.base).grid, { idle:true }); }, 220);
     });
+  }
+
+  /* Same autoplay picker and in-menu bet controls as Le Voleur. */
+  let autoPick = 50;
+  function paintAutoMenu(){
+    const n=el("sbAutoNum"), r=el("sbAutoRange");
+    if(n) n.textContent=String(autoPick);
+    if(r){ r.value=String(autoPick); r.style.setProperty("--fill", ((autoPick-1)/999*100).toFixed(2)+"%"); }
+    const bv=el("sbAutoBetVal"); if(bv) bv.textContent=money(st.bet);
+    const bb=el("sbBuyBetVal"); if(bb) bb.textContent=money(st.bet);
+    document.querySelectorAll("#sbAutoPresets button").forEach(b=>b.classList.toggle("on", Number(b.dataset.n)===autoPick));
+  }
+  function openAutoMenu(){ paintAutoMenu(); el("sbAutoMenu").classList.add("sbOn"); }
+  function wireAuto(){
+    const box=el("sbAutoPresets");
+    if(box && !box.children.length){
+      box.innerHTML=[10,25,50,100,250,500,1000].map(n=>'<button type="button" data-n="'+n+'">'+n+'</button>').join("");
+      box.querySelectorAll("button").forEach(b=>b.onclick=()=>{ autoPick=Number(b.dataset.n); paintAutoMenu(); });
+    }
+    const r=el("sbAutoRange");
+    if(r) r.oninput=()=>{ autoPick=Math.max(1,Math.min(1000,Number(r.value)||1)); paintAutoMenu(); };
+    const x=el("sbAutoClose"); if(x) x.onclick=()=>el("sbAutoMenu").classList.remove("sbOn");
+    const ov=el("sbAutoMenu"); if(ov) ov.addEventListener("click",(e)=>{ if(e.target===ov) ov.classList.remove("sbOn"); });
+    const go=el("sbAutoStart");
+    if(go) go.onclick=()=>{
+      el("sbAutoMenu").classList.remove("sbOn");
+      st.auto=autoPick; st.autoStop=false; updateAuto();
+      if(!st.busy) play("spin");
+    };
+    const bind=(id,d)=>{ const b=el(id); if(b) b.onclick=()=>{ stepBet(d); paintAutoMenu(); }; };
+    bind("sbAutoBetDown",-1); bind("sbAutoBetUp",1);
+    bind("sbBuyBetDown",-1); bind("sbBuyBetUp",1);
+    paintAutoMenu();
   }
 
   loadCfg();
@@ -14579,7 +14692,7 @@ restoreMinesState();
   const PAYING = [S.T10,S.J,S.Q,S.K,S.A,S.TRAP,S.CHEESE,S.BEER,S.HAT];
 
   const COLS = 6, ROWS = 5, CELLS = 30;
-  const PAY_SCALE = 5.61;
+  const PAY_SCALE = 4.78;
   const PAY_BASE = { [S.T10]:0.05, [S.J]:0.06, [S.Q]:0.07, [S.K]:0.09, [S.A]:0.11,
                      [S.TRAP]:0.18, [S.CHEESE]:0.26, [S.BEER]:0.38, [S.HAT]:0.60 };
   const SIZE_CURVE = { 5:1, 6:1.5, 7:2.1, 8:3, 9:4.2, 10:5.5, 11:7, 12:9, 13:11.5, 14:14 };
@@ -14589,7 +14702,9 @@ restoreMinesState();
   const W_BASE = { [S.T10]:33, [S.J]:32.5, [S.Q]:32, [S.K]:31.5, [S.A]:31,
                    [S.TRAP]:8, [S.CHEESE]:7.5, [S.BEER]:7, [S.HAT]:6.5,
                    [S.WILD]:9, [S.SCAT]:1.15, [S.RAIN]:0.20 };
-  const W_FEAT = Object.assign({}, W_BASE, { [S.RAIN]:2.4, [S.SCAT]:0.55, [S.WILD]:3.0 });
+  /* Tuned so a bonus lands one rainbow about half the time, two on a good one
+     and three rarely, rather than the three-to-five it used to throw. */
+  const W_FEAT = Object.assign({}, W_BASE, { [S.RAIN]:0.9, [S.SCAT]:0.55, [S.WILD]:3.0 });
   const W_HUNT = Object.assign({}, W_BASE, { [S.SCAT]: 0.85*3.6 });
 
   function mkPick(w){ const syms=[],cum=[]; let t=0; for(const k in w){ t+=w[k]; syms.push(Number(k)); cum.push(t);} return {syms,cum,total:t}; }
@@ -14693,7 +14808,7 @@ restoreMinesState();
      is the brake, and with diagonal clovers it had to come down from 8. */
   /* Shorter than they look: each bonus starts with the marks from the spin
      that opened it, which is worth nearly as much as a few extra spins. */
-  const FS_SPINS = { luck:9, glitter:8, treasure:5 };
+  const FS_SPINS = { luck:12, glitter:11, treasure:6 };
   const FS_NAME = { luck:"LUCK OF THE BANDIT", glitter:"ALL THAT GLITTERS IS GOLD", treasure:"TREASURE AT THE END OF THE RAINBOW" };
   const FS_NOTE = {
     luck:"Marked Squares stay on the board between spins until a Rainbow sets them off.",
@@ -14701,7 +14816,7 @@ restoreMinesState();
     treasure:"A Rainbow lands on every spin, Marked Squares never switch off, and bronze coins are gone.",
   };
   const RETRIGGER = 5;
-  const BUY = { hunt:5.05, rainbow:7.3, luck:68.5, glitter:143.5 };
+  const BUY = { hunt:5.55, rainbow:7.45, luck:85, glitter:122 };
 
   /* ---------------- maths ---------------- */
   function findClusters(g){
@@ -15436,8 +15551,8 @@ restoreMinesState();
     for(let w=0; w<res.reveal.waves.length; w++){
       const wave=res.reveal.waves[w];
       for(let i=0;i<CELLS;i++) if(wave.cells[i]) shown[i]=Object.assign({}, wave.kind[i], { _val: wave.base[i], _hits: 0 });
-      // clovers that other clovers lifted are shown at their new value from the start
-      for(const cb of wave.cloverBoosts) if(shown[cb.at]){ shown[cb.at]._cv = cb.value; shown[cb.at].lifted = true; }
+      // a lifted clover still LANDS as an ordinary green one; it only changes when
+      // the clover beside it actually reaches over, in the loop below
       const mask=shown.map(x=>x?1:0);
       const timing=revealDelays(wave.cells);
       render(res.grid, mask, null, { kind: shown }, timing);
@@ -15629,6 +15744,7 @@ restoreMinesState();
   const settle=(stake,payout)=>{ try{ hzRecord("slots", stake, payout); }catch(_){ } };
 
   function syncBalance(){
+    try{ paintAutoMenu(); }catch(_){ }
     const b=el("lvBal"); if(b) b.textContent=money(Number((typeof meProfile!=="undefined"&&meProfile)?meProfile.pts:0)||0);
     // with a FeatureSpins mode on, a spin costs a multiple of the bet — say so
     const lbl=document.querySelector("#lvClient .lvBetCol em");
@@ -15721,9 +15837,9 @@ restoreMinesState();
       { k:"rainbow", toggle:true, name:"RAINBOW SPINS", vol:"Volatility: Medium",
         desc:"Every spin guarantees a Rainbow, so any Marked Square pays out." },
       { k:"luck", name:"LUCK OF THE BANDIT", vol:"Volatility: Medium",
-        desc:"12 free spins. Marked Squares stay between spins." },
+        desc:"12 free spins, opening on the board that triggered them." },
       { k:"glitter", name:"ALL THAT GLITTERS", vol:"Volatility: Medium",
-        desc:"12 free spins. Marked Squares never switch off." },
+        desc:"11 free spins. Marked Squares never switch off." },
     ];
     g.innerHTML=opts.map(o=>
       '<button class="lvBuyOpt'+(o.toggle?" lvBuyToggle":"")+'" data-buy="'+o.k+'" type="button">'
@@ -15781,9 +15897,9 @@ restoreMinesState();
       + 'A <b>bag</b> sweeps every coin on the board into itself and pays the lot. The squares those coins came from then fill again, so a bag can be followed by another bag or clover — and a clover landing beside a bag that has already collected multiplies everything it is holding.'
       + '</div></div>'
       + '<div class="sbInfoSec"><h5>THE THREE HEISTS</h5><div class="sbRules">'
-      + '<b>Luck of the Bandit</b> — 3 photos, 12 spins. Marked Squares stay between spins.<br>'
-      + '<b>All That Glitters Is Gold</b> — 4 photos, 12 spins. Marked Squares never switch off, so each Rainbow pays a bigger board.<br>'
-      + '<b>Treasure at the End of the Rainbow</b> — 5 photos, 8 spins. A Rainbow every spin, squares never switch off, and bronze coins are gone.'
+      + '<b>Luck of the Bandit</b> — 3 photos, 12 spins. Marked Squares stay between spins, and the board that opened the bonus carries in already marked.<br>'
+      + '<b>All That Glitters Is Gold</b> — 4 photos, 11 spins. Marked Squares never switch off, so each Rainbow pays a bigger board.<br>'
+      + '<b>Treasure at the End of the Rainbow</b> — 5 photos, 6 spins. A Rainbow every spin, squares never switch off, and bronze coins are gone.'
       + '</div></div>'
       + '<div class="sbInfoSec"><h5>THE NUMBERS</h5><div class="sbStatTable">'
       + '<span>Return to player</span><b>96.3%</b>'
@@ -15849,9 +15965,9 @@ restoreMinesState();
     const a=el("lvAutoBtn");
     if(a) a.onclick=()=>{
       if(st.auto>0){ st.auto=0; st.autoStop=true; updateAuto(); return; }
-      st.auto=25; st.autoStop=false; updateAuto();
-      if(!st.busy) play("spin");
+      openAutoMenu();
     };
+    wireAuto();
     const sd=el("lvSoundBtn"); if(sd) sd.onclick=()=>{ st.sound=!st.sound; setSoundIcon(); saveCfg(); };
     const f=el("lvFullBtn");
     if(f) f.onclick=()=>{ try{ document.fullscreenElement ? document.exitFullscreen() : el("lvClient").requestFullscreen(); }catch(_){ } };
@@ -15860,6 +15976,40 @@ restoreMinesState();
     const bb=el("lvBuyBtn"); if(bb) bb.onclick=()=>{ if(st.busy) return; syncBalance(); el("lvBuyMenu").classList.add("sbOn"); };
     const bc=el("lvBuyClose"); if(bc) bc.onclick=()=>el("lvBuyMenu").classList.remove("sbOn");
     [el("lvBuyMenu"), el("lvInfoSheet")].forEach(ov=>{ if(ov) ov.addEventListener("click",(e)=>{ if(e.target===ov) ov.classList.remove("sbOn"); }); });
+  }
+
+  /* Autoplay picker and the bet controls that live inside the menus. Kept in one
+     place so the buy sheet and the autoplay sheet always agree with the deck. */
+  let autoPick = 50;
+  function paintAutoMenu(){
+    const n=el("lvAutoNum"), r=el("lvAutoRange");
+    if(n) n.textContent=String(autoPick);
+    if(r){ r.value=String(autoPick); r.style.setProperty("--fill", ((autoPick-1)/999*100).toFixed(2)+"%"); }
+    const bv=el("lvAutoBetVal"); if(bv) bv.textContent=money(st.bet);
+    const bb=el("lvBuyBetVal"); if(bb) bb.textContent=money(st.bet);
+    document.querySelectorAll("#lvAutoPresets button").forEach(b=>b.classList.toggle("on", Number(b.dataset.n)===autoPick));
+  }
+  function openAutoMenu(){ paintAutoMenu(); el("lvAutoMenu").classList.add("sbOn"); }
+  function wireAuto(){
+    const box=el("lvAutoPresets");
+    if(box && !box.children.length){
+      box.innerHTML=[10,25,50,100,250,500,1000].map(n=>'<button type="button" data-n="'+n+'">'+n+'</button>').join("");
+      box.querySelectorAll("button").forEach(b=>b.onclick=()=>{ autoPick=Number(b.dataset.n); paintAutoMenu(); });
+    }
+    const r=el("lvAutoRange");
+    if(r) r.oninput=()=>{ autoPick=Math.max(1,Math.min(1000,Number(r.value)||1)); paintAutoMenu(); };
+    const x=el("lvAutoClose"); if(x) x.onclick=()=>el("lvAutoMenu").classList.remove("sbOn");
+    const ov=el("lvAutoMenu"); if(ov) ov.addEventListener("click",(e)=>{ if(e.target===ov) ov.classList.remove("sbOn"); });
+    const go=el("lvAutoStart");
+    if(go) go.onclick=()=>{
+      el("lvAutoMenu").classList.remove("sbOn");
+      st.auto=autoPick; st.autoStop=false; updateAuto();
+      if(!st.busy) play("spin");
+    };
+    const bind=(id,d)=>{ const b=el(id); if(b) b.onclick=()=>{ stepBet(d); paintAutoMenu(); }; };
+    bind("lvAutoBetDown",-1); bind("lvAutoBetUp",1);
+    bind("lvBuyBetDown",-1); bind("lvBuyBetUp",1);
+    paintAutoMenu();
   }
 
   loadCfg(); wire(); setSoundIcon();
