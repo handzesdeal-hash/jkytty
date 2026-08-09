@@ -14579,7 +14579,7 @@ restoreMinesState();
   const PAYING = [S.T10,S.J,S.Q,S.K,S.A,S.TRAP,S.CHEESE,S.BEER,S.HAT];
 
   const COLS = 6, ROWS = 5, CELLS = 30;
-  const PAY_SCALE = 5.97;
+  const PAY_SCALE = 5.61;
   const PAY_BASE = { [S.T10]:0.05, [S.J]:0.06, [S.Q]:0.07, [S.K]:0.09, [S.A]:0.11,
                      [S.TRAP]:0.18, [S.CHEESE]:0.26, [S.BEER]:0.38, [S.HAT]:0.60 };
   const SIZE_CURVE = { 5:1, 6:1.5, 7:2.1, 8:3, 9:4.2, 10:5.5, 11:7, 12:9, 13:11.5, 14:14 };
@@ -14608,31 +14608,41 @@ restoreMinesState();
   /* Rainbows are deliberately scarce, so collects are rarer. The 1x coin is
      pulled right down to compensate: fewer collects, each worth more, which
      keeps the collect the payoff instead of handing that role to the paytable. */
-  const COINS_BRONZE = [[1,2600],[2,2600],[3,900],[4,400]];
+  /* Clovers are common and they stack, so coins start small: most are 1x and
+     the clover is what makes them worth something. */
+  const COINS_BRONZE = [[1,20000],[2,2600],[3,900],[4,400]];
   const COINS_SILVER = [[5,260],[6,150],[10,70],[15,26],[20,12]];
   const COINS_GOLD   = [[30,6],[50,2.6],[100,0.9],[250,0.22],[500,0.07],[1000,0.02]];
   const FS_BRONZE = [[1,4000],[2,2200],[3,1100],[4,600]];
   const FS_SILVER = [[5,420],[6,260],[10,140],[15,60],[20,30]];
   const FS_GOLD   = [[30,14],[50,6],[100,2],[250,0.5],[500,0.15],[1000,0.05]];
   /* Clovers stack now, so their share of a reveal counts twice over. */
-  const CLOVERS = [[2,105],[3,42],[5,11]];
-  /* Glitter and Treasure fill nearly the whole board, so a clover there
-     reaches far more coins. They get their own thinner mix. */
-  const FS_CLOVERS = [[2,42],[3,17],[5,4.5]];
-  const POT_W = 55;
+  /* Clovers and bags are declared as a SHARE of the reveal, not as raw weights.
+     They used to sit in the same weight pool as the coins, so every time the coin
+     ladder was re-weighted their frequency moved with it — which is how clovers
+     silently fell to one every 414 spins. */
+  const CLOVER_SHARE = 0.070, BAG_SHARE = 0.006;
+  const CLOVER_MIX = [[2,0.68],[3,0.26],[5,0.06]];
+  /* Glitter and Treasure fill nearly the whole board, so one clover there reaches
+     far more coins. They get a thinner share. */
+  const FS_CLOVER_SHARE = 0.050;
   /* x5 beside x5 would be x25, and a coin between two of those x625. */
   const CLOVER_MAX = 10, SYM_MULT_MAX = 25;
   const tierOf = (v)=> v <= 4 ? "bronze" : v <= 20 ? "silver" : "gold";
 
-  function buildReveal(bronze, silver, gold, noBronze){
-    const rows = [];
-    const add = (kind,l)=>l.forEach(([v,w])=>rows.push({kind,v,w}));
+  function mkReveal(bronze, silver, gold, noBronze, cloverShare){
+    const rows=[];
+    const add=(kind,l)=>l.forEach(([v,w])=>rows.push({kind,v,w}));
     if(!noBronze) add("coin", bronze);
-    add("coin", silver); add("coin", gold); add("clover", bronze===FS_BRONZE ? FS_CLOVERS : CLOVERS);
-    rows.push({ kind:"pot", v:2, w:POT_W });
+    add("coin", silver); add("coin", gold);
+    let coinW=0; rows.forEach(r=>{ coinW+=r.w; });
+    const total = coinW / (1 - cloverShare - BAG_SHARE);
+    CLOVER_MIX.forEach(([v,part])=>rows.push({ kind:"clover", v, w: total*cloverShare*part }));
+    rows.push({ kind:"pot", v:2, w: total*BAG_SHARE });
     let t=0; rows.forEach(r=>{ t+=r.w; r.cum=t; });
     return { rows, total:t };
   }
+  const buildReveal = (b,si,g,nb)=> mkReveal(b,si,g,nb, b===FS_BRONZE ? FS_CLOVER_SHARE : CLOVER_SHARE);
   const RV = buildReveal(COINS_BRONZE,COINS_SILVER,COINS_GOLD,false);
   const RV_NB = buildReveal(COINS_BRONZE,COINS_SILVER,COINS_GOLD,true);
   const RV_FS = buildReveal(FS_BRONZE,FS_SILVER,FS_GOLD,false);
@@ -14681,7 +14691,9 @@ restoreMinesState();
   /* Treasure keeps every marked square and forces a rainbow, so its board is
      nearly full by the end and each extra spin pays a bigger sweep. Its length
      is the brake, and with diagonal clovers it had to come down from 8. */
-  const FS_SPINS = { luck:12, glitter:11, treasure:6 };
+  /* Shorter than they look: each bonus starts with the marks from the spin
+     that opened it, which is worth nearly as much as a few extra spins. */
+  const FS_SPINS = { luck:9, glitter:8, treasure:5 };
   const FS_NAME = { luck:"LUCK OF THE BANDIT", glitter:"ALL THAT GLITTERS IS GOLD", treasure:"TREASURE AT THE END OF THE RAINBOW" };
   const FS_NOTE = {
     luck:"Marked Squares stay on the board between spins until a Rainbow sets them off.",
@@ -14689,7 +14701,7 @@ restoreMinesState();
     treasure:"A Rainbow lands on every spin, Marked Squares never switch off, and bronze coins are gone.",
   };
   const RETRIGGER = 5;
-  const BUY = { hunt:4.25, rainbow:7.9, luck:47, glitter:91 };
+  const BUY = { hunt:5.05, rainbow:7.3, luck:68.5, glitter:143.5 };
 
   /* ---------------- maths ---------------- */
   function findClusters(g){
@@ -14906,8 +14918,11 @@ restoreMinesState();
              win: clusterWin + collectWin, goldenStart, goldenEnd: Array.from(golden) };
   }
 
-  function runFeature(mode, startSpins){
+  function runFeature(mode, startSpins, startGolden){
     const golden = new Uint8Array(CELLS);
+    // the board that opened the bonus keeps its marks: the trigger squares and
+    // anything else that won on that spin are already lit when it starts
+    if(startGolden) for(let i=0;i<CELLS;i++) if(startGolden[i]) golden[i]=1;
     const keepGolden = (mode==="glitter" || mode==="treasure");
     const opts = { keepGolden, forceRain: mode==="treasure", noBronze: mode==="treasure", richCoins:true };
     let left = startSpins != null ? startSpins : FS_SPINS[mode];
@@ -15253,7 +15268,9 @@ restoreMinesState();
     lastFill = timing ? timing.total : 0;
     let html="";
     for(let i=0;i<CELLS;i++){
-      const f = (fall && fall[i]) ? fall[i] : (timing && timing.fall[i] ? timing.fall[i] : 0);
+      // in a cascade the supplied fall distances are authoritative: a symbol that
+      // did not move must stay put rather than dropping again with the rest
+      const f = fall ? (fall[i] || 0) : (timing && timing.fall[i] ? timing.fall[i] : 0);
       const rv = reveal && reveal.kind && reveal.kind[i];
       const drop = f > 0 && !!timing;
       let cls="lvCell"+(drop?" lvDrop":"")+(timing && timing.ant[i]?" lvAnt":"");
@@ -15652,9 +15669,8 @@ restoreMinesState();
         const trig=playSpin(P_BASE, golden, { forceScatters: mode==="luck" ? 3 : 4 });
         await animateSpin(trig);
         totalX = trig.win;
-        trig.scatterCells = [];
         await wait(st.turbo?300:700);
-        totalX += await playFeature(runFeature(mode));
+        totalX += await playFeature(runFeature(mode, null, trig.goldenEnd));
       }else{
         const golden=new Uint8Array(CELLS);
         const res=playSpin(st.hunt?P_HUNT:P_BASE, golden, { forceRain: st.rainbowSpins });
@@ -15663,7 +15679,7 @@ restoreMinesState();
         if(res.scatters>=3){
           const m=FS_FOR[Math.min(5,res.scatters)];
           await wait(st.turbo?250:600);
-          totalX += await playFeature(runFeature(m));
+          totalX += await playFeature(runFeature(m, null, res.goldenEnd));
         }
       }
 
@@ -15856,8 +15872,9 @@ restoreMinesState();
      model they were measured from */
   window.__lvMath = {
     S, PAYING, PAY_BASE, PAY_SCALE, SIZE_CURVE, W_BASE, W_FEAT, W_HUNT,
-    COINS_BRONZE, COINS_SILVER, COINS_GOLD, FS_BRONZE, FS_SILVER, FS_GOLD, CLOVERS, POT_W,
-    MAX_WIN, FS_SPINS, FS_FOR, BUY, COLS, ROWS, CELLS, CLOVER_MAX, SYM_MULT_MAX, FS_CLOVERS,
+    COINS_BRONZE, COINS_SILVER, COINS_GOLD, FS_BRONZE, FS_SILVER, FS_GOLD,
+    CLOVER_SHARE, BAG_SHARE, CLOVER_MIX, FS_CLOVER_SHARE,
+    MAX_WIN, FS_SPINS, FS_FOR, BUY, COLS, ROWS, CELLS, CLOVER_MAX, SYM_MULT_MAX,
     clusterPay, findClusters, playSpin, runFeature, dropDelays, revealDelays, capRain,
     P_BASE, P_FEAT, P_HUNT,
   };
