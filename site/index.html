@@ -14570,7 +14570,7 @@ restoreMinesState();
   const PAYING = [S.T10,S.J,S.Q,S.K,S.A,S.TRAP,S.CHEESE,S.BEER,S.HAT];
 
   const COLS = 6, ROWS = 5, CELLS = 30;
-  const PAY_SCALE = 6.14;
+  const PAY_SCALE = 5.66;
   const PAY_BASE = { [S.T10]:0.05, [S.J]:0.06, [S.Q]:0.07, [S.K]:0.09, [S.A]:0.11,
                      [S.TRAP]:0.18, [S.CHEESE]:0.26, [S.BEER]:0.38, [S.HAT]:0.60 };
   const SIZE_CURVE = { 5:1, 6:1.5, 7:2.1, 8:3, 9:4.2, 10:5.5, 11:7, 12:9, 13:11.5, 14:14 };
@@ -14579,8 +14579,8 @@ restoreMinesState();
 
   const W_BASE = { [S.T10]:33, [S.J]:32.5, [S.Q]:32, [S.K]:31.5, [S.A]:31,
                    [S.TRAP]:8, [S.CHEESE]:7.5, [S.BEER]:7, [S.HAT]:6.5,
-                   [S.WILD]:9, [S.SCAT]:1.15, [S.RAIN]:0.30 };
-  const W_FEAT = Object.assign({}, W_BASE, { [S.RAIN]:3.4, [S.SCAT]:0.55, [S.WILD]:3.0 });
+                   [S.WILD]:9, [S.SCAT]:1.15, [S.RAIN]:0.20 };
+  const W_FEAT = Object.assign({}, W_BASE, { [S.RAIN]:2.4, [S.SCAT]:0.55, [S.WILD]:3.0 });
   const W_HUNT = Object.assign({}, W_BASE, { [S.SCAT]: 0.85*3.6 });
 
   function mkPick(w){ const syms=[],cum=[]; let t=0; for(const k in w){ t+=w[k]; syms.push(Number(k)); cum.push(t);} return {syms,cum,total:t}; }
@@ -14596,14 +14596,17 @@ restoreMinesState();
   function pick(p){ const r = rnd()*p.total; for(let i=0;i<p.cum.length;i++) if(r<=p.cum[i]) return p.syms[i]; return p.syms[p.syms.length-1]; }
 
   /* coin faces stay whole numbers; the weights carry the balance */
-  const COINS_BRONZE = [[1,10000],[2,2600],[3,900],[4,400]];
+  /* Rainbows are deliberately scarce, so collects are rarer. The 1x coin is
+     pulled right down to compensate: fewer collects, each worth more, which
+     keeps the collect the payoff instead of handing that role to the paytable. */
+  const COINS_BRONZE = [[1,2600],[2,2600],[3,900],[4,400]];
   const COINS_SILVER = [[5,260],[6,150],[10,70],[15,26],[20,12]];
   const COINS_GOLD   = [[30,6],[50,2.6],[100,0.9],[250,0.22],[500,0.07],[1000,0.02]];
   const FS_BRONZE = [[1,4000],[2,2200],[3,1100],[4,600]];
   const FS_SILVER = [[5,420],[6,260],[10,140],[15,60],[20,30]];
   const FS_GOLD   = [[30,14],[50,6],[100,2],[250,0.5],[500,0.15],[1000,0.05]];
   const CLOVERS = [[2,220],[3,90],[5,24]];
-  const POT_W = 40;
+  const POT_W = 55;
   const tierOf = (v)=> v <= 4 ? "bronze" : v <= 20 ? "silver" : "gold";
 
   function buildReveal(bronze, silver, gold, noBronze){
@@ -14640,6 +14643,17 @@ restoreMinesState();
   }
   /* Rainbow Spins promise a rainbow every spin, so put a real one on the board
      instead of just flagging the collect. */
+  /* A bought bonus opens on a real spin that lands the trigger, so the price
+     covers that spin's own win as well as the feature. */
+  function forceScatters(g, n){
+    const spots=[];
+    let have=0;
+    for(let i=0;i<CELLS;i++){ if(g[i]===S.SCAT) have++; else spots.push(i); }
+    for(let k=have;k<n && spots.length;k++){
+      const idx=Math.floor(rnd()*spots.length);
+      g[spots[idx]]=S.SCAT; spots.splice(idx,1);
+    }
+  }
   function forceRainbow(g){
     for(let i=0;i<CELLS;i++) if(g[i]===S.RAIN) return;
     let i, guard=0;
@@ -14660,7 +14674,7 @@ restoreMinesState();
     treasure:"A Rainbow lands on every spin, Marked Squares never switch off, and bronze coins are gone.",
   };
   const RETRIGGER = 5;
-  const BUY = { hunt:3.5, rainbow:5.15, luck:53.5, glitter:128 };
+  const BUY = { hunt:4.4, rainbow:8, luck:52.5, glitter:104 };
 
   /* ---------------- maths ---------------- */
   function findClusters(g){
@@ -14817,6 +14831,7 @@ restoreMinesState();
     const g = new Int8Array(CELLS);
     for(let i=0;i<CELLS;i++) g[i]=pick(picker);
     capRain(g, picker);
+    if(opts.forceScatters) forceScatters(g, opts.forceScatters);
     if(opts.forceRain) forceRainbow(g);
 
     let scatters=0; const scatMask=new Uint8Array(CELLS);
@@ -14836,6 +14851,12 @@ restoreMinesState();
       cascadeGrid(g, dead, picker);
       countScat();
     }
+
+    // the squares the trigger symbols landed on are marked too, so the board
+    // that opens the bonus already shows where it came from
+    let scatterCount=0;
+    for(let i=0;i<CELLS;i++) if(scatMask[i]) scatterCount++;
+    if(scatterCount>=3) for(let i=0;i<CELLS;i++) if(scatMask[i]) golden[i]=1;
 
     let hasRain = false;
     for(let i=0;i<CELLS;i++) if(g[i]===S.RAIN){ hasRain=true; break; }
@@ -14859,11 +14880,15 @@ restoreMinesState();
     const keepGolden = (mode==="glitter" || mode==="treasure");
     const opts = { keepGolden, forceRain: mode==="treasure", noBronze: mode==="treasure", richCoins:true };
     let left = startSpins != null ? startSpins : FS_SPINS[mode];
-    let total=0, played=0, retriggers=0;
+    let total=0, played=0, retriggers=0, sawRain=false;
     const steps=[];
     while(left>0 && total<MAX_WIN){
       left--; played++;
-      const s = playSpin(P_FEAT, golden, opts);
+      // a bonus always pays out at least once: if this is the last spin and no
+      // rainbow has landed, one is placed
+      const spinOpts = (!sawRain && left===0) ? Object.assign({}, opts, { forceRain:true }) : opts;
+      const s = playSpin(P_FEAT, golden, spinOpts);
+      if(s.hasRain) sawRain = true;
       total += s.win;
       let extra=0;
       if(s.scatters>=3){ extra=RETRIGGER; left+=extra; retriggers++; }
@@ -15547,7 +15572,14 @@ restoreMinesState();
 
       let totalX=0;
       if(mode==="luck" || mode==="glitter"){
-        totalX = await playFeature(runFeature(mode));
+        // show the spin that opens it, then the bonus you paid for
+        const golden=new Uint8Array(CELLS);
+        const trig=playSpin(P_BASE, golden, { forceScatters: mode==="luck" ? 3 : 4 });
+        await animateSpin(trig);
+        totalX = trig.win;
+        trig.scatterCells = [];
+        await wait(st.turbo?300:700);
+        totalX += await playFeature(runFeature(mode));
       }else{
         const golden=new Uint8Array(CELLS);
         const res=playSpin(st.hunt?P_HUNT:P_BASE, golden, { forceRain: st.rainbowSpins });
