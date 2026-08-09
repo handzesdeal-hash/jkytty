@@ -14692,7 +14692,7 @@ restoreMinesState();
   const PAYING = [S.T10,S.J,S.Q,S.K,S.A,S.TRAP,S.CHEESE,S.BEER,S.HAT];
 
   const COLS = 6, ROWS = 5, CELLS = 30;
-  const PAY_SCALE = 4.78;
+  const PAY_SCALE = 5.65;
   const PAY_BASE = { [S.T10]:0.05, [S.J]:0.06, [S.Q]:0.07, [S.K]:0.09, [S.A]:0.11,
                      [S.TRAP]:0.18, [S.CHEESE]:0.26, [S.BEER]:0.38, [S.HAT]:0.60 };
   const SIZE_CURVE = { 5:1, 6:1.5, 7:2.1, 8:3, 9:4.2, 10:5.5, 11:7, 12:9, 13:11.5, 14:14 };
@@ -14816,7 +14816,7 @@ restoreMinesState();
     treasure:"A Rainbow lands on every spin, Marked Squares never switch off, and bronze coins are gone.",
   };
   const RETRIGGER = 5;
-  const BUY = { hunt:5.55, rainbow:7.45, luck:85, glitter:122 };
+  const BUY = { hunt:5.2, rainbow:6.9, luck:79, glitter:114 };
 
   /* ---------------- maths ---------------- */
   function findClusters(g){
@@ -14976,8 +14976,14 @@ restoreMinesState();
                    boosts, relifts, bags, coinSum, paid, cells:Array.from(active), dealt:dealt.slice() });
 
       if(!bags.length) break;
+      // after a sweep everything is dealt again except the bags themselves, which
+      // stay on the board holding what they took
       const next=new Uint8Array(CELLS);
-      for(let i=0;i<CELLS;i++) if(board[i] && board[i].kind==="coin"){ next[i]=1; board[i]=null; }
+      for(let i=0;i<CELLS;i++){
+        if(!board[i]) continue;
+        if(board[i].kind==="pot") continue;
+        next[i]=1; board[i]=null;
+      }
       active.set(next);
     }
     return { waves, total, bagCount: waves.reduce((a,x)=>a+x.bags.length,0) };
@@ -15108,15 +15114,9 @@ restoreMinesState();
   + '<rect x="52" y="52" width="15" height="20" rx="2" fill="#fdf1cf" stroke="#0b0e14" stroke-width="2.5" transform="rotate(12 59 62)"/>'
   + '<path d="M59 58l3 5-3 5-3-5z" fill="#c0392b" transform="rotate(12 59 62)"/></symbol>'
   /* wanted poster wild */
+  /* the wanted poster is a supplied illustration rather than drawn SVG */
   + '<symbol id="lvs-wild" viewBox="0 0 100 100">'
-  + '<rect x="14" y="10" width="72" height="80" rx="3" fill="url(#lvgPaper)" stroke="#7a5f2e" stroke-width="4" transform="rotate(-3 50 50)"/>'
-  + '<g transform="rotate(-3 50 50)">'
-  + '<text x="50" y="30" text-anchor="middle" font-family="Bangers,Impact,sans-serif" font-size="17" fill="#4a2f16" letter-spacing="1">WANTED</text>'
-  + '<circle cx="50" cy="52" r="15" fill="#9a938a"/><path d="M35 52a15 15 0 0 1 30 0z" fill="#6f6862"/>'
-  + '<rect x="38" y="47" width="24" height="7" rx="3.5" fill="#2b2118"/>'
-  + '<circle cx="44" cy="50.5" r="2" fill="#fff"/><circle cx="56" cy="50.5" r="2" fill="#fff"/>'
-  + '<text x="50" y="82" text-anchor="middle" font-family="Bangers,Impact,sans-serif" font-size="13" fill="#4a2f16">WILD</text>'
-  + '</g></symbol>'
+  + '<image href="assets/lv-wild.png" x="-2" y="-2" width="104" height="104" preserveAspectRatio="xMidYMid meet"/></symbol>'
   /* polaroid bonus */
   + '<symbol id="lvs-scat" viewBox="0 0 100 100">'
   + '<rect x="14" y="24" width="72" height="48" rx="7" fill="#f5f1e6" stroke="#3a2412" stroke-width="4.5"/>'
@@ -15188,6 +15188,9 @@ restoreMinesState();
     boost(){ beep(720,.16,"triangle",.05,1180); },
     bag(){ beep(190,.42,"sawtooth",.055,880); },
     sweep(i){ beep(320-i*18,.09,"sine",.028,180); },
+    /* refills after a cluster clears: brighter and shorter than a fresh board,
+       so a cascade never sounds like a whole new spin */
+    refill(i){ beep(520+i*40,.07,"sine",.038,760+i*40); },
     rainbow(){ [0,110,220,330].forEach((d,i)=>setTimeout(()=>beep(520*Math.pow(1.22,i),.26,"triangle",.055),d)); },
     bonus(){ [0,140,280,430].forEach((d,i)=>setTimeout(()=>beep(430*Math.pow(1.26,i),.3,"triangle",.06),d)); },
     big(){ [0,90,180,300,430].forEach((d,i)=>setTimeout(()=>beep(380*Math.pow(1.2,i),.34,"sawtooth",.05),d)); },
@@ -15321,7 +15324,9 @@ restoreMinesState();
   const ANT_CELL  = ()=> st.turbo ? 42 : 95;
   const ANT_GAP   = ()=> st.turbo ? 60 : 130;
   const DROP_MS   = ()=> st.turbo ? 200 : 360;
-  function dropDelays(grid){
+  /* `plain` is used by cascades: they refill a few cells, so they must not
+     borrow the anticipation slow-drop (or its ticking) from a fresh spin. */
+  function dropDelays(grid, plain){
     const step=COL_STEP(), cell=ANT_CELL(), gap=ANT_GAP();
     const d=new Array(CELLS).fill(0), ant=new Array(CELLS).fill(false), fall=new Array(CELLS).fill(0);
     let scat=0, slow=false, t=0;
@@ -15340,8 +15345,10 @@ restoreMinesState();
         for(let r=0;r<ROWS;r++){ const i=c*ROWS+r; d[i]=t; fall[i]=ROWS+1; }
         t+=step;
       }
-      for(let r=0;r<ROWS;r++) if(grid[c*ROWS+r]===S.SCAT) scat++;
-      if(scat>=2) slow=true;
+      if(!plain){
+        for(let r=0;r<ROWS;r++) if(grid[c*ROWS+r]===S.SCAT) scat++;
+        if(scat>=2) slow=true;
+      }
     }
     return { d, ant, fall, total: t + DROP_MS() };
   }
@@ -15359,15 +15366,19 @@ restoreMinesState();
     return { d, ant:new Array(CELLS).fill(false), fall, total: max + DROP_MS() + 120 };
   }
   /* a tick as each column (or each symbol, when anticipating) lands */
-  function scheduleDropSounds(timing){
+  function scheduleDropSounds(timing, kind){
     if(!st.sound || !timing) return;
     const seen={};
     for(let i=0;i<CELLS;i++){
       const key = timing.ant[i] ? i : ((i/ROWS)|0);
       if(seen[key]) continue;
       seen[key]=1;
-      const t=timing.d[i]+DROP_MS()*0.72, ant=timing.ant[i];
-      setTimeout(()=>{ ant ? sfx.tick() : sfx.land(((i/ROWS)|0)); }, t);
+      const t=timing.d[i]+DROP_MS()*0.72, ant=timing.ant[i], col=((i/ROWS)|0);
+      setTimeout(()=>{
+        if(ant) sfx.tick();                     // one symbol at a time, bonus pending
+        else if(kind === "cascade") sfx.refill(col);
+        else sfx.land(col);
+      }, t);
     }
   }
 
@@ -15472,9 +15483,9 @@ restoreMinesState();
 
       const next = (i+1<res.steps.length) ? res.steps[i+1].grid : res.grid;
       const fall = computeFall(step.grid, dead);
-      const tc = dropDelays(next);
+      const tc = dropDelays(next, true);
       render(next, step.golden, fall, null, tc);
-      scheduleDropSounds(tc);
+      scheduleDropSounds(tc, "cascade");
       await wait(fillTime());
     }
 
