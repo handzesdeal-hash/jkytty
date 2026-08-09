@@ -14570,7 +14570,7 @@ restoreMinesState();
   const PAYING = [S.T10,S.J,S.Q,S.K,S.A,S.TRAP,S.CHEESE,S.BEER,S.HAT];
 
   const COLS = 6, ROWS = 5, CELLS = 30;
-  const PAY_SCALE = 6.39;
+  const PAY_SCALE = 6.14;
   const PAY_BASE = { [S.T10]:0.05, [S.J]:0.06, [S.Q]:0.07, [S.K]:0.09, [S.A]:0.11,
                      [S.TRAP]:0.18, [S.CHEESE]:0.26, [S.BEER]:0.38, [S.HAT]:0.60 };
   const SIZE_CURVE = { 5:1, 6:1.5, 7:2.1, 8:3, 9:4.2, 10:5.5, 11:7, 12:9, 13:11.5, 14:14 };
@@ -14649,7 +14649,10 @@ restoreMinesState();
 
   const MAX_WIN = 10000;
   const FS_FOR = { 3:"luck", 4:"glitter", 5:"treasure" };
-  const FS_SPINS = { luck:12, glitter:12, treasure:8 };
+  /* Treasure keeps every marked square and forces a rainbow, so its board is
+     nearly full by the end and each extra spin pays a bigger sweep. Its length
+     is the brake, and with diagonal clovers it had to come down from 8. */
+  const FS_SPINS = { luck:12, glitter:11, treasure:6 };
   const FS_NAME = { luck:"LUCK OF THE BANDIT", glitter:"ALL THAT GLITTERS IS GOLD", treasure:"TREASURE AT THE END OF THE RAINBOW" };
   const FS_NOTE = {
     luck:"Marked Squares stay on the board between spins until a Rainbow sets them off.",
@@ -14657,7 +14660,7 @@ restoreMinesState();
     treasure:"A Rainbow lands on every spin, Marked Squares never switch off, and bronze coins are gone.",
   };
   const RETRIGGER = 5;
-  const BUY = { hunt:3.45, rainbow:5, luck:50, glitter:135 };
+  const BUY = { hunt:3.5, rainbow:5.15, luck:53.5, glitter:128 };
 
   /* ---------------- maths ---------------- */
   function findClusters(g){
@@ -14712,44 +14715,97 @@ restoreMinesState();
     if(c<COLS-1) out.push(i+ROWS);
     return out;
   }
+  /* Clovers reach diagonally too. Clusters deliberately do not — those stay
+     orthogonal, which is what the paytable promises. */
+  function neighbours8(i){
+    const c=(i/ROWS)|0, r=i%ROWS, out=[];
+    for(let dc=-1;dc<=1;dc++) for(let dr=-1;dr<=1;dr++){
+      if(!dc && !dr) continue;
+      const nc=c+dc, nr=r+dr;
+      if(nc<0||nc>=COLS||nr<0||nr>=ROWS) continue;
+      out.push(nc*ROWS+nr);
+    }
+    return out;
+  }
   const MAX_WAVES = 6;
-  /* Every marked square reveals a coin, a clover or a bag.
-     A clover multiplies each coin it touches — and a bag it touches too.
-     A bag SWEEPS every coin on the board into itself and pays that sum; the
-     squares those coins came from then refill and the whole thing runs again,
-     so a bag can be followed by another bag or clover. The first wave without a
-     bag ends it, which is what bounds the loop. */
+  /* The collect runs in waves over a board that persists between them.
+     Coins live for one wave — paid or swept, then gone. Clovers and bags stay
+     put, which is what lets a clover dealt in a later wave reach a bag that has
+     already collected and multiply what it is holding. */
   function resolveCollect(mark, opts){
     const active=new Uint8Array(CELLS);
     for(let i=0;i<CELLS;i++) active[i]= mark[i]?1:0;
+    const board=new Array(CELLS).fill(null);
     const waves=[]; let total=0;
+
     for(let w=0; w<MAX_WAVES; w++){
       let any=false;
       for(let i=0;i<CELLS;i++) if(active[i]){ any=true; break; }
       if(!any) break;
-      const kind=new Array(CELLS).fill(null);
-      for(let i=0;i<CELLS;i++) if(active[i]) kind[i]=drawReveal(opts.noBronze, opts.richCoins);
-      const base=new Float64Array(CELLS), val=new Float64Array(CELLS);
-      for(let i=0;i<CELLS;i++) if(kind[i] && kind[i].kind==="coin"){ base[i]=kind[i].v; val[i]=kind[i].v; }
-      const boosts=[];
+
+      const dealt=[];
       for(let i=0;i<CELLS;i++){
-        if(!kind[i] || kind[i].kind!=="clover") continue;
-        for(const j of neighbours(i)) if(kind[j] && kind[j].kind==="coin"){ val[j]*=kind[i].v; boosts.push({from:i,to:j,mult:kind[i].v}); }
+        if(!active[i]) continue;
+        const d=drawReveal(opts.noBronze, opts.richCoins);
+        board[i]={ kind:d.kind, v:d.v, held:0, mult:1 };
+        dealt.push(i);
+      }
+
+      const val=new Float64Array(CELLS), base=new Float64Array(CELLS);
+      for(let i=0;i<CELLS;i++) if(board[i] && board[i].kind==="coin"){ base[i]=board[i].v; val[i]=board[i].v; }
+
+      /* A symbol takes the BEST clover beside it, not the product of all of
+         them. With diagonal reach on a nearly full board the product compounded
+         (a bag touching three clovers came to x30) and tripled the top bonus. */
+      const boosts=[];
+      const best=new Float64Array(CELLS), bestFrom=new Int16Array(CELLS).fill(-1);
+      for(let i=0;i<CELLS;i++){
+        if(!board[i] || board[i].kind!=="clover") continue;
+        for(const j of neighbours8(i)) if(board[j] && board[j].kind==="coin" && board[i].v > (best[j]||1)) best[j]=board[i].v;
+      }
+      for(let i=0;i<CELLS;i++){
+        if(!best[i]) continue;
+        for(let k=0;k<CELLS;k++) if(board[k] && board[k].kind==="clover" && board[k].v===best[i] && neighbours8(k).indexOf(i)>=0){ bestFrom[i]=k; break; }
+        val[i]*=best[i];
+        boosts.push({ from:bestFrom[i], to:i, mult:best[i], kind:"coin" });
       }
       let coinSum=0; for(let i=0;i<CELLS;i++) coinSum+=val[i];
-      const bags=[];
-      for(let i=0;i<CELLS;i++){
-        if(!kind[i] || kind[i].kind!=="pot") continue;
-        let m=1;
-        for(const j of neighbours(i)) if(kind[j] && kind[j].kind==="clover"){ m*=kind[j].v; boosts.push({from:j,to:i,mult:kind[j].v}); }
-        bags.push({ at:i, mult:m, amount: coinSum*m });
+
+      // a clover dealt now also lifts a bag that already collected
+      const relifts=[];
+      for(const i of dealt){
+        if(board[i].kind!=="clover") continue;
+        for(const j of neighbours8(i)){
+          if(!board[j] || board[j].kind!=="pot" || board[j].held<=0) continue;
+          const before=board[j].held;
+          board[j].held*=board[i].v;
+          const gain=board[j].held-before;
+          total+=gain;
+          relifts.push({ from:i, to:j, mult:board[i].v, gain, held:board[j].held });
+          boosts.push({ from:i, to:j, mult:board[i].v, kind:"bag" });
+        }
       }
+
+      const bags=[];
+      for(const i of dealt){
+        if(board[i].kind!=="pot") continue;
+        let m=1;
+        for(const j of neighbours8(i)) if(board[j] && board[j].kind==="clover" && board[j].v>m) m=board[j].v;
+        board[i].mult=m;
+        board[i].held=coinSum*m;
+        bags.push({ at:i, mult:m, amount:board[i].held });
+      }
+
       const paid = bags.length ? bags.reduce((a,x)=>a+x.amount,0) : coinSum;
       total += paid;
-      waves.push({ kind, base:Array.from(base), val:Array.from(val), boosts, bags, coinSum, paid, cells:Array.from(active) });
+
+      waves.push({ kind: board.map(x=>x?{kind:x.kind,v:x.v}:null),
+                   base:Array.from(base), val:Array.from(val),
+                   boosts, relifts, bags, coinSum, paid, cells:Array.from(active), dealt:dealt.slice() });
+
       if(!bags.length) break;
       const next=new Uint8Array(CELLS);
-      for(let i=0;i<CELLS;i++) if(kind[i] && kind[i].kind==="coin") next[i]=1;
+      for(let i=0;i<CELLS;i++) if(board[i] && board[i].kind==="coin"){ next[i]=1; board[i]=null; }
       active.set(next);
     }
     return { waves, total, bagCount: waves.reduce((a,x)=>a+x.bags.length,0) };
@@ -14937,6 +14993,7 @@ restoreMinesState();
     tick(){ beep(660,.05,"square",.035,520); },
     boost(){ beep(720,.16,"triangle",.05,1180); },
     bag(){ beep(190,.42,"sawtooth",.055,880); },
+    sweep(i){ beep(320-i*18,.09,"sine",.028,180); },
     rainbow(){ [0,110,220,330].forEach((d,i)=>setTimeout(()=>beep(520*Math.pow(1.22,i),.26,"triangle",.055),d)); },
     bonus(){ [0,140,280,430].forEach((d,i)=>setTimeout(()=>beep(430*Math.pow(1.26,i),.3,"triangle",.06),d)); },
     big(){ [0,90,180,300,430].forEach((d,i)=>setTimeout(()=>beep(380*Math.pow(1.2,i),.34,"sawtooth",.05),d)); },
@@ -15165,6 +15222,7 @@ restoreMinesState();
       n.classList.remove("lvDrop");
       n.style.setProperty("--d", (((i/ROWS)|0)*step)+"ms");
       n.classList.add("lvFall");
+      if(i%ROWS===0) setTimeout(()=>sfx.sweep(((i/ROWS)|0)), ((i/ROWS)|0)*step);
     }
     await wait(step*(COLS-1) + (st.turbo?180:300));
   }
@@ -15194,7 +15252,9 @@ restoreMinesState();
 
     // the previous board falls away first, then the new one drops in
     if(opts.fresh !== false) await dropOut();
-    render(g, res.goldenStart, null, null, dropDelays(g));
+    const t0=dropDelays(g);
+    render(g, res.goldenStart, null, null, t0);
+    scheduleDropSounds(t0);
     await wait(fillTime());
 
     for(let i=0;i<res.steps.length;i++){
@@ -15212,8 +15272,9 @@ restoreMinesState();
 
       const next = (i+1<res.steps.length) ? res.steps[i+1].grid : res.grid;
       const fall = computeFall(step.grid, dead);
-      render(next, step.golden, fall, null, dropDelays(next));
-      sfx.drop(i);
+      const tc = dropDelays(next);
+      render(next, step.golden, fall, null, tc);
+      scheduleDropSounds(tc);
       await wait(fillTime());
     }
 
@@ -15295,11 +15356,21 @@ restoreMinesState();
       for(const b of wave.boosts){
         if(nodes[b.from]) nodes[b.from].classList.add("lvHit");
         await flyBoost(b.from, b.to, b.mult);
-        const k=wave.kind[b.to];
-        if(k && k.kind==="coin"){
+        if(b.kind==="coin"){
           paintCoin(nodes[b.to], wave.val[b.to], true);
           if(shown[b.to]) { shown[b.to]._val = wave.val[b.to]; shown[b.to]._up = true; }
-        }else if(nodes[b.to]) nodes[b.to].classList.add("lvHit");
+        }else{
+          // a clover reaching a bag that already collected: repaint what it holds
+          const rl = wave.relifts.find(x=>x.from===b.from && x.to===b.to);
+          const n2 = nodes[b.to];
+          if(n2){
+            const v2=n2.querySelector(".lvVal");
+            if(v2 && rl){ v2.textContent=money(rl.held*st.bet); v2.classList.add("lvValUp"); }
+            n2.classList.add("lvHit");
+          }
+          if(rl && shown[b.to]){ shown[b.to]._bag = money(rl.held*st.bet); shown[b.to]._up = true; }
+          if(rl){ running += rl.gain; setWin(base + running*st.bet); }
+        }
         sfx.boost();
         await wait(fast?110:240);
         if(nodes[b.from]) nodes[b.from].classList.remove("lvHit");
@@ -15583,8 +15654,8 @@ restoreMinesState();
       + '</div></div>'
       + '<div class="sbInfoSec"><h5>MARKED SQUARES</h5><div class="sbRules">'
       + 'Marked Squares wait until a Rainbow lands. Then each one reveals a <b>coin</b> worth 1× to 1000× your bet, a <b>clover</b>, or a <b>bag</b>.<br><br>'
-      + 'A <b>clover</b> lifts every coin it touches by ×2, ×3 or ×5 — the lifted value turns green, and a coin can climb from bronze to silver or gold.<br>'
-      + 'A <b>bag</b> sweeps every coin on the board into itself and pays the lot. The squares those coins came from then fill again, so a bag can be followed by another bag or clover. A clover touching a bag multiplies the whole sweep.'
+      + 'A <b>clover</b> lifts every coin around it, diagonals included, by ×2, ×3 or ×5. The lifted value turns green, and a coin can climb from bronze to silver or gold. Where two clovers reach the same symbol, the higher one wins.<br>'
+      + 'A <b>bag</b> sweeps every coin on the board into itself and pays the lot. The squares those coins came from then fill again, so a bag can be followed by another bag or clover — and a clover landing beside a bag that has already collected multiplies everything it is holding.'
       + '</div></div>'
       + '<div class="sbInfoSec"><h5>THE THREE HEISTS</h5><div class="sbRules">'
       + '<b>Luck of the Bandit</b> — 3 photos, 12 spins. Marked Squares stay between spins.<br>'
