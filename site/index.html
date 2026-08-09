@@ -32,7 +32,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <!-- three roles, not one face everywhere:
      Inter = body/UI · Space Grotesk = headings & titles · JetBrains Mono = numbers -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700;800&family=Bangers&display=swap" rel="stylesheet"/>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"HANDZES.BET","logo":"./assets/hz-logo.png"}</script>
 <style id="hzTheme">
 :root{
@@ -4116,6 +4116,168 @@ input[type=number],
   .sbCell.sbIdle .sbSymWrap,.sbCell.sbWin .sbSymWrap,.sbSpin .sbSpinRing,
   .sbPlayBtn,.sbCardCoin,.sbLoadLogoLine{animation:none !important;}
 }
+
+/* ============================================================
+   3.1 — SLOTS: LE VOLEUR (6x5 cluster pays)
+   A warm cartoon alley instead of the silver/purple cabinet. The board is a
+   plain absolutely-positioned 6x5 grid: cascades animate by giving each cell a
+   starting translateY of however many rows it fell, then releasing it.
+   ============================================================ */
+#view-slots{
+  --lv-paper:#f2e2bd; --lv-ink:#3a2412; --lv-ink2:#6b4a24;
+  --lv-brick:#5d4632; --lv-brick2:#3a2a1e;
+  --lv-gold:#f6c445; --lv-goldDeep:#b57e14;
+  --lv-green:#4ea24a;
+}
+.sbPillMed{background:rgba(78,162,74,.16);border-color:rgba(78,162,74,.4);color:#86d982;}
+
+/* ---------- lobby card ---------- */
+.lvCardArt{background:linear-gradient(180deg,#8a6d4a 0%,#4c3826 55%,#231a12 100%);}
+.lvCardSky{position:absolute;inset:0;background:radial-gradient(70% 60% at 22% 10%, rgba(255,214,150,.5), transparent 62%);}
+.lvCardWall{position:absolute;inset:0;opacity:.35;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 2px,transparent 2px 22px),
+             repeating-linear-gradient(90deg,rgba(0,0,0,.18) 0 2px,transparent 2px 44px);}
+.lvCardLamp{position:absolute;left:12%;top:-6%;width:54px;height:54px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,214,140,.85),rgba(255,190,90,0) 68%);}
+.lvCardMark{position:absolute;left:0;right:0;top:44%;transform:translateY(-50%);text-align:center;
+  font-family:"Bangers",Impact,sans-serif;font-size:34px;letter-spacing:.06em;color:#f7e3b6;
+  text-shadow:0 3px 0 #4a2f16, 0 6px 16px rgba(0,0,0,.6);}
+.lvCardRat{position:absolute;right:8%;bottom:0;width:74px;height:78px;
+  background:radial-gradient(closest-side,#8d8377 68%,transparent 70%);opacity:.85;
+  clip-path:polygon(20% 100%,0 62%,14% 30%,34% 12%,62% 8%,86% 26%,96% 56%,84% 100%);}
+.lvCard:hover .lvCardMark{transform:translateY(-52%);transition:.25s;}
+
+/* ---------- stage: the alley ---------- */
+.lvStage{
+  background:
+    radial-gradient(110% 70% at 50% -8%, rgba(255,214,150,.20), transparent 58%),
+    linear-gradient(180deg,#6b5238 0%,#4a3728 44%,#2b1f18 100%);
+}
+.lvAlley{position:absolute;inset:0;pointer-events:none;opacity:.30;border-radius:12px;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.20) 0 2px,transparent 2px 30px),
+             repeating-linear-gradient(90deg,rgba(0,0,0,.16) 0 2px,transparent 2px 62px);}
+.lvGame{position:relative;z-index:1;}
+.lvRat{position:absolute;right:1%;bottom:0;width:min(210px,20%);height:76%;pointer-events:none;z-index:2;
+  background-repeat:no-repeat;background-position:bottom right;background-size:contain;opacity:.96;
+  filter:drop-shadow(0 10px 22px rgba(0,0,0,.5));}
+@media(max-width:1100px){ .lvRat{display:none;} }
+
+/* A 6x5 board is 0.83 tall per unit of width, so width has to be capped against
+   the viewport height or the control deck drops off the bottom of the screen. */
+.lvCab{position:relative;z-index:3;max-width:min(720px,66vh);margin:0 auto;padding:6px 10px 10px;}
+.lvTitle{
+  text-align:center;font-family:"Bangers",Impact,sans-serif;font-size:clamp(30px,4.4vw,46px);
+  letter-spacing:.05em;color:#f4dca8;line-height:1;margin-bottom:6px;
+  text-shadow:0 3px 0 #4a2f16, 0 8px 18px rgba(0,0,0,.55);
+}
+.lvBoardFrame{
+  position:relative;border-radius:10px;padding:8px;
+  background:linear-gradient(180deg,#7b6042,#4b3826);
+  box-shadow:inset 0 0 0 3px #c8a86c, inset 0 0 0 6px #6b4f30, 0 18px 44px rgba(0,0,0,.5);
+}
+.lvBoard{position:relative;width:100%;aspect-ratio:6/5;background:rgba(24,15,8,.72);border-radius:5px;overflow:hidden;}
+
+.lvCell{
+  position:absolute;width:16.6667%;height:20%;display:grid;place-items:center;
+  box-sizing:border-box;padding:3%;
+}
+.lvCell::before{content:"";position:absolute;inset:1px;border-radius:4px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.045);pointer-events:none;}
+/* a square that took part in a win and is waiting for the rainbow */
+.lvCell.lvGold::before{background:linear-gradient(180deg,rgba(246,196,69,.30),rgba(181,126,20,.20));
+  box-shadow:inset 0 0 0 2px rgba(246,196,69,.75), inset 0 0 16px rgba(246,196,69,.28);}
+.lvSym{width:88%;height:88%;display:block;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5));}
+.lvCell.lvDrop{animation:lvDrop .3s cubic-bezier(.3,1.5,.5,1);}
+@keyframes lvDrop{from{transform:translateY(var(--fall,-100%))}to{transform:translateY(0)}}
+.lvCell.lvHit .lvSym{animation:lvHit .42s ease-in-out;}
+@keyframes lvHit{0%{transform:scale(1)}35%{transform:scale(1.22) rotate(-6deg)}70%{transform:scale(1.1) rotate(5deg)}100%{transform:scale(1)}}
+.lvCell.lvPop .lvSym{animation:lvPop .26s ease-in forwards;}
+@keyframes lvPop{to{transform:scale(.1) rotate(90deg);opacity:0}}
+.lvCell.lvDim .lvSym{filter:grayscale(.75) brightness(.55);}
+
+/* coin / clover / pot revealed on a golden square */
+.lvVal{
+  position:absolute;z-index:3;left:50%;top:53%;transform:translate(-50%,-50%);
+  font-family:"Bangers",Impact,sans-serif;font-size:clamp(11px,2.1vw,20px);letter-spacing:.02em;
+  color:#4a2f16;text-shadow:0 1px 0 rgba(255,255,255,.5);pointer-events:none;
+}
+.lvCell.lvReveal{animation:lvReveal .38s cubic-bezier(.2,1.5,.4,1);}
+@keyframes lvReveal{from{transform:scale(.3) rotate(-30deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+
+/* ---------- HUD ---------- */
+.lvHud{display:flex;align-items:center;gap:10px;margin-top:9px;justify-content:space-between;}
+.lvFsPanel{display:none;align-items:center;gap:12px;padding:6px 13px;border-radius:9px;
+  background:linear-gradient(180deg,rgba(246,196,69,.26),rgba(181,126,20,.18));
+  border:1px solid rgba(246,196,69,.5);}
+.lvFsPanel.lvOn{display:flex;}
+.lvFsName{font-family:"Bangers",Impact,sans-serif;font-size:14px;letter-spacing:.06em;color:#ffe6a5;}
+.lvFsLeft{font-size:11px;font-weight:800;letter-spacing:.1em;color:#f0d9a8;}
+.lvFsLeft b{font-family:var(--mono);font-size:15px;color:#fff;margin-left:4px;}
+.lvWin{margin-left:auto;display:flex;align-items:center;gap:9px;padding:6px 14px;border-radius:9px;
+  background:rgba(20,12,6,.55);border:1px solid rgba(246,196,69,.28);}
+.lvWin span{font-size:9.5px;font-weight:800;letter-spacing:.2em;color:#c9ac7c;}
+.lvWin b{font-size:19px;color:#ffe6a5;font-variant-numeric:tabular-nums;}
+
+/* ---------- controls ---------- */
+.lvBottom{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px;flex-wrap:wrap;}
+.lvSpin{
+  position:relative;width:80px;height:80px;border-radius:50%;cursor:pointer;border:none;display:grid;place-items:center;
+  background:radial-gradient(circle at 50% 32%,#ffd977,#e8a72a 55%,#9c6a10 100%);color:#3a2412;
+  box-shadow:0 10px 26px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.55), inset 0 -6px 12px rgba(0,0,0,.28);
+  transition:transform .14s cubic-bezier(.2,.9,.3,1),filter .16s;
+}
+.lvSpin:hover:not(:disabled){transform:scale(1.05);filter:brightness(1.07);}
+.lvSpin:active:not(:disabled){transform:scale(.95);}
+.lvSpin:disabled{cursor:not-allowed;filter:grayscale(.5) brightness(.72);}
+.lvSpinIco svg{width:34px;height:34px;}
+.lvSpin.lvBusy .lvSpinIco{animation:sbSpinIco .9s linear infinite;}
+.lvBuyBtn{background:linear-gradient(180deg,rgba(246,196,69,.3),rgba(181,126,20,.2));
+  border-color:rgba(246,196,69,.5);color:#ffe6a5;}
+.lvClient .sbBetBox,.lvClient .sbMini{background:rgba(20,12,6,.5);border-color:rgba(246,196,69,.24);color:#f0d9a8;}
+.lvClient .sbBetLbl,.lvClient .sbBalStrip{color:#c9ac7c;}
+.lvClient .sbBalStrip b{color:#ffe6a5;}
+.lvClient .sbStep{background:rgba(255,255,255,.09);border-color:rgba(246,196,69,.28);color:#ffe6a5;}
+.lvClient .sbMini.sbOn{background:rgba(78,162,74,.24);border-color:rgba(78,162,74,.55);color:#bff0bb;}
+
+/* ---------- loader + overlays ---------- */
+.lvLoader{background:radial-gradient(80% 70% at 50% 26%, rgba(255,214,150,.14), transparent 62%), #241a12;}
+.lvLoadLogo{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.lvLoadLogo span{font-family:"Bangers",Impact,sans-serif;font-size:44px;letter-spacing:.05em;color:#f4dca8;
+  text-shadow:0 3px 0 #4a2f16,0 8px 20px rgba(0,0,0,.6);line-height:1;}
+.lvLoadLogo em{font-style:italic;font-size:11px;color:#b39a72;letter-spacing:.06em;}
+.lvLoadBar{background:linear-gradient(90deg,#b57e14,#f6c445 60%,#fff0c2);box-shadow:0 0 16px rgba(246,196,69,.6);}
+.lvPlayBtn{background:linear-gradient(180deg,#f6c445,#b57e14);color:#3a2412;box-shadow:0 12px 30px rgba(181,126,20,.55);}
+.lvPlayBtn::after{border-color:rgba(255,232,170,.6);}
+.lvBonusCard{background:linear-gradient(180deg,#3b2a18,#221709);border-color:rgba(246,196,69,.5);}
+.lvBonusName{font-family:"Bangers",Impact,sans-serif;font-size:30px;letter-spacing:.04em;color:#ffe6a5;margin-top:5px;
+  text-shadow:0 3px 0 #4a2f16;}
+.lvBigTag{font-family:"Bangers",Impact,sans-serif;-webkit-text-fill-color:#ffe6a5;background:none;}
+.lvBuyGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;padding:14px;}
+.lvBuyOpt{display:flex;flex-direction:column;gap:4px;text-align:left;padding:13px;border-radius:12px;cursor:pointer;
+  background:linear-gradient(180deg,rgba(246,196,69,.14),rgba(181,126,20,.07));
+  border:1px solid rgba(246,196,69,.34);color:inherit;transition:.16s;}
+.lvBuyOpt:hover{border-color:rgba(246,196,69,.8);transform:translateY(-2px);}
+.lvBuyOpt.lvBuyToggle{background:linear-gradient(180deg,rgba(78,162,74,.16),rgba(30,80,30,.08));border-color:rgba(78,162,74,.4);}
+.lvBuyOpt.lvOn{box-shadow:0 0 0 2px rgba(78,162,74,.7) inset;}
+.lvBuyName{font-family:"Bangers",Impact,sans-serif;font-size:16px;letter-spacing:.04em;color:#ffe6a5;}
+.lvBuyDesc{font-size:11px;color:#c0a67e;line-height:1.45;min-height:32px;}
+.lvBuyVol{font-size:9.5px;letter-spacing:.1em;color:#9c8460;font-weight:800;}
+.lvBuyPrice{font-family:var(--mono);font-size:19px;font-weight:800;color:#f6c445;margin-top:3px;}
+.lvClient .sbInfoBody{color:#d8c39c;}
+.lvClient .sbSheet{background:linear-gradient(180deg,#3a2a18,#221709);border-color:rgba(246,196,69,.28);}
+.lvClient .sbSheetHd{background:#33240f;}
+.lvClient .sbInfoSec h5{color:#f6c445;}
+.lvClient .sbPayRow{background:rgba(255,255,255,.045);border-color:rgba(246,196,69,.2);}
+.lvClient .sbPayNums{color:#d8c39c;}
+.lvClient .sbRules,.lvClient .sbStatTable{color:#d8c39c;}
+
+@media(max-width:820px){
+  .lvCab{padding:4px 2px 8px;}
+  .lvBottom{gap:7px;}
+  .lvSpin{width:66px;height:66px;}
+  .lvSpinIco svg{width:28px;height:28px;}
+  .lvHud{flex-wrap:wrap;}
+}
 </style>
 </head>
 <body>
@@ -4653,7 +4815,7 @@ input[type=number],
           <div><h3>Slots</h3><div class="sub">Provider-style reels that load on demand, the way a real casino client does.</div></div>
           <div style="display:flex;gap:8px;align-items:center;">
             <button class="statsFab" data-gstats="slots" type="button" title="Live stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></button>
-            <div class="chip">1 GAME</div>
+            <div class="chip">2 GAMES</div>
           </div>
         </div>
         <div class="sectionBd">
@@ -4677,6 +4839,27 @@ input[type=number],
                   <span class="sbPill">96.15% RTP</span>
                   <span class="sbPill sbPillGold">10 000× MAX</span>
                   <span class="sbPill sbPillHot">HIGH VOL</span>
+                </span>
+              </span>
+              <span class="sbCardPlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+            </button>
+
+            <button class="sbCard lvCard" id="lvOpen" type="button">
+              <span class="sbCardArt lvCardArt">
+                <span class="lvCardSky"></span>
+                <span class="lvCardWall"></span>
+                <span class="lvCardLamp"></span>
+                <span class="lvCardMark">LE VOLEUR</span>
+                <span class="lvCardRat"></span>
+                <span class="sbCardTag">NEW</span>
+              </span>
+              <span class="sbCardBody">
+                <span class="sbCardTitle">Le Voleur</span>
+                <span class="sbCardSub">HANDZES Originals · 6×5 · cluster pays</span>
+                <span class="sbCardMeta">
+                  <span class="sbPill" id="lvRtpPill">96.2% RTP</span>
+                  <span class="sbPill sbPillGold">10 000× MAX</span>
+                  <span class="sbPill sbPillMed">MEDIUM VOL</span>
                 </span>
               </span>
               <span class="sbCardPlay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
@@ -4847,6 +5030,134 @@ input[type=number],
             <div class="sbSheet sbSheetWide">
               <div class="sbSheetHd"><h4>Silver Bandit — paytable & rules</h4><button class="sbSheetX" id="sbInfoClose" type="button">✕</button></div>
               <div class="sbInfoBody" id="sbInfoBody"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- LE VOLEUR: 6x5 cluster pays ---------- -->
+      <div class="sbClient lvClient" id="lvClient" style="display:none;">
+        <div class="sbClientBar">
+          <button class="sbIconBtn sbBack" id="lvBackBtn" type="button" title="Back to lobby">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span>Lobby</span>
+          </button>
+          <div class="sbClientName"><b>LE VOLEUR</b><span>HANDZES Originals</span></div>
+          <div class="sbClientTools">
+            <button class="sbIconBtn" id="lvSoundBtn" type="button" title="Sound"></button>
+            <button class="sbIconBtn" id="lvInfoBtn" type="button" title="Paytable & rules">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.6" r="1.1" fill="currentColor" stroke="none"/></svg>
+            </button>
+            <button class="sbIconBtn" id="lvFullBtn" type="button" title="Fullscreen">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="sbStage lvStage" id="lvStage">
+          <div class="sbLoader lvLoader" id="lvLoader">
+            <div class="sbLoadInner">
+              <div class="lvLoadLogo"><span>LE VOLEUR</span><em>une histoire de gouttière</em></div>
+              <div class="sbLoadBarWrap"><div class="sbLoadBar lvLoadBar" id="lvLoadBar"></div></div>
+              <div class="sbLoadRow"><span id="lvLoadStage">Connecting…</span><span class="mono" id="lvLoadPct">0%</span></div>
+              <div class="sbLoadTasks" id="lvLoadTasks"></div>
+              <div class="sbPlayGate" id="lvPlayGate" style="display:none;">
+                <button class="sbPlayBtn lvPlayBtn" id="lvPlayBtn" type="button">
+                  <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span>PLAY</span>
+                </button>
+                <div class="sbGateNote" id="lvGateNote">cluster pays · max win 10 000×</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sbGame lvGame" id="lvGame">
+            <div class="lvAlley"></div>
+            <div class="lvRat" id="lvRat"></div>
+            <div class="lvCab">
+              <div class="lvTitle">LE VOLEUR</div>
+              <div class="lvBoardFrame">
+                <div class="lvBoard" id="lvBoard"></div>
+                <div class="sbFx" id="lvFx"></div>
+              </div>
+              <div class="lvHud">
+                <div class="lvFsPanel" id="lvFsPanel">
+                  <span class="lvFsName" id="lvFsName">BONUS</span>
+                  <span class="lvFsLeft">SPINS <b id="lvFsLeft">0</b></span>
+                </div>
+                <div class="lvWin"><span>TOTAL WIN</span><b class="mono" id="lvWinVal">0.00</b></div>
+              </div>
+
+              <div class="lvBottom">
+                <button class="sbMini lvBuyBtn" id="lvBuyBtn" type="button" title="Buy a feature">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M8 7V5.5A4 4 0 0 1 16 5.5V7"/></svg><span>BUY</span>
+                </button>
+                <div class="sbBetBox">
+                  <span class="sbBetLbl">BET</span>
+                  <div class="sbBetRow">
+                    <button class="sbStep" id="lvBetDown" type="button">−</button>
+                    <input class="sbBetVal mono" id="lvBetVal" type="text" inputmode="decimal" value="1.00"/>
+                    <button class="sbStep" id="lvBetUp" type="button">+</button>
+                  </div>
+                </div>
+                <button class="lvSpin" id="lvSpinBtn" type="button">
+                  <span class="lvSpinIco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3.2-6.9"/><path d="M21 4v5h-5"/></svg></span>
+                </button>
+                <button class="sbMini" id="lvTurboBtn" type="button" title="Turbo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M13 2L4.5 13.5H11L9.5 22 19 10h-6.5z"/></svg><span>TURBO</span>
+                </button>
+                <button class="sbMini" id="lvAutoBtn" type="button" title="Autoplay">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg><span id="lvAutoTxt">AUTO</span>
+                </button>
+              </div>
+
+              <div class="sbBalStrip">
+                <span>BALANCE <b class="mono" id="lvBal">0.00</b></span>
+                <span class="sbBalDot"></span>
+                <span>BET <b class="mono" id="lvTotalBet">1.00</b></span>
+                <span class="sbBalDot"></span>
+                <span class="sbLastWin">LAST WIN <b class="mono" id="lvLastWin">0.00</b></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sbOverlay" id="lvBonusIntro">
+            <div class="sbBonusCard lvBonusCard">
+              <div class="sbBonusKick" id="lvIntroKick">YOU TRIGGERED</div>
+              <div class="lvBonusName" id="lvIntroName">LUCK OF THE BANDIT</div>
+              <div class="sbBonusBig"><b id="lvIntroCount">12</b><span>FREE SPINS</span></div>
+              <div class="sbBonusNote" id="lvIntroNote"></div>
+              <button class="sbBonusGo" id="lvIntroGo" type="button">START</button>
+            </div>
+          </div>
+
+          <div class="sbOverlay" id="lvBonusOutro">
+            <div class="sbBonusCard lvBonusCard">
+              <div class="sbBonusKick">THE HEIST IS OVER</div>
+              <div class="sbBonusName sbBonusWinAmt mono" id="lvOutroAmt">0.00</div>
+              <div class="sbBonusNote" id="lvOutroSub"></div>
+              <button class="sbBonusGo" id="lvOutroGo" type="button">COLLECT</button>
+            </div>
+          </div>
+
+          <div class="sbOverlay sbBigWinOv" id="lvBigWin">
+            <div class="sbBigWinInner">
+              <div class="sbBigWinTag lvBigTag" id="lvBigTag">BIG WIN</div>
+              <div class="sbBigWinAmt mono" id="lvBigAmt">0.00</div>
+              <div class="sbBigWinMult mono" id="lvBigMult">0×</div>
+            </div>
+          </div>
+
+          <div class="sbOverlay sbSheetOv" id="lvBuyMenu">
+            <div class="sbSheet sbSheetWide">
+              <div class="sbSheetHd"><h4>Bonus buy</h4><button class="sbSheetX" id="lvBuyClose" type="button">✕</button></div>
+              <div class="lvBuyGrid" id="lvBuyGrid"></div>
+              <div class="sbSheetNote">Every option is priced from its measured average return, so the RTP matches the base game.</div>
+            </div>
+          </div>
+
+          <div class="sbOverlay sbSheetOv" id="lvInfoSheet">
+            <div class="sbSheet sbSheetWide">
+              <div class="sbSheetHd"><h4>Le Voleur — paytable & rules</h4><button class="sbSheetX" id="lvInfoClose" type="button">✕</button></div>
+              <div class="sbInfoBody" id="lvInfoBody"></div>
             </div>
           </div>
         </div>
@@ -6433,6 +6744,7 @@ function setHostBalance(newPts){
   try{ updateMeUI(); }catch(e){}
   try{ refreshAdminPlayerRowSelf(); }catch(_){ }
   try{ if(window.sbSyncBalance) window.sbSyncBalance(); }catch(_){ }
+  try{ if(window.lvSyncBalance) window.lvSyncBalance(); }catch(_){ }
   try{ window.dispatchEvent(new CustomEvent('hostBalanceChanged', { detail: Number(newPts) })); }catch(e){}
 }
 
@@ -6752,8 +7064,14 @@ function applyView(v){
     adminPlayersPollTimer = null;
     stopAdminPlayersRealtime();
   }
-  if(prevView === "slots" && v !== "slots"){ try{ if(window.__sb){ window.__sb.auto = 0; window.__sb.autoStop = true; } }catch(_){ } }
-  if(v==="slots"){ try{ if(window.sbSyncBalance) window.sbSyncBalance(); }catch(_){ } }
+  if(prevView === "slots" && v !== "slots"){
+    try{ if(window.__sb){ window.__sb.auto = 0; window.__sb.autoStop = true; } }catch(_){ }
+    try{ if(window.__lv){ window.__lv.auto = 0; window.__lv.autoStop = true; } }catch(_){ }
+  }
+  if(v==="slots"){
+    try{ if(window.sbSyncBalance) window.sbSyncBalance(); }catch(_){ }
+    try{ if(window.lvSyncBalance) window.lvSyncBalance(); }catch(_){ }
+  }
   if(v==="case") refreshCaseUI();
   if(v==="cases") renderCasesLobby();
   if(v==="trading") tradingOnViewEnter();
@@ -14174,6 +14492,905 @@ restoreMinesState();
     S, PAY, LINES, COIN_VALUES, MULT_LADDER, MAX_WIN, ANTE_COST, BUY_PRICE, SUPER_PRICE, FS_FOR,
     strips: ()=>STRIPS || (STRIPS = compileStrips()),
     evalLines, baseSpin, runFeature,
+  };
+})();
+
+/* ============================================================================
+   LE VOLEUR — 6x5 cluster pays, cascades, golden squares, three bonus rounds
+   ----------------------------------------------------------------------------
+   Cluster + cascade + collect has no closed form, so this maths was measured,
+   not derived. RTP was split into pieces that each sample cleanly:
+
+       RTP = base clusters + base collects + SUM P(mode) x EV(mode)
+
+   over 7 000 000 base spins and 500 000 runs of each feature:
+
+       base clusters   42.05%      hit frequency  37.4%
+       base collects   25.73%      cascades       0.46 per spin
+       free spins      28.49%      rainbow        4.87% of base spins
+       ---------------------------------------------------------
+       TOTAL           96.27%  +/- 0.71%          max win 10 000x
+
+   Triggers: 3 scatters 1 in 345 · 4 in 1849 · 5 in 11058.
+   Feature EV: Luck 47.1x · Glitter 126.6x · Treasure 882.6x.
+   Buy prices are those EVs divided by 0.963, so every route has the same RTP.
+   Changing a weight, pay or coin value invalidates all of it.
+   ============================================================================ */
+(function(){
+  "use strict";
+
+  const S = { T10:0, J:1, Q:2, K:3, A:4, TRAP:5, CHEESE:6, BEER:7, HAT:8, WILD:9, SCAT:10, RAIN:11 };
+  const ID = ["t10","j","q","k","a","trap","cheese","beer","hat","wild","scat","rain"];
+  const NAME = ["10","J","Q","K","A","Bear Trap","Cheese","Beer","Top Hat","Wanted Wild","Photo Bonus","Rainbow"];
+  /* Nine paying symbols, not eleven: on a 30-cell board an extra symbol drops the
+     chance of a 5-connected group so far that golden squares almost never exist
+     when a rainbow lands, and the headline feature stops firing. */
+  const PAYING = [S.T10,S.J,S.Q,S.K,S.A,S.TRAP,S.CHEESE,S.BEER,S.HAT];
+
+  const COLS = 6, ROWS = 5, CELLS = 30;
+  const PAY_SCALE = 6.67;
+  const PAY_BASE = { [S.T10]:0.05, [S.J]:0.06, [S.Q]:0.07, [S.K]:0.09, [S.A]:0.11,
+                     [S.TRAP]:0.18, [S.CHEESE]:0.26, [S.BEER]:0.38, [S.HAT]:0.60 };
+  const SIZE_CURVE = { 5:1, 6:1.5, 7:2.1, 8:3, 9:4.2, 10:5.5, 11:7, 12:9, 13:11.5, 14:14 };
+  const sizeMult = (n)=> n < 5 ? 0 : (n >= 15 ? 17 + (n-15)*2.5 : SIZE_CURVE[n]);
+  const clusterPay = (sym, n)=> (PAY_BASE[sym]||0) * sizeMult(n) * PAY_SCALE;
+
+  const W_BASE = { [S.T10]:33, [S.J]:32.5, [S.Q]:32, [S.K]:31.5, [S.A]:31,
+                   [S.TRAP]:8, [S.CHEESE]:7.5, [S.BEER]:7, [S.HAT]:6.5,
+                   [S.WILD]:9, [S.SCAT]:1.15, [S.RAIN]:0.30 };
+  const W_FEAT = Object.assign({}, W_BASE, { [S.RAIN]:3.4, [S.SCAT]:0.55, [S.WILD]:3.0 });
+  const W_HUNT = Object.assign({}, W_BASE, { [S.SCAT]: 0.85*3.6 });
+
+  function mkPick(w){ const syms=[],cum=[]; let t=0; for(const k in w){ t+=w[k]; syms.push(Number(k)); cum.push(t);} return {syms,cum,total:t}; }
+  const P_BASE = mkPick(W_BASE), P_FEAT = mkPick(W_FEAT), P_HUNT = mkPick(W_HUNT);
+
+  let rbuf=null, rat=0;
+  function rnd(){
+    try{
+      if(!rbuf || rat >= rbuf.length){ rbuf = new Uint32Array(512); crypto.getRandomValues(rbuf); rat = 0; }
+      return rbuf[rat++] / 4294967296;
+    }catch(_){ return Math.random(); }
+  }
+  function pick(p){ const r = rnd()*p.total; for(let i=0;i<p.cum.length;i++) if(r<=p.cum[i]) return p.syms[i]; return p.syms[p.syms.length-1]; }
+
+  /* coin faces stay whole numbers; the weights carry the balance */
+  const COINS_BRONZE = [[1,10000],[2,2600],[3,900],[4,400]];
+  const COINS_SILVER = [[5,260],[6,150],[10,70],[15,26],[20,12]];
+  const COINS_GOLD   = [[30,6],[50,2.6],[100,0.9],[250,0.22],[500,0.07],[1000,0.02]];
+  const FS_BRONZE = [[1,4000],[2,2200],[3,1100],[4,600]];
+  const FS_SILVER = [[5,420],[6,260],[10,140],[15,60],[20,30]];
+  const FS_GOLD   = [[30,14],[50,6],[100,2],[250,0.5],[500,0.15],[1000,0.05]];
+  const CLOVERS = [[2,220],[3,90],[5,24]];
+  const POT_W = 40;
+  const tierOf = (v)=> v <= 4 ? "bronze" : v <= 20 ? "silver" : "gold";
+
+  function buildReveal(bronze, silver, gold, noBronze){
+    const rows = [];
+    const add = (kind,l)=>l.forEach(([v,w])=>rows.push({kind,v,w}));
+    if(!noBronze) add("coin", bronze);
+    add("coin", silver); add("coin", gold); add("clover", CLOVERS);
+    rows.push({ kind:"pot", v:2, w:POT_W });
+    let t=0; rows.forEach(r=>{ t+=r.w; r.cum=t; });
+    return { rows, total:t };
+  }
+  const RV = buildReveal(COINS_BRONZE,COINS_SILVER,COINS_GOLD,false);
+  const RV_NB = buildReveal(COINS_BRONZE,COINS_SILVER,COINS_GOLD,true);
+  const RV_FS = buildReveal(FS_BRONZE,FS_SILVER,FS_GOLD,false);
+  const RV_FS_NB = buildReveal(FS_BRONZE,FS_SILVER,FS_GOLD,true);
+  function drawReveal(noBronze, rich){
+    const t = rich ? (noBronze?RV_FS_NB:RV_FS) : (noBronze?RV_NB:RV);
+    const r = rnd()*t.total;
+    for(const row of t.rows) if(r<=row.cum) return row;
+    return t.rows[0];
+  }
+
+  const MAX_WIN = 10000;
+  const FS_FOR = { 3:"luck", 4:"glitter", 5:"treasure" };
+  const FS_SPINS = { luck:12, glitter:12, treasure:8 };
+  const FS_NAME = { luck:"LUCK OF THE BANDIT", glitter:"ALL THAT GLITTERS IS GOLD", treasure:"TREASURE AT THE END OF THE RAINBOW" };
+  const FS_NOTE = {
+    luck:"Golden Squares stay on the board between spins until a Rainbow sets them off.",
+    glitter:"Golden Squares never switch off — every Rainbow pays a bigger board.",
+    treasure:"A Rainbow lands on every spin, Golden Squares never switch off, and bronze coins are gone.",
+  };
+  const RETRIGGER = 5;
+  const BUY = { hunt:3.5, rainbow:6, luck:49, glitter:132 };
+
+  /* ---------------- maths ---------------- */
+  function findClusters(g){
+    const out=[], seen=new Uint8Array(CELLS), stack=new Int16Array(CELLS);
+    for(const sym of PAYING){
+      seen.fill(0);
+      for(let start=0;start<CELLS;start++){
+        if(seen[start] || g[start]!==sym) continue;
+        let sp=0,n=0,real=0; const cells=[];
+        stack[sp++]=start; seen[start]=1;
+        while(sp>0){
+          const i=stack[--sp]; cells.push(i); n++;
+          if(g[i]===sym) real++;
+          const c=(i/ROWS)|0, r=i%ROWS;
+          const push=(j)=>{ if(!seen[j] && (g[j]===sym || g[j]===S.WILD)){ seen[j]=1; stack[sp++]=j; } };
+          if(r>0) push(i-1);
+          if(r<ROWS-1) push(i+1);
+          if(c>0) push(i-ROWS);
+          if(c<COLS-1) push(i+ROWS);
+        }
+        if(n>=5 && real>=1) out.push({ sym, cells, n, pay: clusterPay(sym,n) });
+        for(const i of cells) if(g[i]===S.WILD) seen[i]=0;   // wilds stay available to other symbols
+      }
+    }
+    return out;
+  }
+  function cascadeGrid(g, dead, p){
+    for(let c=0;c<COLS;c++){
+      const keep=[];
+      for(let r=ROWS-1;r>=0;r--){ const i=c*ROWS+r; if(!dead[i]) keep.push(g[i]); }
+      for(let r=ROWS-1,k=0;r>=0;r--,k++){ const i=c*ROWS+r; g[i]= k<keep.length?keep[k]:pick(p); }
+    }
+  }
+  /* how far each cell of the NEW grid fell, for the drop animation */
+  function computeFall(oldGrid, deadSet){
+    const fall = new Array(CELLS).fill(0);
+    for(let c=0;c<COLS;c++){
+      const surv=[];
+      for(let r=ROWS-1;r>=0;r--){ const i=c*ROWS+r; if(!(deadSet.has(i) && oldGrid[i]!==S.SCAT)) surv.push(r); }
+      surv.forEach((oldRow,k)=>{ const newRow=ROWS-1-k; fall[c*ROWS+newRow]=newRow-oldRow; });
+      for(let k=surv.length;k<ROWS;k++){ const newRow=ROWS-1-k; fall[c*ROWS+newRow]=newRow+1+(k-surv.length); }
+    }
+    return fall;
+  }
+
+  function playSpin(picker, golden, opts){
+    opts = opts || {};
+    const goldenStart = Array.from(golden);   // the feature carries these between spins
+    const g = new Int8Array(CELLS);
+    for(let i=0;i<CELLS;i++) g[i]=pick(picker);
+
+    let scatters=0; const scatMask=new Uint8Array(CELLS);
+    const countScat=()=>{ for(let i=0;i<CELLS;i++) if(g[i]===S.SCAT && !scatMask[i]){ scatMask[i]=1; scatters++; } };
+    countScat();
+
+    let clusterWin=0; const steps=[]; let guard=0;
+    while(guard++ < 40){
+      const cl = findClusters(g);
+      if(!cl.length) break;
+      const dead=new Uint8Array(CELLS); let stepWin=0;
+      for(const c of cl){ stepWin += c.pay; for(const i of c.cells){ dead[i]=1; golden[i]=1; } }
+      clusterWin += stepWin;
+      steps.push({ grid: Array.from(g), clusters: cl.map(c=>({sym:c.sym,cells:c.cells.slice(),n:c.n,pay:c.pay})),
+                   stepWin, golden: Array.from(golden) });
+      for(let i=0;i<CELLS;i++) if(g[i]===S.SCAT) dead[i]=0;   // scatters never cascade away
+      cascadeGrid(g, dead, picker);
+      countScat();
+    }
+
+    let hasRain = opts.forceRain === true;
+    if(!hasRain) for(let i=0;i<CELLS;i++) if(g[i]===S.RAIN){ hasRain=true; break; }
+
+    let collectWin=0, reveal=null;
+    if(hasRain){
+      let gc=0; for(let i=0;i<CELLS;i++) if(golden[i]) gc++;
+      if(gc>0){
+        const kind=new Array(CELLS).fill(null);
+        for(let i=0;i<CELLS;i++) if(golden[i]) kind[i]=drawReveal(opts.noBronze, opts.richCoins);
+        const base=new Float64Array(CELLS), val=new Float64Array(CELLS);
+        for(let i=0;i<CELLS;i++) if(kind[i] && kind[i].kind==="coin"){ base[i]=kind[i].v; val[i]=kind[i].v; }
+        const boosted=[];
+        for(let i=0;i<CELLS;i++){
+          if(!kind[i] || kind[i].kind!=="clover") continue;
+          const c=(i/ROWS)|0, r=i%ROWS;
+          const hit=(j)=>{ if(kind[j] && kind[j].kind==="coin"){ val[j]*=kind[i].v; boosted.push(j); } };
+          if(r>0) hit(i-1);
+          if(r<ROWS-1) hit(i+1);
+          if(c>0) hit(i-ROWS);
+          if(c<COLS-1) hit(i+ROWS);
+        }
+        let sum=0, pots=0;
+        for(let i=0;i<CELLS;i++){ sum+=val[i]; if(kind[i] && kind[i].kind==="pot") pots++; }
+        collectWin = sum * Math.pow(2, pots);
+        reveal = { kind, base:Array.from(base), val:Array.from(val), boosted, pots, sum, total:collectWin };
+        if(!opts.keepGolden) golden.fill(0);
+      }
+    }
+    return { grid: Array.from(g), steps, clusterWin, collectWin, hasRain, reveal, scatters,
+             win: clusterWin + collectWin, goldenStart, goldenEnd: Array.from(golden) };
+  }
+
+  function runFeature(mode, startSpins){
+    const golden = new Uint8Array(CELLS);
+    const keepGolden = (mode==="glitter" || mode==="treasure");
+    const opts = { keepGolden, forceRain: mode==="treasure", noBronze: mode==="treasure", richCoins:true };
+    let left = startSpins != null ? startSpins : FS_SPINS[mode];
+    let total=0, played=0, retriggers=0;
+    const steps=[];
+    while(left>0 && total<MAX_WIN){
+      left--; played++;
+      const s = playSpin(P_FEAT, golden, opts);
+      total += s.win;
+      let extra=0;
+      if(s.scatters>=3){ extra=RETRIGGER; left+=extra; retriggers++; }
+      steps.push(Object.assign({}, s, { extra, spinsLeft:left, index:played, running:Math.min(total,MAX_WIN) }));
+    }
+    return { total: Math.min(total, MAX_WIN), steps, played, retriggers, mode, capped: total>=MAX_WIN };
+  }
+
+  /* ---------------- art ---------------- */
+  const cardArt = (ch, fill, w)=>
+    '<symbol id="lvs-'+ID[ch]+'" viewBox="0 0 100 100">'
+    + '<text x="50" y="72" text-anchor="middle" font-family="Bangers,Impact,sans-serif" font-size="'+(w||62)+'"'
+    + ' fill="'+fill+'" stroke="#3a2412" stroke-width="7" paint-order="stroke" stroke-linejoin="round">'+NAME[ch]+'</text></symbol>';
+
+  const SPRITE = '<svg id="lvSprite" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;pointer-events:none;">'
+  + '<defs>'
+  + '<linearGradient id="lvgGold" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#ffe9a8"/><stop offset=".45" stop-color="#f6c445"/><stop offset="1" stop-color="#a9720d"/></linearGradient>'
+  + '<linearGradient id="lvgSilver" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#d7dde8"/><stop offset="1" stop-color="#8b93a3"/></linearGradient>'
+  + '<linearGradient id="lvgBronze" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#ffd0a0"/><stop offset=".45" stop-color="#e8933f"/><stop offset="1" stop-color="#9c561a"/></linearGradient>'
+  + '<linearGradient id="lvgSteel" x1="0" y1="0" x2=".4" y2="1"><stop offset="0" stop-color="#e2e8f0"/><stop offset=".5" stop-color="#94a3b8"/><stop offset="1" stop-color="#475569"/></linearGradient>'
+  + '<linearGradient id="lvgCheese" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#ffe680"/><stop offset=".5" stop-color="#f2c53d"/><stop offset="1" stop-color="#b98a12"/></linearGradient>'
+  + '<linearGradient id="lvgBeer" x1="0" y1="0" x2=".2" y2="1"><stop offset="0" stop-color="#ffc860"/><stop offset=".5" stop-color="#e39a22"/><stop offset="1" stop-color="#a3660c"/></linearGradient>'
+  + '<linearGradient id="lvgPaper" x1="0" y1="0" x2=".2" y2="1"><stop offset="0" stop-color="#fdf1cf"/><stop offset="1" stop-color="#d8bd88"/></linearGradient>'
+  + '</defs>'
+  + cardArt(S.T10, "#bcd8ef", 46)
+  + cardArt(S.J, "#f0e0b8")
+  + cardArt(S.Q, "#f0b9c4")
+  + cardArt(S.K, "#b9dfa0")
+  + cardArt(S.A, "#cfc0ec")
+  /* bear trap */
+  + '<symbol id="lvs-trap" viewBox="0 0 100 100">'
+  + '<ellipse cx="50" cy="58" rx="40" ry="31" fill="#2f3846" stroke="#1a2029" stroke-width="4"/>'
+  + '<ellipse cx="50" cy="58" rx="27" ry="19" fill="#10151c"/>'
+  + '<path d="M12 58 A38 29 0 0 1 88 58 L88 58 L83 69 L78 58 L73 69 L68 58 L63 69 L58 58 L53 69 L48 58 L43 69 L38 58 L33 69 L28 58 L23 69 L18 58 L12 58Z" fill="url(#lvgSteel)" stroke="#1a2029" stroke-width="3.5" stroke-linejoin="round"/>'
+  + '<path d="M12 58 A38 29 0 0 0 88 58 L88 58 L83 47 L78 58 L73 47 L68 58 L63 47 L58 58 L53 47 L48 58 L43 47 L38 58 L33 47 L28 58 L23 47 L18 58 L12 58Z" fill="url(#lvgSteel)" stroke="#1a2029" stroke-width="3.5" stroke-linejoin="round"/>'
+  + '<circle cx="50" cy="58" r="6" fill="#9ca3af" stroke="#1a2029" stroke-width="3"/>'
+  + '<path d="M6 58h-4M98 58h-4" stroke="#1a2029" stroke-width="5" stroke-linecap="round"/></symbol>'
+  /* cheese */
+  + '<symbol id="lvs-cheese" viewBox="0 0 100 100">'
+  + '<path d="M14 68 78 26l10 12-10 34z" fill="url(#lvgCheese)" stroke="#7a5806" stroke-width="4.5" stroke-linejoin="round"/>'
+  + '<path d="M14 68 78 26l10 12-64 32z" fill="#ffe680" opacity=".55"/>'
+  + '<g fill="#b8890c"><circle cx="34" cy="60" r="5.5"/><circle cx="49" cy="52" r="4.2"/><circle cx="62" cy="60" r="4.8"/><circle cx="57" cy="41" r="3.4"/><circle cx="72" cy="49" r="3"/></g>'
+  + '<path d="M14 68 78 26" fill="none" stroke="#fff2b0" stroke-width="3" opacity=".55"/></symbol>'
+  /* beer */
+  + '<symbol id="lvs-beer" viewBox="0 0 100 100">'
+  + '<rect x="26" y="34" width="38" height="52" rx="6" fill="url(#lvgBeer)" stroke="#6b4106" stroke-width="4.5"/>'
+  + '<path d="M64 44h10a10 10 0 0 1 0 20H64" fill="none" stroke="#6b4106" stroke-width="5"/>'
+  + '<path d="M22 36c2-10 12-14 20-9 6-8 20-6 22 4 8-2 14 4 12 11H22z" fill="#fffaf0" stroke="#6b4106" stroke-width="4" stroke-linejoin="round"/>'
+  + '<rect x="33" y="46" width="6" height="34" rx="3" fill="#fff" opacity=".45"/></symbol>'
+  /* top hat */
+  + '<symbol id="lvs-hat" viewBox="0 0 100 100">'
+  + '<ellipse cx="50" cy="72" rx="40" ry="11" fill="#1f2430" stroke="#0b0e14" stroke-width="4"/>'
+  + '<path d="M30 70V30a20 8 0 0 1 40 0v40z" fill="#2b3140" stroke="#0b0e14" stroke-width="4"/>'
+  + '<ellipse cx="50" cy="30" rx="20" ry="8" fill="#39404f" stroke="#0b0e14" stroke-width="4"/>'
+  + '<rect x="30" y="54" width="40" height="11" fill="#c0392b"/>'
+  + '<rect x="52" y="52" width="15" height="20" rx="2" fill="#fdf1cf" stroke="#0b0e14" stroke-width="2.5" transform="rotate(12 59 62)"/>'
+  + '<path d="M59 58l3 5-3 5-3-5z" fill="#c0392b" transform="rotate(12 59 62)"/></symbol>'
+  /* wanted poster wild */
+  + '<symbol id="lvs-wild" viewBox="0 0 100 100">'
+  + '<rect x="14" y="10" width="72" height="80" rx="3" fill="url(#lvgPaper)" stroke="#7a5f2e" stroke-width="4" transform="rotate(-3 50 50)"/>'
+  + '<g transform="rotate(-3 50 50)">'
+  + '<text x="50" y="30" text-anchor="middle" font-family="Bangers,Impact,sans-serif" font-size="17" fill="#4a2f16" letter-spacing="1">WANTED</text>'
+  + '<circle cx="50" cy="52" r="15" fill="#9a938a"/><path d="M35 52a15 15 0 0 1 30 0z" fill="#6f6862"/>'
+  + '<rect x="38" y="47" width="24" height="7" rx="3.5" fill="#2b2118"/>'
+  + '<circle cx="44" cy="50.5" r="2" fill="#fff"/><circle cx="56" cy="50.5" r="2" fill="#fff"/>'
+  + '<text x="50" y="82" text-anchor="middle" font-family="Bangers,Impact,sans-serif" font-size="13" fill="#4a2f16">WILD</text>'
+  + '</g></symbol>'
+  /* polaroid bonus */
+  + '<symbol id="lvs-scat" viewBox="0 0 100 100">'
+  + '<rect x="14" y="24" width="72" height="48" rx="7" fill="#f5f1e6" stroke="#3a2412" stroke-width="4.5"/>'
+  + '<rect x="14" y="24" width="72" height="13" rx="6" fill="#d94f4f"/>'
+  + '<circle cx="50" cy="52" r="14" fill="#3a3a44" stroke="#20202a" stroke-width="3"/>'
+  + '<circle cx="50" cy="52" r="7" fill="#6b7280"/><circle cx="46" cy="48" r="2.6" fill="#fff" opacity=".8"/>'
+  + '<rect x="20" y="66" width="60" height="20" rx="3" fill="#ffd84d" stroke="#3a2412" stroke-width="4"/>'
+  + '<text x="50" y="82" text-anchor="middle" font-family="Bangers,Impact,sans-serif" font-size="16" fill="#3a2412">FS</text></symbol>'
+  /* rainbow */
+  + '<symbol id="lvs-rain" viewBox="0 0 100 100">'
+  + '<g fill="none" stroke-width="7" stroke-linecap="round">'
+  + '<path d="M14 74a36 36 0 0 1 72 0" stroke="#e74c3c"/>'
+  + '<path d="M22 74a28 28 0 0 1 56 0" stroke="#f39c12"/>'
+  + '<path d="M30 74a20 20 0 0 1 40 0" stroke="#f1c40f"/>'
+  + '<path d="M38 74a12 12 0 0 1 24 0" stroke="#4ea24a"/></g>'
+  + '<ellipse cx="20" cy="78" rx="17" ry="11" fill="#fff"/><ellipse cx="80" cy="78" rx="17" ry="11" fill="#fff"/>'
+  + '<ellipse cx="28" cy="72" rx="10" ry="7" fill="#fff"/><ellipse cx="72" cy="72" rx="10" ry="7" fill="#fff"/></symbol>'
+  /* coins */
+  + '<symbol id="lvs-coin-bronze" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="url(#lvgBronze)" stroke="#7c3f10" stroke-width="5"/><circle cx="50" cy="50" r="31" fill="none" stroke="#b9702c" stroke-width="3"/><ellipse cx="36" cy="30" rx="11" ry="7" fill="#fff" opacity=".4" transform="rotate(-30 36 30)"/></symbol>'
+  + '<symbol id="lvs-coin-silver" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="url(#lvgSilver)" stroke="#5c6473" stroke-width="5"/><circle cx="50" cy="50" r="31" fill="none" stroke="#8b93a3" stroke-width="3"/><ellipse cx="36" cy="30" rx="11" ry="7" fill="#fff" opacity=".55" transform="rotate(-30 36 30)"/></symbol>'
+  + '<symbol id="lvs-coin-gold" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="url(#lvgGold)" stroke="#7a5206" stroke-width="5"/><circle cx="50" cy="50" r="31" fill="none" stroke="#c9930f" stroke-width="3"/><ellipse cx="36" cy="30" rx="11" ry="7" fill="#fff" opacity=".5" transform="rotate(-30 36 30)"/></symbol>'
+  /* clover */
+  + '<symbol id="lvs-clover" viewBox="0 0 100 100">'
+  + '<g fill="#4ea24a" stroke="#2c6b2a" stroke-width="4">'
+  + '<circle cx="36" cy="36" r="17"/><circle cx="64" cy="36" r="17"/><circle cx="36" cy="64" r="17"/><circle cx="64" cy="64" r="17"/></g>'
+  + '<path d="M52 62c6 12 10 18 20 22" fill="none" stroke="#2c6b2a" stroke-width="5" stroke-linecap="round"/></symbol>'
+  /* pot of gold */
+  + '<symbol id="lvs-pot" viewBox="0 0 100 100">'
+  + '<path d="M18 46h64c0 24-10 38-32 38S18 70 18 46z" fill="#2b2b33" stroke="#111116" stroke-width="5"/>'
+  + '<rect x="12" y="38" width="76" height="12" rx="6" fill="#3a3a44" stroke="#111116" stroke-width="5"/>'
+  + '<g fill="url(#lvgGold)" stroke="#7a5206" stroke-width="3">'
+  + '<circle cx="34" cy="34" r="10"/><circle cx="52" cy="28" r="11"/><circle cx="68" cy="35" r="9"/></g></symbol>'
+  + '</svg>';
+
+  const RAT = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240">'
+    + '<g stroke="#2b2118" stroke-width="6" stroke-linejoin="round">'
+    + '<path d="M150 60c22-6 34 10 30 28-4 16-20 22-30 18z" fill="#8d8377"/>'
+    + '<path d="M60 236c-16-30-18-70-6-104 10-30 34-48 60-48s48 18 58 46c12 34 8 76-8 106z" fill="#9a938a"/>'
+    + '<ellipse cx="106" cy="96" rx="52" ry="44" fill="#a8a29a"/>'
+    + '<path d="M62 74c-10-16-4-30 10-30 10 0 16 8 18 16z" fill="#8d8377"/>'
+    + '<path d="M150 74c10-16 4-30-10-30-10 0-16 8-18 16z" fill="#8d8377"/>'
+    + '<path d="M54 96c22-12 46-14 52-4 6-10 30-8 52 4-14 16-32 24-52 24s-38-8-52-24z" fill="#3d372f"/>'
+    + '<ellipse cx="82" cy="92" rx="9" ry="10" fill="#fff"/><ellipse cx="130" cy="92" rx="9" ry="10" fill="#fff"/>'
+    + '<path d="M76 122c12 8 44 8 56 0-8 14-48 14-56 0z" fill="#c9744f"/>'
+    + '<path d="M40 40 168 8" stroke="#6b6259" stroke-width="9" stroke-linecap="round" fill="none"/>'
+    + '<path d="M150 4c26-2 40 12 34 30-6 16-30 20-42 8z" fill="#b7ad9e"/>'
+    + '</g>'
+    + '<circle cx="84" cy="93" r="4.6" fill="#1d1a16"/><circle cx="132" cy="93" r="4.6" fill="#1d1a16"/>'
+    + '<ellipse cx="106" cy="112" rx="9" ry="6" fill="#1d1a16"/>'
+    + '</svg>');
+
+  const symSVG = (id)=>'<svg class="lvSym" viewBox="0 0 100 100"><use href="#lvs-'+id+'"/></svg>';
+
+  /* ---------------- sound ---------------- */
+  let actx=null;
+  const audio=()=>{ if(actx) return actx; try{ actx=new (window.AudioContext||window.webkitAudioContext)(); }catch(_){ actx=null; } return actx; };
+  function beep(f,d,type,vol,to){
+    if(!st.sound) return;
+    const a=audio(); if(!a) return;
+    try{
+      if(a.state==="suspended") a.resume();
+      const o=a.createOscillator(), g=a.createGain();
+      o.type=type||"triangle"; o.frequency.setValueAtTime(f,a.currentTime);
+      if(to) o.frequency.exponentialRampToValueAtTime(Math.max(30,to), a.currentTime+d);
+      g.gain.setValueAtTime(0.0001,a.currentTime);
+      g.gain.exponentialRampToValueAtTime(vol||0.05, a.currentTime+0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime+d);
+      o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime+d+0.02);
+    }catch(_){ }
+  }
+  const sfx = {
+    click(){ beep(400,.05,"square",.03); },
+    drop(i){ beep(200+i*18,.07,"triangle",.04,150); },
+    pop(n){ beep(420+Math.min(6,n)*70,.1,"square",.045); },
+    coin(){ beep(1150,.07,"sine",.045,1650); },
+    rainbow(){ [0,110,220,330].forEach((d,i)=>setTimeout(()=>beep(520*Math.pow(1.22,i),.26,"triangle",.055),d)); },
+    bonus(){ [0,140,280,430].forEach((d,i)=>setTimeout(()=>beep(430*Math.pow(1.26,i),.3,"triangle",.06),d)); },
+    big(){ [0,90,180,300,430].forEach((d,i)=>setTimeout(()=>beep(380*Math.pow(1.2,i),.34,"sawtooth",.05),d)); },
+  };
+
+  /* ---------------- state ---------------- */
+  const BETS = [0.10,0.20,0.30,0.50,0.80,1,2,3,5,8,10,20,30,50,80,100,200,500];
+  const LS = "hz_lv_v1";
+  const st = { bet:1, turbo:false, auto:0, autoStop:false, sound:true,
+               busy:false, loaded:false, loading:false, hunt:false, rainbowSpins:false, lastWin:0 };
+  function saveCfg(){ try{ localStorage.setItem(LS, JSON.stringify({bet:st.bet,turbo:st.turbo,sound:st.sound})); }catch(_){ } }
+  function loadCfg(){ try{ const c=JSON.parse(localStorage.getItem(LS)||"{}");
+    if(BETS.indexOf(Number(c.bet))>=0) st.bet=Number(c.bet);
+    st.turbo=!!c.turbo; st.sound=c.sound!==false; }catch(_){ } }
+
+  const el=(id)=>document.getElementById(id);
+  const wait=(ms)=>new Promise(r=>setTimeout(r,ms));
+  const frame=()=>new Promise(r=>requestAnimationFrame(()=>r()));
+  const money=(n)=>(typeof fmtN==="function"?fmtN(n):Number(n||0).toFixed(2));
+  const spinCost = ()=> Math.round(st.bet * (st.rainbowSpins ? BUY.rainbow : st.hunt ? BUY.hunt : 1) * 100)/100;
+
+  /* ---------------- loader ---------------- */
+  const TASKS = [["Picking the lock",8,320],["Painting the alley",24,460],["Decoding symbols",30,780],
+                 ["Shuffling the board",14,340],["Waking the raccoon",14,400],["Ready",10,300]];
+  let pctShown=0, pctTarget=0, pctRAF=0;
+  function setLoad(p,label){
+    pctTarget=Math.max(pctTarget,Math.min(100,p));
+    const s=el("lvLoadStage"); if(s&&label) s.textContent=label;
+    cancelAnimationFrame(pctRAF);
+    (function tick(){
+      pctShown += (pctTarget-pctShown)*0.16;
+      if(pctTarget-pctShown<0.12) pctShown=pctTarget;
+      const b=el("lvLoadBar"), t=el("lvLoadPct");
+      if(b) b.style.width=pctShown.toFixed(1)+"%";
+      if(t) t.textContent=pctShown.toFixed(0)+"%";
+      if(pctShown<pctTarget) pctRAF=requestAnimationFrame(tick);
+    })();
+  }
+  function renderTasks(done,run){
+    const box=el("lvLoadTasks"); if(!box) return;
+    box.innerHTML=TASKS.map((t,i)=>{
+      const mark = i<done ? "<b>✓</b>" : (i===run ? "<b style='color:#f6c445'>▸</b>" : "<span style='opacity:.4'>·</span>");
+      return '<div class="sbTask'+(i===run?" sbTaskRun":"")+'">'+mark+'<span>'+t[0]+'</span></div>';
+    }).join("");
+  }
+  function decodeSym(id){
+    return new Promise((res)=>{
+      try{
+        const src=document.getElementById("lvs-"+id), defs=document.querySelector("#lvSprite defs");
+        if(!src) return res(false);
+        const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="150" height="150">'
+          + (defs?new XMLSerializer().serializeToString(defs):"") + src.innerHTML + '</svg>';
+        const img=new Image();
+        const fin=()=>{ try{ const cv=document.createElement("canvas"); cv.width=cv.height=150; cv.getContext("2d").drawImage(img,0,0,150,150); }catch(_){ } res(true); };
+        img.onload=()=>{ if(img.decode) img.decode().then(fin).catch(fin); else fin(); };
+        img.onerror=()=>res(false);
+        img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);
+      }catch(_){ res(false); }
+    });
+  }
+
+  async function boot(){
+    if(st.loaded || st.loading) return;
+    st.loading=true;
+    let acc=0;
+    const stage=async(i,work)=>{
+      const t0=performance.now();
+      renderTasks(i,i); setLoad(acc+TASKS[i][1]*0.15, TASKS[i][0]); await frame();
+      if(work) await work();
+      acc+=TASKS[i][1]; setLoad(acc,TASKS[i][0]);
+      const left=TASKS[i][2]-(performance.now()-t0);
+      if(left>0) await wait(left);
+    };
+    await stage(0, async()=>{ try{ if(typeof ensureActionReady==="function") await ensureActionReady(false); }catch(_){ } });
+    await stage(1, async()=>{
+      if(!document.getElementById("lvSprite")){
+        const h=document.createElement("div");
+        h.style.cssText="position:absolute;width:0;height:0;overflow:hidden;";
+        h.innerHTML=SPRITE;
+        document.body.appendChild(h);
+      }
+      const r=el("lvRat"); if(r) r.style.backgroundImage="url('"+RAT+"')";
+      await frame();
+    });
+    {
+      const list=ID.concat(["coin-bronze","coin-silver","coin-gold","clover","pot"]);
+      const t0=performance.now(); renderTasks(2,2);
+      const per=TASKS[2][1]/list.length, minEach=TASKS[2][2]/list.length;
+      for(let i=0;i<list.length;i++){
+        await decodeSym(list[i]);
+        acc+=per; setLoad(acc,"Decoding symbols · "+(NAME[i]||list[i]));
+        const behind=minEach*(i+1)-(performance.now()-t0);
+        if(behind>0) await wait(behind);
+      }
+    }
+    await stage(3, async()=>{ buildBoard(); buildInfo(); buildBuyMenu(); try{ await document.fonts.ready; }catch(_){ } });
+    await stage(4, async()=>{ idleBoard(); for(let i=0;i<5;i++) await frame(); });
+    await stage(5, null);
+    renderTasks(TASKS.length,-1); setLoad(100,"Ready"); await wait(240);
+    st.loaded=true; st.loading=false;
+    el("lvPlayGate").style.display="";
+  }
+
+  /* ---------------- board ---------------- */
+  function buildBoard(){ const b=el("lvBoard"); if(b) b.innerHTML=""; }
+  function idleBoard(){
+    const g=new Int8Array(CELLS);
+    for(let i=0;i<CELLS;i++) g[i]=pick(P_BASE);
+    render(Array.from(g), null, null, null);
+  }
+  const cellStyle=(i)=>{
+    const c=(i/ROWS)|0, r=i%ROWS;
+    return "left:"+(c*100/COLS)+"%;top:"+(r*100/ROWS)+"%;";
+  };
+  /* one render pass. `fall` gives each cell a starting offset in whole rows so
+     the cascade reads as gravity; `reveal` swaps golden squares for their prize */
+  function render(grid, golden, fall, reveal){
+    const b=el("lvBoard"); if(!b) return;
+    let html="";
+    for(let i=0;i<CELLS;i++){
+      const f = fall && fall[i] ? fall[i] : 0;
+      const isGold = golden && golden[i];
+      const rv = reveal && reveal.kind && reveal.kind[i];
+      let cls="lvCell"+(isGold?" lvGold":"")+(f?" lvDrop":"")+(rv?" lvReveal":"");
+      let inner;
+      if(rv){
+        if(rv.kind==="coin"){
+          const shown = reveal.val[i] || rv.v;
+          inner = symSVG("coin-"+tierOf(rv.v)) + '<span class="lvVal" data-i="'+i+'">'+shown+'</span>';
+        }else if(rv.kind==="clover"){
+          inner = symSVG("clover") + '<span class="lvVal">×'+rv.v+'</span>';
+        }else{
+          inner = symSVG("pot") + '<span class="lvVal">×2</span>';
+        }
+      }else{
+        inner = symSVG(ID[grid[i]]);
+      }
+      html += '<div class="'+cls+'" style="'+cellStyle(i)+(f?"--fall:"+(-f*100)+"%;":"")+'">'+inner+'</div>';
+    }
+    b.innerHTML=html;
+  }
+  const cellNodes=()=> el("lvBoard") ? el("lvBoard").children : [];
+
+  function chip(i, text, gold){
+    const fx=el("lvFx"); if(!fx) return;
+    const c=(i/ROWS)|0, r=i%ROWS;
+    const d=document.createElement("div");
+    d.className="sbChip"+(gold?" sbChipGold":"");
+    d.style.left=((c+0.5)*100/COLS)+"%";
+    d.style.top=((r+0.5)*100/ROWS)+"%";
+    d.textContent=text;
+    fx.appendChild(d);
+    setTimeout(()=>d.remove(),1250);
+  }
+
+  /* ---------------- presentation ---------------- */
+  let shownWin=0;
+  function setWin(v){ shownWin=v; const n=el("lvWinVal"); if(n) n.textContent=money(v); }
+
+  async function animateSpin(res){
+    const fast=st.turbo;
+    let g = res.steps.length ? res.steps[0].grid : res.grid;
+    render(g, res.goldenStart, null, null);
+    await wait(fast?60:140);
+
+    for(let i=0;i<res.steps.length;i++){
+      const step=res.steps[i];
+      const dead=new Set();
+      step.clusters.forEach(c=>c.cells.forEach(x=>dead.add(x)));
+      const nodes=cellNodes();
+      for(let k=0;k<CELLS;k++){ if(!nodes[k]) continue; nodes[k].classList.add(dead.has(k)?"lvHit":"lvDim"); }
+      sfx.pop(step.clusters.length);
+      step.clusters.forEach(c=>chip(c.cells[c.cells.length-1], "+"+money(c.pay*st.bet)));
+      await wait(fast?200:460);
+      for(let k=0;k<CELLS;k++){ if(!nodes[k]) continue; nodes[k].classList.remove("lvDim"); if(dead.has(k)) nodes[k].classList.add("lvPop"); }
+      setWin(shownWin + step.stepWin*st.bet);
+      await wait(fast?140:250);
+
+      const next = (i+1<res.steps.length) ? res.steps[i+1].grid : res.grid;
+      const fall = computeFall(step.grid, dead);
+      render(next, step.golden, fall, null);
+      sfx.drop(i);
+      await wait(fast?150:300);
+    }
+
+    /* the rainbow sets off every golden square */
+    if(res.reveal){
+      sfx.rainbow();
+      render(res.grid, res.goldenEnd.map((v,i)=>res.reveal.kind[i]?1:v), null, res.reveal);
+      const nodes=cellNodes();
+      let d=0;
+      for(let i=0;i<CELLS;i++) if(res.reveal.kind[i] && nodes[i]){ nodes[i].style.animationDelay=(d*(fast?12:26))+"ms"; d++; }
+      await wait(fast?260:520);
+      if(res.reveal.boosted.length){
+        res.reveal.boosted.forEach(i=>{ if(nodes[i]) nodes[i].classList.add("lvHit"); });
+        sfx.coin();
+        await wait(fast?200:420);
+      }
+      if(res.reveal.pots){
+        for(let i=0;i<CELLS;i++) if(res.reveal.kind[i] && res.reveal.kind[i].kind==="pot" && nodes[i]) nodes[i].classList.add("lvHit");
+        sfx.big();
+        await wait(fast?220:460);
+      }
+      setWin(shownWin + res.collectWin*st.bet);
+      chip(12, "+"+money(res.collectWin*st.bet), true);
+      await wait(fast?260:600);
+    }
+  }
+
+  /* ---------------- free spins ---------------- */
+  async function playFeature(feat){
+    const panel=el("lvFsPanel");
+    el("lvIntroName").textContent=FS_NAME[feat.mode];
+    el("lvIntroCount").textContent=String(FS_SPINS[feat.mode]);
+    el("lvIntroNote").textContent=FS_NOTE[feat.mode];
+    el("lvBonusIntro").classList.add("sbOn");
+    sfx.bonus();
+    await new Promise(res=>{
+      const go=el("lvIntroGo");
+      const done=()=>{ go.removeEventListener("click",done); res(); };
+      go.addEventListener("click",done);
+      setTimeout(()=>{ if(el("lvBonusIntro").classList.contains("sbOn")) done(); },6000);
+    });
+    el("lvBonusIntro").classList.remove("sbOn");
+
+    panel.classList.add("lvOn");
+    el("lvFsName").textContent=FS_NAME[feat.mode];
+    setWin(0);
+    for(const step of feat.steps){
+      el("lvFsLeft").textContent=String(step.spinsLeft+1);
+      await animateSpin(step);
+      el("lvFsLeft").textContent=String(step.spinsLeft);
+      if(step.extra){
+        chip(12, "+"+step.extra+" SPINS", true);
+        sfx.bonus();
+        await wait(st.turbo?350:800);
+      }
+      await wait(st.turbo?80:220);
+    }
+    panel.classList.remove("lvOn");
+
+    el("lvOutroAmt").textContent=money(0);
+    el("lvOutroSub").textContent = FS_NAME[feat.mode].toLowerCase() + " · " + feat.played + " spins" + (feat.capped?" · MAX WIN":"");
+    el("lvBonusOutro").classList.add("sbOn");
+    const t0=performance.now(), target=feat.total*st.bet, ms=st.turbo?700:1500;
+    await new Promise(res=>{
+      (function tick(now){
+        const k=Math.min(1,(now-t0)/ms), e=1-Math.pow(1-k,3);
+        el("lvOutroAmt").textContent=money(target*e);
+        if(k<1) requestAnimationFrame(tick); else res();
+      })(t0);
+    });
+    await new Promise(res=>{
+      const go=el("lvOutroGo");
+      const done=()=>{ go.removeEventListener("click",done); res(); };
+      go.addEventListener("click",done);
+      setTimeout(()=>{ if(el("lvBonusOutro").classList.contains("sbOn")) done(); },7000);
+    });
+    el("lvBonusOutro").classList.remove("sbOn");
+    return feat.total;
+  }
+
+  /* ---------------- big win ---------------- */
+  const TIERS=[[500,"LE CASSE DU SIÈCLE"],[100,"MEGA WIN"],[40,"HUGE WIN"],[15,"BIG WIN"]];
+  async function bigWin(amount, mult){
+    let tag=null;
+    for(const [m,t] of TIERS) if(mult>=m){ tag=t; break; }
+    if(!tag) return;
+    el("lvBigTag").textContent=tag;
+    el("lvBigMult").textContent=mult.toFixed(2)+"×";
+    el("lvBigAmt").textContent=money(0);
+    el("lvBigWin").classList.add("sbOn");
+    sfx.big();
+    const t0=performance.now(), ms=st.turbo?900:1800;
+    await new Promise(res=>{
+      (function tick(now){
+        const k=Math.min(1,(now-t0)/ms), e=1-Math.pow(1-k,3);
+        el("lvBigAmt").textContent=money(amount*e);
+        if(k<1) requestAnimationFrame(tick); else res();
+      })(t0);
+    });
+    await wait(st.turbo?500:1200);
+    el("lvBigWin").classList.remove("sbOn");
+  }
+
+  /* ---------------- money ---------------- */
+  async function debit(a){ await addWagerAndPayout(a, 0, { noStats:true }); syncBalance(); }
+  async function credit(p){
+    if(!(p>0)) return;
+    try{
+      const n=clamp2(Number(meProfile.pts)+p);
+      const { error } = await withTimeout(supabase.from("profiles").update({ pts:n }).eq("id", session.user.id), 12000);
+      if(error) throw error;
+      setHostBalance(n);
+    }catch(e){
+      console.error("le voleur credit failed", e);
+      toast(/timeout/i.test(String(e&&e.message))?"Win payout timed out":"Win payout failed (DB/RLS)");
+    }
+    syncBalance();
+  }
+  /* one round in, one round out — stats, rain and the chat announce all key off
+     the true stake and payout rather than the two halves of the transaction */
+  const settle=(stake,payout)=>{ try{ hzRecord("slots", stake, payout); }catch(_){ } };
+
+  function syncBalance(){
+    const b=el("lvBal"); if(b) b.textContent=money(Number((typeof meProfile!=="undefined"&&meProfile)?meProfile.pts:0)||0);
+    const t=el("lvTotalBet"); if(t) t.textContent=money(spinCost());
+    const v=el("lvBetVal"); if(v && document.activeElement!==v) v.value=Number(st.bet).toFixed(2);
+    const l=el("lvLastWin"); if(l) l.textContent=money(st.lastWin);
+    document.querySelectorAll("#lvBuyGrid .lvBuyPrice").forEach(n=>{
+      const k=n.getAttribute("data-k");
+      if(k) n.textContent=money(st.bet*BUY[k]);
+    });
+  }
+
+  /* ---------------- a round ---------------- */
+  async function play(mode){
+    if(st.busy || !st.loaded) return;
+    if(typeof ensureActionReady==="function" && !(await ensureActionReady())) return;
+    if(!meProfile) return toast("Profile not ready");
+
+    const bet=st.bet;
+    const cost = (mode==="luck"||mode==="glitter") ? Math.round(bet*BUY[mode]*100)/100 : spinCost();
+    if(Number(meProfile.pts) < cost) return toast("Not enough balance for "+money(cost));
+
+    st.busy=true;
+    el("lvSpinBtn").disabled=true; el("lvSpinBtn").classList.add("lvBusy");
+    setWin(0); sfx.click();
+    try{
+      try{ await debit(cost); }
+      catch(e){
+        const m=String((e&&e.message)||e);
+        toast(/balance/.test(m)?"Not enough balance":/timeout/i.test(m)?"Bet timed out — try again":"Bet failed (DB/RLS)");
+        return;
+      }
+
+      let totalX=0;
+      if(mode==="luck" || mode==="glitter"){
+        totalX = await playFeature(runFeature(mode));
+      }else{
+        const golden=new Uint8Array(CELLS);
+        const res=playSpin(st.hunt?P_HUNT:P_BASE, golden, { forceRain: st.rainbowSpins });
+        await animateSpin(res);
+        totalX = res.win;
+        if(res.scatters>=3){
+          const m=FS_FOR[Math.min(5,res.scatters)];
+          await wait(st.turbo?250:600);
+          totalX += await playFeature(runFeature(m));
+        }
+      }
+
+      if(totalX>MAX_WIN) totalX=MAX_WIN;
+      const payout=Math.round(totalX*bet*100)/100;
+      st.lastWin=payout; setWin(payout);
+      settle(cost, payout);
+      if(payout>0){ await bigWin(payout, payout/cost); await credit(payout); }
+      else syncBalance();
+    } finally {
+      st.busy=false;
+      el("lvSpinBtn").disabled=false; el("lvSpinBtn").classList.remove("lvBusy");
+      syncBalance();
+    }
+
+    if(st.auto>0 && !st.autoStop){
+      st.auto--; updateAuto();
+      if(st.auto>0 && Number(meProfile.pts)>=spinCost()){
+        await wait(st.turbo?110:320);
+        if(st.auto>0 && !st.autoStop && isOpen()) return play("spin");
+      }
+      if(st.auto<=0){ st.auto=0; updateAuto(); }
+    }
+  }
+  const isOpen=()=> el("lvClient") && el("lvClient").style.display!=="none" && el("view-slots") && el("view-slots").style.display!=="none";
+  function updateAuto(){
+    const b=el("lvAutoBtn"), t=el("lvAutoTxt");
+    if(!b||!t) return;
+    b.classList.toggle("sbOn", st.auto>0);
+    t.textContent = st.auto>0 ? String(st.auto) : "AUTO";
+  }
+
+  /* ---------------- buy menu + info ---------------- */
+  function buildBuyMenu(){
+    const g=el("lvBuyGrid"); if(!g) return;
+    const opts=[
+      { k:"hunt", toggle:true, name:"BONUSHUNT SPINS", vol:"Volatility: High",
+        desc:"Every spin is about 3.6× more likely to land the bonus." },
+      { k:"rainbow", toggle:true, name:"RAINBOW SPINS", vol:"Volatility: Medium",
+        desc:"Every spin guarantees a Rainbow, so any Golden Square pays out." },
+      { k:"luck", name:"LUCK OF THE BANDIT", vol:"Volatility: Medium",
+        desc:"12 free spins. Golden Squares stay between spins." },
+      { k:"glitter", name:"ALL THAT GLITTERS", vol:"Volatility: Medium",
+        desc:"12 free spins. Golden Squares never switch off." },
+    ];
+    g.innerHTML=opts.map(o=>
+      '<button class="lvBuyOpt'+(o.toggle?" lvBuyToggle":"")+'" data-buy="'+o.k+'" type="button">'
+      + '<span class="lvBuyName">'+o.name+'</span>'
+      + '<span class="lvBuyDesc">'+o.desc+'</span>'
+      + '<span class="lvBuyVol">'+o.vol+'</span>'
+      + '<span class="lvBuyPrice mono" data-k="'+o.k+'">0.00</span>'
+      + '<span class="sbBuyMult">'+BUY[o.k]+'× bet'+(o.toggle?" · per spin":"")+'</span></button>'
+    ).join("");
+    g.querySelectorAll("[data-buy]").forEach(btn=>{
+      btn.onclick=()=>{
+        const k=btn.getAttribute("data-buy");
+        if(k==="hunt" || k==="rainbow"){
+          const on = k==="hunt" ? (st.hunt=!st.hunt) : (st.rainbowSpins=!st.rainbowSpins);
+          if(k==="hunt" && st.hunt) st.rainbowSpins=false;
+          if(k==="rainbow" && st.rainbowSpins) st.hunt=false;
+          refreshToggles(); syncBalance();
+          if(on) el("lvBuyMenu").classList.remove("sbOn");
+          return;
+        }
+        el("lvBuyMenu").classList.remove("sbOn");
+        play(k);
+      };
+    });
+    refreshToggles(); syncBalance();
+  }
+  function refreshToggles(){
+    const g=el("lvBuyGrid"); if(!g) return;
+    const h=g.querySelector('[data-buy="hunt"]'), r=g.querySelector('[data-buy="rainbow"]');
+    if(h) h.classList.toggle("lvOn", st.hunt);
+    if(r) r.classList.toggle("lvOn", st.rainbowSpins);
+    const b=el("lvBuyBtn"); if(b) b.classList.toggle("sbOn", st.hunt||st.rainbowSpins);
+  }
+
+  function buildInfo(){
+    const box=el("lvInfoBody"); if(!box) return;
+    const order=[S.HAT,S.BEER,S.CHEESE,S.TRAP,S.A,S.K,S.Q,S.J,S.T10];
+    const sizes=[5,6,8,10,12,15];
+    const pays=order.map(s=>
+      '<div class="sbPayRow"><svg class="sbPayIco" viewBox="0 0 100 100"><use href="#lvs-'+ID[s]+'"/></svg>'
+      + '<div class="sbPayNums">'+sizes.map(n=>'<span>'+n+(n===15?"+":"")+' × <b>'+(clusterPay(s,n)).toFixed(2)+'</b></span>').join("")+'</div></div>').join("");
+    const specials=[["wild","Wanted Wild","Stands in for every paying symbol. It never forms a cluster on its own."],
+                    ["rain","Rainbow","Sets off every Golden Square on the board, turning each into a coin, a clover or a pot."],
+                    ["scat","Photo Bonus","3, 4 or 5 anywhere open Luck of the Bandit, All That Glitters or Treasure at the End of the Rainbow."]];
+    box.innerHTML =
+      '<div class="sbInfoSec"><h5>CLUSTER PAYS — × TOTAL BET</h5>'
+      + '<div class="sbRules" style="margin-bottom:8px">Five or more of the same symbol touching left, right, up or down pay anywhere on the board. Winners vanish and the rest fall in — a <b>cascade</b> — and every winning square turns <b>gold</b>.</div>'
+      + '<div class="sbPayGrid">'+pays+'</div></div>'
+      + '<div class="sbInfoSec"><h5>SPECIAL SYMBOLS</h5><div class="sbPayGrid">'
+      + specials.map(([k,n,d])=>'<div class="sbPayRow"><svg class="sbPayIco" viewBox="0 0 100 100"><use href="#lvs-'+k+'"/></svg><div class="sbPayNums"><span style="line-height:1.45"><b>'+n+'</b><br>'+d+'</span></div></div>').join("")
+      + '</div></div>'
+      + '<div class="sbInfoSec"><h5>GOLDEN SQUARES</h5><div class="sbRules">'
+      + 'Golden Squares wait until a Rainbow lands. Then each one reveals a <b>coin</b> (1× to 1000× your bet), a <b>clover</b> that multiplies every coin next to it by ×2, ×3 or ×5, or a <b>pot of gold</b> that <b>doubles the whole haul</b>.'
+      + '</div></div>'
+      + '<div class="sbInfoSec"><h5>THE THREE HEISTS</h5><div class="sbRules">'
+      + '<b>Luck of the Bandit</b> — 3 photos, 12 spins. Golden Squares stay between spins.<br>'
+      + '<b>All That Glitters Is Gold</b> — 4 photos, 12 spins. Golden Squares never switch off, so each Rainbow pays a bigger board.<br>'
+      + '<b>Treasure at the End of the Rainbow</b> — 5 photos, 8 spins. A Rainbow every spin, squares never switch off, and bronze coins are gone.'
+      + '</div></div>'
+      + '<div class="sbInfoSec"><h5>THE NUMBERS</h5><div class="sbStatTable">'
+      + '<span>Return to player</span><b>96.27%</b>'
+      + '<span>Hit frequency</span><b>37.4%</b>'
+      + '<span>Volatility</span><b>Medium</b>'
+      + '<span>Bonus — 3 photos</span><b>1 in 345</b>'
+      + '<span>Bonus — 4 photos</span><b>1 in 1 849</b>'
+      + '<span>Bonus — 5 photos</span><b>1 in 11 058</b>'
+      + '<span>Maximum win</span><b>10 000×</b>'
+      + '<span>Grid</span><b>6×5 · cluster pays</b>'
+      + '</div></div>';
+  }
+
+  /* ---------------- wiring ---------------- */
+  function openClient(){
+    el("sbLobby").style.display="none";
+    el("lvClient").style.display="";
+    const s=el("sbSuggest"); if(s) s.style.display="none";
+    if(!st.loaded && !st.loading) boot().catch(e=>{ console.error("Le Voleur failed to load", e); setLoad(100,"Load failed — go back and try again"); });
+  }
+  function closeClient(){
+    st.auto=0; st.autoStop=true; updateAuto();
+    el("lvClient").style.display="none";
+    el("sbLobby").style.display="";
+    const s=el("sbSuggest"); if(s) s.style.display="";
+  }
+  function setSoundIcon(){
+    const b=el("lvSoundBtn"); if(!b) return;
+    b.innerHTML = st.sound
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9v6h4l5 4V5L9 9z"/><path d="M17 9a4 4 0 0 1 0 6"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9v6h4l5 4V5L9 9z"/><path d="M17 10l4 4M21 10l-4 4"/></svg>';
+    b.classList.toggle("sbOn", st.sound);
+  }
+  function stepBet(d){
+    let i=BETS.indexOf(st.bet);
+    if(i<0){ i=0; for(let k=0;k<BETS.length;k++) if(BETS[k]<=st.bet) i=k; }
+    i=Math.max(0,Math.min(BETS.length-1,i+d));
+    st.bet=BETS[i]; saveCfg(); syncBalance(); beep(880,.03,"square",.02);
+  }
+
+  function wire(){
+    const o=el("lvOpen"); if(o) o.onclick=openClient;
+    const b=el("lvBackBtn"); if(b) b.onclick=()=>{ if(st.busy) return toast("Finishing the round…"); closeClient(); };
+    const p=el("lvPlayBtn");
+    if(p) p.onclick=()=>{
+      audio();
+      el("lvLoader").classList.add("sbGone");
+      el("lvGame").classList.add("sbReady");
+      setTimeout(()=>{ const l=el("lvLoader"); if(l) l.style.display="none"; },500);
+      syncBalance();
+    };
+    const s=el("lvSpinBtn"); if(s) s.onclick=()=>{ st.autoStop=false; play("spin"); };
+    const up=el("lvBetUp"); if(up) up.onclick=()=>stepBet(1);
+    const dn=el("lvBetDown"); if(dn) dn.onclick=()=>stepBet(-1);
+    const bv=el("lvBetVal");
+    if(bv) bv.onchange=()=>{
+      const v=Number(String(bv.value).replace(/[^\d.]/g,""));
+      let best=BETS[0];
+      for(const x of BETS) if(Math.abs(x-v)<Math.abs(best-v)) best=x;
+      st.bet=best; saveCfg(); syncBalance();
+    };
+    const t=el("lvTurboBtn"); if(t) t.onclick=()=>{ st.turbo=!st.turbo; t.classList.toggle("sbOn",st.turbo); saveCfg(); };
+    const a=el("lvAutoBtn");
+    if(a) a.onclick=()=>{
+      if(st.auto>0){ st.auto=0; st.autoStop=true; updateAuto(); return; }
+      st.auto=25; st.autoStop=false; updateAuto();
+      if(!st.busy) play("spin");
+    };
+    const sd=el("lvSoundBtn"); if(sd) sd.onclick=()=>{ st.sound=!st.sound; setSoundIcon(); saveCfg(); };
+    const f=el("lvFullBtn");
+    if(f) f.onclick=()=>{ try{ document.fullscreenElement ? document.exitFullscreen() : el("lvClient").requestFullscreen(); }catch(_){ } };
+    const i=el("lvInfoBtn"); if(i) i.onclick=()=>{ buildInfo(); el("lvInfoSheet").classList.add("sbOn"); };
+    const ic=el("lvInfoClose"); if(ic) ic.onclick=()=>el("lvInfoSheet").classList.remove("sbOn");
+    const bb=el("lvBuyBtn"); if(bb) bb.onclick=()=>{ if(st.busy) return; syncBalance(); el("lvBuyMenu").classList.add("sbOn"); };
+    const bc=el("lvBuyClose"); if(bc) bc.onclick=()=>el("lvBuyMenu").classList.remove("sbOn");
+    [el("lvBuyMenu"), el("lvInfoSheet")].forEach(ov=>{ if(ov) ov.addEventListener("click",(e)=>{ if(e.target===ov) ov.classList.remove("sbOn"); }); });
+  }
+
+  loadCfg(); wire(); setSoundIcon();
+  const tb=el("lvTurboBtn"); if(tb) tb.classList.toggle("sbOn", st.turbo);
+  syncBalance();
+
+  window.lvSyncBalance = syncBalance;
+  window.__lv = st;
+  /* read-only view of the maths, for checking the shipped tables against the
+     model they were measured from */
+  window.__lvMath = {
+    S, PAYING, PAY_BASE, PAY_SCALE, SIZE_CURVE, W_BASE, W_FEAT, W_HUNT,
+    COINS_BRONZE, COINS_SILVER, COINS_GOLD, FS_BRONZE, FS_SILVER, FS_GOLD, CLOVERS, POT_W,
+    MAX_WIN, FS_SPINS, FS_FOR, BUY, COLS, ROWS, CELLS,
+    clusterPay, findClusters, playSpin, runFeature,
+    P_BASE, P_FEAT, P_HUNT,
   };
 })();
 
