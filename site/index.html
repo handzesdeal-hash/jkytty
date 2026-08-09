@@ -4209,6 +4209,15 @@ input[type=number],
   color:#17862f;text-shadow:0 1px 0 rgba(255,255,255,.75), 0 0 12px rgba(46,204,90,.7);
   animation:lvValUp .45s cubic-bezier(.2,1.6,.4,1);
 }
+/* lifted twice reads purple, and a clover another clover lifted reads red */
+.lvVal.lvValUp2{
+  color:#7b21c9;text-shadow:0 1px 0 rgba(255,255,255,.8), 0 0 14px rgba(168,85,247,.85);
+  animation:lvValUp .45s cubic-bezier(.2,1.6,.4,1);
+}
+.lvVal.lvValRed{
+  color:#d81f2a;text-shadow:0 1px 0 rgba(255,255,255,.8), 0 0 14px rgba(255,70,80,.8);
+  animation:lvValUp .45s cubic-bezier(.2,1.6,.4,1);
+}
 @keyframes lvValUp{0%{transform:translate(-50%,-50%) scale(1)}45%{transform:translate(-50%,-50%) scale(1.55)}100%{transform:translate(-50%,-50%) scale(1)}}
 /* the x2 / x3 / x5 tag a clover throws at what it is lifting */
 .lvBoostTag{
@@ -14570,7 +14579,7 @@ restoreMinesState();
   const PAYING = [S.T10,S.J,S.Q,S.K,S.A,S.TRAP,S.CHEESE,S.BEER,S.HAT];
 
   const COLS = 6, ROWS = 5, CELLS = 30;
-  const PAY_SCALE = 5.66;
+  const PAY_SCALE = 5.97;
   const PAY_BASE = { [S.T10]:0.05, [S.J]:0.06, [S.Q]:0.07, [S.K]:0.09, [S.A]:0.11,
                      [S.TRAP]:0.18, [S.CHEESE]:0.26, [S.BEER]:0.38, [S.HAT]:0.60 };
   const SIZE_CURVE = { 5:1, 6:1.5, 7:2.1, 8:3, 9:4.2, 10:5.5, 11:7, 12:9, 13:11.5, 14:14 };
@@ -14605,15 +14614,21 @@ restoreMinesState();
   const FS_BRONZE = [[1,4000],[2,2200],[3,1100],[4,600]];
   const FS_SILVER = [[5,420],[6,260],[10,140],[15,60],[20,30]];
   const FS_GOLD   = [[30,14],[50,6],[100,2],[250,0.5],[500,0.15],[1000,0.05]];
-  const CLOVERS = [[2,220],[3,90],[5,24]];
+  /* Clovers stack now, so their share of a reveal counts twice over. */
+  const CLOVERS = [[2,105],[3,42],[5,11]];
+  /* Glitter and Treasure fill nearly the whole board, so a clover there
+     reaches far more coins. They get their own thinner mix. */
+  const FS_CLOVERS = [[2,42],[3,17],[5,4.5]];
   const POT_W = 55;
+  /* x5 beside x5 would be x25, and a coin between two of those x625. */
+  const CLOVER_MAX = 10, SYM_MULT_MAX = 25;
   const tierOf = (v)=> v <= 4 ? "bronze" : v <= 20 ? "silver" : "gold";
 
   function buildReveal(bronze, silver, gold, noBronze){
     const rows = [];
     const add = (kind,l)=>l.forEach(([v,w])=>rows.push({kind,v,w}));
     if(!noBronze) add("coin", bronze);
-    add("coin", silver); add("coin", gold); add("clover", CLOVERS);
+    add("coin", silver); add("coin", gold); add("clover", bronze===FS_BRONZE ? FS_CLOVERS : CLOVERS);
     rows.push({ kind:"pot", v:2, w:POT_W });
     let t=0; rows.forEach(r=>{ t+=r.w; r.cum=t; });
     return { rows, total:t };
@@ -14674,7 +14689,7 @@ restoreMinesState();
     treasure:"A Rainbow lands on every spin, Marked Squares never switch off, and bronze coins are gone.",
   };
   const RETRIGGER = 5;
-  const BUY = { hunt:4.4, rainbow:8, luck:52.5, glitter:104 };
+  const BUY = { hunt:4.25, rainbow:7.9, luck:47, glitter:91 };
 
   /* ---------------- maths ---------------- */
   function findClusters(g){
@@ -14768,20 +14783,34 @@ restoreMinesState();
       const val=new Float64Array(CELLS), base=new Float64Array(CELLS);
       for(let i=0;i<CELLS;i++) if(board[i] && board[i].kind==="coin"){ base[i]=board[i].v; val[i]=board[i].v; }
 
-      /* A symbol takes the BEST clover beside it, not the product of all of
-         them. With diagonal reach on a nearly full board the product compounded
-         (a bag touching three clovers came to x30) and tripled the top bonus. */
+      /* Clovers stack. A clover beside another clover lifts it first, and both
+         sides are worked out from the ORIGINAL values at once so a pair cannot
+         chase each other in a loop. The lifted clover then lifts coins at its
+         new value, and a coin touched by two clovers takes both. */
       const boosts=[];
-      const best=new Float64Array(CELLS), bestFrom=new Int16Array(CELLS).fill(-1);
+      const cloverVal=new Float64Array(CELLS);
+      for(let i=0;i<CELLS;i++) if(board[i] && board[i].kind==="clover") cloverVal[i]=board[i].v;
+      const cloverBoosts=[];
       for(let i=0;i<CELLS;i++){
         if(!board[i] || board[i].kind!=="clover") continue;
-        for(const j of neighbours8(i)) if(board[j] && board[j].kind==="coin" && board[i].v > (best[j]||1)) best[j]=board[i].v;
+        let m=1; const from=[];
+        for(const j of neighbours8(i)) if(board[j] && board[j].kind==="clover"){ m*=board[j].v; from.push(j); }
+        if(m>1){
+          cloverVal[i]=Math.min(CLOVER_MAX, board[i].v*m);
+          board[i].lifted=true;
+          cloverBoosts.push({ at:i, by:from.slice(), mult:m, value:cloverVal[i] });
+        }
       }
+      const hits=new Int16Array(CELLS);
       for(let i=0;i<CELLS;i++){
-        if(!best[i]) continue;
-        for(let k=0;k<CELLS;k++) if(board[k] && board[k].kind==="clover" && board[k].v===best[i] && neighbours8(k).indexOf(i)>=0){ bestFrom[i]=k; break; }
-        val[i]*=best[i];
-        boosts.push({ from:bestFrom[i], to:i, mult:best[i], kind:"coin" });
+        if(!board[i] || board[i].kind!=="coin") continue;
+        let m=1;
+        for(const j of neighbours8(i)){
+          if(!board[j] || board[j].kind!=="clover") continue;
+          m*=cloverVal[j]; hits[i]++;
+          boosts.push({ from:j, to:i, mult:cloverVal[j], kind:"coin" });
+        }
+        if(m>1) val[i]*=Math.min(SYM_MULT_MAX, m);
       }
       let coinSum=0; for(let i=0;i<CELLS;i++) coinSum+=val[i];
 
@@ -14792,11 +14821,11 @@ restoreMinesState();
         for(const j of neighbours8(i)){
           if(!board[j] || board[j].kind!=="pot" || board[j].held<=0) continue;
           const before=board[j].held;
-          board[j].held*=board[i].v;
+          board[j].held*=cloverVal[i];
           const gain=board[j].held-before;
           total+=gain;
-          relifts.push({ from:i, to:j, mult:board[i].v, gain, held:board[j].held });
-          boosts.push({ from:i, to:j, mult:board[i].v, kind:"bag" });
+          relifts.push({ from:i, to:j, mult:cloverVal[i], gain, held:board[j].held });
+          boosts.push({ from:i, to:j, mult:cloverVal[i], kind:"bag" });
         }
       }
 
@@ -14804,7 +14833,8 @@ restoreMinesState();
       for(const i of dealt){
         if(board[i].kind!=="pot") continue;
         let m=1;
-        for(const j of neighbours8(i)) if(board[j] && board[j].kind==="clover" && board[j].v>m) m=board[j].v;
+        for(const j of neighbours8(i)) if(board[j] && board[j].kind==="clover") m*=cloverVal[j];
+        m=Math.min(SYM_MULT_MAX, m);
         board[i].mult=m;
         board[i].held=coinSum*m;
         bags.push({ at:i, mult:m, amount:board[i].held });
@@ -14813,7 +14843,8 @@ restoreMinesState();
       const paid = bags.length ? bags.reduce((a,x)=>a+x.amount,0) : coinSum;
       total += paid;
 
-      waves.push({ kind: board.map(x=>x?{kind:x.kind,v:x.v}:null),
+      waves.push({ kind: board.map(x=>x?{kind:x.kind,v:x.v,lifted:!!x.lifted}:null),
+                   cloverVal:Array.from(cloverVal), cloverBoosts, hits:Array.from(hits),
                    base:Array.from(base), val:Array.from(val),
                    boosts, relifts, bags, coinSum, paid, cells:Array.from(active), dealt:dealt.slice() });
 
@@ -14981,6 +15012,14 @@ restoreMinesState();
   + '<symbol id="lvs-clover" viewBox="0 0 100 100">'
   + '<g fill="#4ea24a" stroke="#2c6b2a" stroke-width="4">'
   + '<circle cx="36" cy="36" r="17"/><circle cx="64" cy="36" r="17"/><circle cx="36" cy="64" r="17"/><circle cx="64" cy="64" r="17"/></g>'
+  + '<path d="M52 62c6 12 10 18 20 22" fill="none" stroke="#2c6b2a" stroke-width="5" stroke-linecap="round"/></symbol>'
+  /* a clover another clover has lifted: the two diagonal leaves turn purple */
+  + '<symbol id="lvs-clover2" viewBox="0 0 100 100">'
+  + '<g stroke-width="4">'
+  + '<circle cx="36" cy="36" r="17" fill="#a855f7" stroke="#5b21b6"/>'
+  + '<circle cx="64" cy="36" r="17" fill="#4ea24a" stroke="#2c6b2a"/>'
+  + '<circle cx="36" cy="64" r="17" fill="#4ea24a" stroke="#2c6b2a"/>'
+  + '<circle cx="64" cy="64" r="17" fill="#a855f7" stroke="#5b21b6"/></g>'
   + '<path d="M52 62c6 12 10 18 20 22" fill="none" stroke="#2c6b2a" stroke-width="5" stroke-linecap="round"/></symbol>'
   /* pot of gold */
   + '<symbol id="lvs-pot" viewBox="0 0 100 100">'
@@ -15222,9 +15261,13 @@ restoreMinesState();
       if(rv){
         if(rv.kind==="coin"){
           const shown = rv._val != null ? rv._val : rv.v;
-          inner = symSVG("coin-"+tierOf(shown)) + '<span class="lvVal'+(rv._up?" lvValUp":"")+'" data-i="'+i+'">'+shown+'</span>';
+          const upCls = rv._hits >= 2 ? " lvValUp2" : (rv._hits === 1 ? " lvValUp" : "");
+          inner = symSVG("coin-"+tierOf(shown)) + '<span class="lvVal'+upCls+'" data-i="'+i+'">'+shown+'</span>';
         }else if(rv.kind==="clover"){
-          inner = symSVG("clover") + '<span class="lvVal">×'+rv.v+'</span>';
+          // a clover another clover lifted shows two purple leaves and a red number
+          const lifted = rv.lifted && rv._cv != null && rv._cv > rv.v;
+          inner = symSVG(lifted ? "clover2" : "clover")
+            + '<span class="lvVal'+(lifted?" lvValRed":"")+'">×'+(lifted ? rv._cv : rv.v)+'</span>';
         }else{
           inner = symSVG("pot") + '<span class="lvVal'+(rv._bag?" lvValUp":"")+'">'+(rv._bag!=null?rv._bag:"BAG")+'</span>';
         }
@@ -15351,12 +15394,18 @@ restoreMinesState();
         .finished.catch(()=>{}).then(()=>d.remove());
     }));
   }
-  function paintCoin(node, value, up){
+  /* hits = how many clovers have lifted this coin: one reads green, two or more purple */
+  function paintCoin(node, value, hits){
     if(!node) return;
     const use=node.querySelector("use");
     if(use) use.setAttribute("href", "#lvs-coin-"+tierOf(value));
     const v=node.querySelector(".lvVal");
-    if(v){ v.textContent=value; if(up) v.classList.add("lvValUp"); }
+    if(v){
+      v.textContent = Math.round(value*100)/100;
+      v.classList.remove("lvValUp","lvValUp2");
+      if(hits >= 2) v.classList.add("lvValUp2");
+      else if(hits >= 1) v.classList.add("lvValUp");
+    }
     node.classList.add("lvHit");
     setTimeout(()=>node.classList.remove("lvHit"), 430);
   }
@@ -15369,7 +15418,9 @@ restoreMinesState();
 
     for(let w=0; w<res.reveal.waves.length; w++){
       const wave=res.reveal.waves[w];
-      for(let i=0;i<CELLS;i++) if(wave.cells[i]) shown[i]=Object.assign({}, wave.kind[i], { _val: wave.base[i] });
+      for(let i=0;i<CELLS;i++) if(wave.cells[i]) shown[i]=Object.assign({}, wave.kind[i], { _val: wave.base[i], _hits: 0 });
+      // clovers that other clovers lifted are shown at their new value from the start
+      for(const cb of wave.cloverBoosts) if(shown[cb.at]){ shown[cb.at]._cv = cb.value; shown[cb.at].lifted = true; }
       const mask=shown.map(x=>x?1:0);
       const timing=revealDelays(wave.cells);
       render(res.grid, mask, null, { kind: shown }, timing);
@@ -15377,13 +15428,37 @@ restoreMinesState();
       await wait(fillTime());
       const nodes=cellNodes();
 
+      // a clover lifting another clover happens first, and is worth showing
+      for(const cb of wave.cloverBoosts){
+        for(const src of cb.by){
+          if(nodes[src]) nodes[src].classList.add("lvHit");
+          await flyBoost(src, cb.at, wave.kind[src] ? wave.kind[src].v : cb.mult);
+          if(nodes[src]) nodes[src].classList.remove("lvHit");
+        }
+        const n=nodes[cb.at];
+        if(n){
+          const u=n.querySelector("use");
+          if(u) u.setAttribute("href", "#lvs-clover2");
+          const v=n.querySelector(".lvVal");
+          if(v){ v.textContent="×"+cb.value; v.classList.add("lvValRed"); }
+          n.classList.add("lvHit");
+        }
+        sfx.boost();
+        await wait(fast?160:340);
+      }
+
       // clovers lift what they touch, one at a time
       for(const b of wave.boosts){
         if(nodes[b.from]) nodes[b.from].classList.add("lvHit");
         await flyBoost(b.from, b.to, b.mult);
         if(b.kind==="coin"){
-          paintCoin(nodes[b.to], wave.val[b.to], true);
-          if(shown[b.to]) { shown[b.to]._val = wave.val[b.to]; shown[b.to]._up = true; }
+          // step the value up per clover, so two clovers read as two lifts
+          const cur = shown[b.to] || {};
+          cur._hits = (cur._hits || 0) + 1;
+          const next = (cur._hits >= (wave.hits[b.to]||1)) ? wave.val[b.to] : (cur._val || wave.base[b.to]) * b.mult;
+          cur._val = next;
+          paintCoin(nodes[b.to], next, cur._hits);
+          if(shown[b.to]) shown[b.to] = cur;
         }else{
           // a clover reaching a bag that already collected: repaint what it holds
           const rl = wave.relifts.find(x=>x.from===b.from && x.to===b.to);
@@ -15782,7 +15857,7 @@ restoreMinesState();
   window.__lvMath = {
     S, PAYING, PAY_BASE, PAY_SCALE, SIZE_CURVE, W_BASE, W_FEAT, W_HUNT,
     COINS_BRONZE, COINS_SILVER, COINS_GOLD, FS_BRONZE, FS_SILVER, FS_GOLD, CLOVERS, POT_W,
-    MAX_WIN, FS_SPINS, FS_FOR, BUY, COLS, ROWS, CELLS,
+    MAX_WIN, FS_SPINS, FS_FOR, BUY, COLS, ROWS, CELLS, CLOVER_MAX, SYM_MULT_MAX, FS_CLOVERS,
     clusterPay, findClusters, playSpin, runFeature, dropDelays, revealDelays, capRain,
     P_BASE, P_FEAT, P_HUNT,
   };
